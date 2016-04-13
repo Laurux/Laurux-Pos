@@ -682,6 +682,8 @@ Public Sub Aff_viseur(Texte_aff As String)
     Try Print #Sport, Texte_aff;
     Try Print #Sport, Chr$(&H1B) & "=" & Chr$(1);
   Endif
+  'Imprime sur l'afficheur USB BA6X
+  PrintBA6X(Texte_aff, "");
 
 End
 
