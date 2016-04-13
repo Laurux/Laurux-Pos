@@ -1,0 +1,247 @@
+' Gambas class file
+
+'----------------------------------------------------------------------------
+'
+
+'
+'Ce programme est un logiciel libre; Vous pouvez le redistribuer et/ou
+'le modifier selon les termes de la GNU General PUBLIC License publiés par
+'la Free Software Foundation.
+
+'Ce programme est distribué sans garantie. Voyez la GNU General PUBLIC
+'License pour plus de details.
+
+'Vous devez lire la GNU General PUBLIC Licence.
+'Si vous ne disposez pas d'un exemplaire, veuillez écrire
+'à " The Free Software Foundation
+'INC, 59 Temple place - Suite 33, Boston
+'MA 02111-1307 USA
+'----------------------------------------------------------------------------
+'################################################
+'# nom du fichier           : LauruxConf.class
+'# Auteur                   : Jacky Tripoteau
+'# date de création         : 07 janvier 2010
+'# Gestion du fichier de configuration
+'################################################
+'#######################################################
+'# Modification Marc GUILLAUME <alarch@alarch.ath.cx>
+'# pour utilisation d'un tunnel ssh de connexion MySQL
+'# 07 janvier 2010
+'########################################################
+'
+Public Hwnd As Fmenu
+Public hcon As New Connection
+Public Soc As String
+Public intitule As String
+Public Fonte As Integer
+Public Version As String
+Public Hfile As File
+Public d As String
+Static Public DB As New Connection
+Public lnd As Integer
+Public Lig As String
+Public Key As String
+Public iPos As Integer
+Public rResult As Result
+
+Public Sub _new()
+  
+  Dim Frmt As String[]
+  Dim ssh As String
+  
+  Frmt = Utils.FColr(Settings["/Coul/Fnets"])
+  If Settings["/Soc" & Start.Soc & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
+  Utils.Observers(LauruxConf)
+  Music.Load("son/warning.ogg")
+  'Me.Center
+  Try ssh = Settings["/dbase/Con-ssh"]
+  If ssh <> 0 And Not IsNull(ssh) Then
+    Bssh.value = True
+    Bssh_Click()
+  Endif
+  Host.Add(Settings["/dbase/Host"], 0)
+  Host.Add(Settings["/dbase/Host2"], 1)
+  Try Cnl.value = Settings["/dbase/Cnl"]
+  If Cnl.value Then
+    Host.Text = Settings["/dbase/Host2"]
+  Else
+    Host.Text = Settings["/dbase/Host"]
+  Endif
+  
+End
+
+'***********************************************************
+'* La connexion se fait sans mot de passe, la clé publique
+'* de l'utilisateur doit se trouver sur le serveur SQL
+'* contacté en SSH
+'* MG - 07 janvier 2010
+'***********************************************************
+Public Sub Button1_Click()
+  
+  Dim $ready_connect As Boolean
+  
+  $ready_connect = True
+  Soc = "01"
+  intitule = "  "
+  Settings["/dbase/Version"] = "Laurux.Pos V3.15"
+  '# -- Partie commune aux connexions avec ou sans tunnel
+  Settings["/dbase/type"] = "mysql"
+  Settings["/dbase/Name"] = "Laurux01"
+  Settings["/dbase/Login"] = login.Text
+  Settings["/dbase/Password"] = hexdblKey.crypt("en", Password.Text, "Laurux")
+  Settings["/dbase/Port"] = Port.Text
+  Settings["/dbase/Cnl"] = Cnl.value
+  If Cnl.value Then
+    Settings["/dbase/Host2"] = Host.Text
+  Else
+    Settings["/dbase/Host"] = Host.Text  
+  Endif
+  '# -- Partie variant suivant que l'on utilise un tunnel ssh ou pas
+  Settings["/dbase/ssh/Con-ssh"] = Bssh.Value
+  If Bssh.value Then
+    Settings["/dbase/ssh/Login"] = Loginssh.Text
+    Settings["/dbase/ssh/Portssh"] = Portssh.Text
+    Settings["/dbase/ssh/Hostssh"] = Hostssh.Text
+    Settings["/dbase/ssh/Portlocal"] = Portlocal.Text
+  Endif
+  Settings["/dbase/Con-ssh"] = Bssh.Value
+  Settings["/Soc"] = Soc
+  Settings["/intitule"] = intitule
+  Settings["/son"] = 0
+  Settings["/Tips"] = 1
+  Settings["/Soc" & Soc & "/Entete"] = 1
+  Settings["/Soc" & Soc & "/Conditions"] = 1
+  Settings["/Soc" & Soc & "/Tva550"] = 0
+  Settings["/Soc" & Soc & "/Codetva"] = " "
+  Settings["/Soc" & Soc & "/Compta"] = 0
+  Settings["/Soc" & Soc & "/Gestion"] = 0
+  Settings["/Soc" & Soc & "/CptFac"] = 1
+  Settings["/Soc" & Soc & "/Qt1"] = 0
+  Settings["/Soc" & Soc & "/Coul_fen"] = 0
+  Settings["/Soc" & Soc & "/Qt1"] = 0
+  Settings["/Soc" & Soc & "/Ctrlstk"] = 0
+  Settings["/Soc" & Soc & "/AutoEnt"] = 0
+  Settings["/tactile"] = 0
+  Settings["/Coul" & "/Fnets"] = "BackColor: &HDDDDDD&; "
+  Settings["/Coul" & "/Btns"] = "BackColor: &HBDBDBD&; "
+  Settings["/Coul" & "/Znss"] = "BackColor: &HFAFAFA&; "
+  Settings["/Coul" & "/Znaff"] = "BackColor: &HEEEEEE&; "
+  Settings["/Coul" & "/Focus"] = "BackColor: &HF9FFC7&; "
+  Settings["/Coul" & "/Coulfonds"] = "Backcolor: &FFEE81&; "
+  Settings["/Coul" & "/Others"] = "Backcolor: &FFE0B8&; "
+  Settings["/Soc" & Soc & "/Copie"] = 0
+  Settings["/Soc" & Soc & "/Siret"] = "Siret"
+  Settings["/Soc" & Soc & "/Prxdec"] = 0
+  Settings["/Soc" & Soc & "/Taxe"] = "TVA"
+  Settings.Save
+  
+  '# -- valeurs de connexion communes avec ou sans tunnel
+  ' Le type reste bien entendu mysql
+  hcon.type = Settings["/dbase/type"]
+  ' le nom est celui de la base
+  hcon.Name = Settings["/dbase/Name"]
+  ' le login est celui de la base
+  hcon.Login = Settings["/dbase/Login"]
+  ' le mot de passe est celui de la base
+  hcon.Password = hexdblKey.crypt("de", Settings["/dbase/Password"], "Laurux")
+  
+  '*************************************
+  '* On initialise les variables
+  '* ainsi les routines de connexion
+  '* restent inchangées
+  '* Il suffira juste de lancer le tunnel
+  '* ssh ou pas
+  '*************************************
+  If Bssh.Value Then
+    '# -- Valeurs de connexion via tunnel
+    ' par contre on utilise le port local de loopback pour la connexion (et pas localhost qui impliquerait une connexion socket unix)
+    hcon.Host = "127.0.0.1"
+    ' on remplace le port mysql par le port local du tunnel ssh
+    hcon.Port = Settings["/dbase/ssh/Portlocal"]
+    ' on définit des variables pour l'établissement du tunnel ssh
+    Utils.MysqlServeur = Settings["/dbase/Host"]
+    Utils.RemotePort = Settings["/dbase/Port"]
+    Utils.SshHost = Settings["/dbase/ssh/Hostssh"]
+    Utils.SshPort = Settings["/dbase/ssh/Portssh"]
+    Utils.SshUser = Settings["/dbase/ssh/Login"]
+  Else
+    '# -- Valeurs de connexion sans tunnel
+    ' l'hôte à utiliser est le serveur MySQL
+    hcon.Host = Settings["/dbase/Host"]
+    ' le port le port MySQL du serveur
+    If Not Cnl.value Then
+      hcon.Port = Settings["/dbase/Port"]
+    Else
+      hcon.Port = Settings["/dbase/Port2"]
+    Endif
+  Endif
+  Soc = Settings["/Soc"]
+  
+  '# -- lancement si nécessaire du tunnel ssh
+  If Bssh.Value Then
+    If Utils.monteTunnel() Then
+      $ready_connect = True
+    Else
+      $ready_connect = False
+    Endif
+  Endif
+  
+  If $ready_connect Then
+    Try hcon.Close
+    
+    hcon.Open
+    If Message.Info("Le fichier de configuration a été crée ou modifié. Veuillez relancer Laurux.pos SVP.", "OK!") = 1 Then
+      Button2_Click()
+      Quit
+    Endif
+  Catch
+    If Left$(error.Text, 35) = "Cannot open database: Access denied" Then
+      Message.Warning("Attention, l' utilisateur ou le mot de passe est erroné ! \n Veuillez controler votre saisie SVP et vérifier que l'utisateur soit bien créé dans MySQL!")
+    Else
+      If Left$(error.Text, 38) = "Cannot open database: Unknown database" Then
+        Message.Warning("Attention, la base n'existe pas sur le serveur sélectionné !")
+      Else
+        If Left$(error.Text, 35) = "Cannot open database: Can't connect" Then
+          Message.Warning("Attention, accès MySQL impossible ! \n Veuillez vérifier que MySQL soit bien installé et que le service soit lancé SVP !")
+        Else
+          message.Error(Error.Text & " " & Error.Where)
+        Endif
+      Endif
+    Endif
+  Else
+    Message.Warning("Le tunnel SSH demandé ne peut être monté")
+  Endif
+  
+End
+
+Public Sub Button2_Click()
+  
+  Try Kill User.home & "/Laurux.Pos.lock"
+  Me.close
+  
+End
+
+'********************************************************************
+'* Fermeture du formulaire avec suppression de l'éventuel tunnel ssh
+'* MG - 07 janvier 2010
+'********************************************************************
+Public Sub Form_Close()
+  
+  Utils.fermeTunnel()
+  Print Now & " - " & "Fermeture de la fenêtre\n"
+  
+End
+
+'******************************************
+'* Masquage affichage du cadre tunnel ssh
+'* MG - 07 janvier 2010
+'******************************************
+Public Sub Bssh_Click()
+  
+  If Bssh.value Then
+    Frame1.Enabled = True
+  Else
+    Frame1.Enabled = False
+  Endif
+  
+End

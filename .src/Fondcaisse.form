@@ -1,0 +1,454 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,70,83)
+  Text = ("Saisie du fond de caisse")
+  Border = False
+  { Label1 Label
+    MoveScaled(2,9,16,3)
+    Text = ("Euros")
+    Border = Border.Etched
+  }
+  { Box1 TextBox
+    MoveScaled(19,9,15,3)
+    Alignment = Align.Center
+  }
+  { Label2 Label
+    MoveScaled(19,6,15,3)
+    Text = ("Montant")
+    Alignment = Align.Center
+    Border = Border.Etched
+  }
+  { Panel1 Panel
+    MoveScaled(46,24,21,34)
+    { zero Button
+      MoveScaled(0,18,13,6)
+      Text = ("0")
+    }
+    { virgule Button
+      MoveScaled(14,18,6,6)
+      Text = (",")
+    }
+    { un Button
+      MoveScaled(0,12,6,6)
+      Text = ("1")
+    }
+    { deux Button
+      MoveScaled(7,12,6,6)
+      Text = ("2")
+    }
+    { trois Button
+      MoveScaled(14,12,6,6)
+      Text = ("3")
+    }
+    { quatre Button
+      MoveScaled(0,6,6,6)
+      Text = ("4")
+    }
+    { cinq Button
+      MoveScaled(7,6,6,6)
+      Text = ("5")
+    }
+    { six Button
+      MoveScaled(14,6,6,6)
+      Text = ("6")
+    }
+    { sept Button
+      MoveScaled(0,0,6,6)
+      Text = ("7")
+    }
+    { huit Button
+      MoveScaled(7,0,6,6)
+      Text = ("8")
+    }
+    { neuf Button
+      MoveScaled(14,0,6,6)
+      Text = ("9")
+    }
+    { Raz Button
+      MoveScaled(0,26,20,6)
+      Text = Shortcut(("Correction"), "C")
+    }
+  }
+  { Button1 Button
+    MoveScaled(51,78,10,4)
+    Text = Shortcut(("annuler"), "a")
+  }
+  { Button2 Button
+    MoveScaled(39,78,10,4)
+    Text = Shortcut(("OK"), "O")
+  }
+  { Button3 Button
+    MoveScaled(22,78,15,4)
+    Text = Shortcut(("Détail caisse"), "D")
+  }
+  { Panel2 Panel
+    MoveScaled(2,18,43,60)
+    Visible = False
+    { Label3 Label
+      MoveScaled(0,4,8,3.4286)
+      Text = ("200,00")
+      Alignment = Align.Right
+    }
+    { Panel3 Panel
+      MoveScaled(17,0,15,60)
+      { Box2 TextBox Box
+        Name = "Box2"
+        MoveScaled(0,4,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box3 TextBox
+        MoveScaled(0,8,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box4 TextBox
+        MoveScaled(0,12,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box5 TextBox
+        MoveScaled(0,16,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box6 TextBox
+        MoveScaled(0,20,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box7 TextBox
+        MoveScaled(0,24,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box8 TextBox
+        MoveScaled(0,28,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box9 TextBox
+        MoveScaled(0,32,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box10 TextBox
+        MoveScaled(0,36,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box11 TextBox
+        MoveScaled(0,40,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box12 TextBox
+        MoveScaled(0,44,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box13 TextBox
+        MoveScaled(0,48,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box14 TextBox
+        MoveScaled(0,52,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box15 TextBox
+        MoveScaled(0,56,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+      { Box31 TextBox
+        MoveScaled(0,0,15,3.4286)
+        Alignment = Align.Right
+        ReadOnly = True
+      }
+    }
+    { Label4 Label
+      MoveScaled(0,8,8,3.4286)
+      Text = ("100,00")
+      Alignment = Align.Right
+    }
+    { Label5 Label
+      MoveScaled(0,12,8,3.4286)
+      Text = ("50,00")
+      Alignment = Align.Right
+    }
+    { Label6 Label
+      MoveScaled(0,16,8,3.4286)
+      Text = ("20,00")
+      Alignment = Align.Right
+    }
+    { Label7 Label
+      MoveScaled(0,20,8,3.4286)
+      Text = ("10,00")
+      Alignment = Align.Right
+    }
+    { Label8 Label
+      MoveScaled(0,24,8,3.4286)
+      Text = ("5,00")
+      Alignment = Align.Right
+    }
+    { Label9 Label
+      MoveScaled(0,28,8,3.4286)
+      Text = ("2,00")
+      Alignment = Align.Right
+    }
+    { Label10 Label
+      MoveScaled(0,32,8,3.4286)
+      Text = ("1,00")
+      Alignment = Align.Right
+    }
+    { Label11 Label
+      MoveScaled(0,36,8,3.4286)
+      Text = ("0,50")
+      Alignment = Align.Right
+    }
+    { Label12 Label
+      MoveScaled(0,40,8,3.4286)
+      Text = ("0,20")
+      Alignment = Align.Right
+    }
+    { Label13 Label
+      MoveScaled(0,44,8,3.4286)
+      Text = ("0,10")
+      Alignment = Align.Right
+    }
+    { Label14 Label
+      MoveScaled(0,48,8,3.4286)
+      Text = ("0,05")
+      Alignment = Align.Right
+    }
+    { Label15 Label
+      MoveScaled(0,52,8,3.4286)
+      Text = ("0,02")
+      Alignment = Align.Right
+    }
+    { Label16 Label
+      MoveScaled(0,56,8,3.4286)
+      Text = ("0,01")
+      Alignment = Align.Right
+    }
+    { Box16 TextBox Box
+      Name = "Box16"
+      MoveScaled(10,4,6.1429,3.4286)
+      Tag = "16"
+      Alignment = Align.Right
+    }
+    { Box17 TextBox Box
+      Name = "Box17"
+      MoveScaled(10,8,6.1429,3.4286)
+      Tag = "17"
+      Alignment = Align.Right
+    }
+    { Box18 TextBox Box
+      Name = "Box18"
+      MoveScaled(10,12,6.1429,3.4286)
+      Tag = "18"
+      Alignment = Align.Right
+    }
+    { Box19 TextBox Box
+      Name = "Box19"
+      MoveScaled(10,16,6.1429,3.4286)
+      Tag = "19"
+      Alignment = Align.Right
+    }
+    { Box20 TextBox Box
+      Name = "Box20"
+      MoveScaled(10,20,6.1429,3.4286)
+      Tag = "20"
+      Alignment = Align.Right
+    }
+    { Box21 TextBox Box
+      Name = "Box21"
+      MoveScaled(10,24,6.1429,3.4286)
+      Tag = "21"
+      Alignment = Align.Right
+    }
+    { Box22 TextBox Box
+      Name = "Box22"
+      MoveScaled(10,28,6.1429,3.4286)
+      Tag = "22"
+      Alignment = Align.Right
+    }
+    { Box23 TextBox Box
+      Name = "Box23"
+      MoveScaled(10,32,6.1429,3.4286)
+      Tag = "23"
+      Alignment = Align.Right
+    }
+    { Box24 TextBox Box
+      Name = "Box24"
+      MoveScaled(10,36,6.1429,3.4286)
+      Tag = "24"
+      Alignment = Align.Right
+    }
+    { Box25 TextBox Box
+      Name = "Box25"
+      MoveScaled(10,40,6.1429,3.4286)
+      Tag = "25"
+      Alignment = Align.Right
+    }
+    { Box26 TextBox Box
+      Name = "Box26"
+      MoveScaled(10,44,6.1429,3.4286)
+      Tag = "26"
+      Alignment = Align.Right
+    }
+    { Box27 TextBox Box
+      Name = "Box27"
+      MoveScaled(10,48,6.1429,3.4286)
+      Tag = "27"
+      Alignment = Align.Right
+    }
+    { Box28 TextBox Box
+      Name = "Box28"
+      MoveScaled(10,52,6.1429,3.4286)
+      Tag = "28"
+      Alignment = Align.Right
+    }
+    { Box29 TextBox Box
+      Name = "Box29"
+      MoveScaled(10,56,6.1429,3.4286)
+      Tag = "29"
+      Alignment = Align.Right
+    }
+    { Label19 Label
+      MoveScaled(0,0,8,3.4286)
+      Text = ("500,00")
+      Alignment = Align.Right
+    }
+    { Box30 TextBox Box
+      Name = "Box30"
+      MoveScaled(10,0,6.1429,3.4286)
+      Tag = "30"
+      Alignment = Align.Right
+    }
+    { Panel4 Panel
+      MoveScaled(32,0,11,60)
+      { VBox1 VBox
+        MoveScaled(2,0,4,60)
+        Padding = 20
+        { PictureBox15 PictureBox btn
+          Name = "PictureBox15"
+          MoveScaled(0,0,4,3.4286)
+          Picture = Picture["Images/monnaie/b500.png"]
+          Stretch = True
+        }
+        { PictureBox14 PictureBox btn
+          Name = "PictureBox14"
+          MoveScaled(0,4,4,3.4286)
+          Picture = Picture["Images/monnaie/b200.png"]
+          Stretch = True
+        }
+        { PictureBox13 PictureBox btn
+          Name = "PictureBox13"
+          MoveScaled(0,8,4,3.4286)
+          Picture = Picture["Images/monnaie/b100.png"]
+          Stretch = True
+        }
+        { PictureBox12 PictureBox btn
+          Name = "PictureBox12"
+          MoveScaled(0,12,4,3.4286)
+          Picture = Picture["Images/monnaie/b50.png"]
+          Stretch = True
+        }
+        { PictureBox11 PictureBox btn
+          Name = "PictureBox11"
+          MoveScaled(0,16,4,3.4286)
+          Picture = Picture["Images/monnaie/b20.png"]
+          Stretch = True
+        }
+        { PictureBox10 PictureBox btn
+          Name = "PictureBox10"
+          MoveScaled(0,20,4,3.4286)
+          Picture = Picture["Images/monnaie/b10.png"]
+          Stretch = True
+        }
+        { PictureBox9 PictureBox btn
+          Name = "PictureBox9"
+          MoveScaled(0,24,4,3.4286)
+          Picture = Picture["Images/monnaie/b5.png"]
+          Stretch = True
+        }
+        { PictureBox8 PictureBox btn
+          Name = "PictureBox8"
+          MoveScaled(0,28,4,3.4286)
+          Picture = Picture["Images/monnaie/p2.png"]
+          Stretch = True
+        }
+        { PictureBox7 PictureBox btn
+          Name = "PictureBox7"
+          MoveScaled(0,32,4,3.4286)
+          Picture = Picture["Images/monnaie/p1.png"]
+          Stretch = True
+        }
+        { PictureBox6 PictureBox btn
+          Name = "PictureBox6"
+          MoveScaled(0,36,4,3.4286)
+          Picture = Picture["Images/monnaie/p50.png"]
+          Stretch = True
+        }
+        { PictureBox5 PictureBox btn
+          Name = "PictureBox5"
+          MoveScaled(0,40,4,3.4286)
+          Picture = Picture["Images/monnaie/p20.png"]
+          Stretch = True
+        }
+        { PictureBox4 PictureBox btn
+          Name = "PictureBox4"
+          MoveScaled(0,44,4,3.4286)
+          Picture = Picture["Images/monnaie/p10.png"]
+          Stretch = True
+        }
+        { PictureBox3 PictureBox btn
+          Name = "PictureBox3"
+          MoveScaled(0,48,4,3.4286)
+          Picture = Picture["Images/monnaie/p05.png"]
+          Stretch = True
+        }
+        { PictureBox2 PictureBox btn
+          Name = "PictureBox2"
+          MoveScaled(0,52,4,3.4286)
+          Tag = "2"
+          Picture = Picture["Images/monnaie/p02.png"]
+          Stretch = True
+        }
+        { PictureBox1 PictureBox btn
+          Name = "PictureBox1"
+          MoveScaled(0,56,4,3.4286)
+          Tag = "1"
+          Picture = Picture["Images/monnaie/p01.png"]
+          Stretch = True
+        }
+      }
+      { P13 PictureBox
+        MoveScaled(0,0,5,6)
+        Visible = False
+        Stretch = True
+      }
+    }
+  }
+  { Label17 Label
+    MoveScaled(12,14,6,3)
+    Visible = False
+    Text = ("Qté")
+    Alignment = Align.Center
+    Border = Border.Etched
+  }
+  { Label18 Label
+    MoveScaled(19,14,15,3)
+    Visible = False
+    Text = ("Total")
+    Alignment = Align.Center
+    Border = Border.Etched
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(4,1,56,3)
+  }
+}

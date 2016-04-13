@@ -1,0 +1,73 @@
+' Gambas module file
+
+'***********************************
+'*      On calcule la position     *
+'***********************************
+Public Function Pos(Qte As String) As String
+
+  Select Case Qte
+    Case 1
+      qte = "premier"
+
+    Case 2
+      qte = "deuxiéme"
+
+    Case 3
+      qte = "troisiéme"
+
+    Case 4
+      qte = "quatriéme"
+
+    Case 5
+      qte = "cinquiéme"
+
+    Case 6
+      qte = "sixiéme"
+
+    Case 7
+      qte = "septiéme"
+
+    Case 8
+      qte = "huitiéème"
+
+    Case 9
+      qte = "neuviéme"
+
+    Case 10
+      qte = "dixiéme"
+
+    Case 11
+      qte = "onziéme"
+
+    Case 12
+      qte = "douziéme"
+
+    Case 13
+      qte = "treizième"
+
+    Case 14
+      qte = "quatorzième"
+
+    Case 15
+      qte = "quinzième"
+
+    Case 16
+      qte = "seiziéme"
+
+    Case 17
+      qte = "dixseptiéme"
+
+    Case 18
+      qte = "dixhuitiéme"
+
+    Case 12
+      qte = "dixneuviéme"
+
+    Case 12
+      qte = "vingtiéme"
+
+  End Select
+
+  Return qte
+
+End

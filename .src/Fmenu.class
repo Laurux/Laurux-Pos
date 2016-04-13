@@ -1,0 +1,409 @@
+' Gambas class file
+
+'#######################################################
+'# Modification Marc GUILLAUME <alarch@alarch.ath.cx>
+'# pour utilisation d'un tunnel ssh de connexion MySQL
+'# 07 janvier 2010
+'########################################################
+
+Public Soc As String
+Public intitule As String
+Public Version As String
+hForm As Fondcaisse
+Ncaisse As String
+Efface As Integer = 1
+
+Public Sub _new()
+  
+  Dim titre As String
+  Dim $con_ok As Boolean = True ' flag d'autorisation de connexion
+  
+  Me.Center
+  Me.Width = Screens[0].width
+  Me.Height = Screens[0].Height
+  titre = fmenu.text
+  Try intitule = Settings["/intitule"]
+  'Fmenu.text = titre & " ( Société  " " " & Right$(Soc, 2) & " - " & intitule & ") "
+  Try Version = Settings["/dbase/Version"]
+  If Settings["/Cnomade"] Then
+    Button3.Text = "&Export vers csv"
+    Button4.Visible = True
+  Else
+    Button3.Text = "&Préférences"
+    Button3.Tooltip = ""
+    Button4.Visible = False
+    Label2.visible = False
+  Endif
+  Try Soc = Settings["/Soc"]
+  TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
+  
+  '# -- initialisation des informations SQL
+  '* MG - 07 janvier 2010
+  Utils.glb()
+  
+  '# -- montage éventuel du tunnel ssh
+  '* MG - 07 janvier 2010
+  If Settings["/dbase/Con-ssh"] Then
+    If Not Utils.monteTunnel() Then
+      $con_ok = False
+    Endif
+  Endif
+  
+  If $con_ok Then
+    Utils.db.Open
+    Utils.db.exec("SET NAMES 'latin1'")
+    Fmenu.text = titre & " ( Société  " " " & Right$(Soc, 2) & " - " & intitule & ") "
+  Else
+    Message.Warning("Le tunnel SSH n'a pu être établi, la connexion SQL est impossible")
+    Config()
+  Endif
+  Button1.SetFocus
+Catch
+  If Start.son Then
+    music.Play
+  Endif
+  If Left$(error.Text, 19) = "Driver name missing" Then
+    Message.Warning("Attention, le fichier de configuration n'existe pas ! \n Veuillez completer les zones nécéssaires à sa création SVP !")
+  Else
+    If Left$(error.Text, 13) = "type mismatch" Then
+      Message.Warning("Attention, le fichier de configuration n'existe pas ou est corrompu !")
+    Else
+      If Left$(error.Text, 27) = "Cannot open database: Acces" Then
+        Message.Warning("Attention, l' utilisateur ou le mot de passe est erroné ! \n Veuillez controler votre saisie SVP !")
+      Else
+        If Left$(error.Text, 38) = "Cannot open database: Unknown database" Then
+          Message.Warning("Attention, la base n'existe pas ou son adresse n'est pas bonne !")
+        Else
+          message.Error(Error.Text & " " & Error.Where)
+        Endif
+      Endif
+    Endif
+  Endif
+  Config()
+  
+End
+
+Public Sub Button1_Click()
+  
+  Dim rResult As Result
+  Dim tab As String = "Fiches_ClientCaisse"
+  Dim b As Integer = 1
+  
+  Try rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where poste = &1", System.host)
+  If Not Error Then
+    If Not rResult.Available Then
+      message.Warning("Il faut d'abord créer vos caisses par la table des caisses sous Laurux !")
+      b = 0
+    Else
+      rResult = Utils.db.Exec("SELECT * FROM " & tab & "")
+      If Not rResult.Available Then
+        If Start.son Then
+          Music.Play
+        Endif
+        Message.Warning("Attention, Vous n'avez pas selectionné le client caisse !")
+        b = 0
+      Endif
+      If b = 1 Then Ouverture.ShowModal()
+    Endif
+  Else
+    message.Warning("Il faut d'abord créer vos caisses par la table des caisses sous Laurux !")
+    b = 0
+  Endif
+  
+End
+
+Public Sub Button1_Click2()
+  
+  Dim rResult As Result
+  Dim tab As String
+  Dim b As Integer = 1
+  
+  Tab = "Fiches_ClientCaisse"
+  Try rResult = Utils.db.Exec("SELECT * FROM " & tab & "")
+  If Not Error Then
+    If Not rResult.Available Then
+      If Start.son Then
+        Music.Play
+      Endif
+      Message.Warning("Attention, Vous n'avez pas selectionné le client caisse !")
+      b = 0
+    Endif
+    rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where poste = &1 ", System.host)
+    If Not rResult.Available Then
+      message.Warning("Il faut d'abord créer vos caisses par la table des caisses sous Laurux !")
+      b = 0
+    Endif
+    If b = 1 Then Ouverture.ShowModal()
+  Else
+    If Start.son Then
+      Music.Play
+    Endif
+    Message.Warning("Attention, Vous n'avez pas selectionné le client caisse !")
+    b = 0
+  Endif
+  
+End
+
+Public Sub Button2_Click()
+  
+  Me.close
+  
+End
+
+Public Sub Button2_KeyPress()
+  
+  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If key.code = key.Enter Or key.code = key.Return Then Button2_Click()
+  
+End
+
+Public Sub form_close()
+  
+  Dim Cai As Result
+  
+  Ncaisse = Left$(Settings["/Cai" & "/Ncai"], 1)
+  If Not IsNull(Ncaisse) Then
+    Cai = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
+    If Start.son Then
+      Music.Play
+    Endif
+    If Message.Question("Voulez-vous déconnecter la caisse n° " & Ncaisse, "Oui", "Non") = 1 Then
+      If Cai!ecole = True Then init_ecole()
+      If Efface = 1 Then
+        Try Kill User.home & "/" & "Caisse" & Ncaisse & ".lock"
+        Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET dtefm = &1, connecte = &2 WHERE code = &3", utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")), 0, Ncaisse)
+        Settings["/Cai" & "/Ncai"] = ""
+        Settings.Save
+        If Start.son Then
+          Music.Play
+        Endif
+        Message.Info("La caisse numéro " & Ncaisse & " est déconnectée ! Au revoir.")
+      Endif
+      Try Kill User.home & "/Laurux.Pos.lock"
+    Else
+      Stop Event
+    Endif
+  Else
+    Try Kill User.home & "/Laurux.Pos.lock"
+  Endif
+Catch
+  Try Kill User.home & "/Laurux.Pos.lock"
+  
+End
+
+Public Sub Button10_Click()
+  
+  If IsNull(Settings["/Cai" & "/Ncai"]) Then
+    If Start.son Then
+      Music.Play
+    Endif
+    Message.Error("La caisse n'est pas connectée!\n Veuillez connecter votre caisse avant de saisir le fond de caisse SVP")
+  Else
+    hForm = New Fondcaisse("")
+    hForm.Showmodal()
+  Endif
+  
+End
+
+Public Sub Button10_KeyPress()
+  
+  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If key.code = key.Enter Or key.code = key.Return Then Button10_Click()
+  
+End
+
+Public Sub Button11_Click()
+  
+  If IsNull(Settings["/Cai" & "/Ncai"]) Then
+    If Start.son Then
+      Music.Play
+    Endif
+    Message.Error("La caisse n'est pas connectée!\n Veuillez connecter votre caisse avant d'aller en saisie SVP")
+  Else
+    Caisse.ShowModal()
+  Endif
+  
+End
+
+Public Sub Button11_KeyPress()
+  
+  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If key.code = key.Enter Or key.code = key.Return Then Button11_Click()
+  
+End
+
+Public Sub Config()
+  
+  LauruxConf.ShowModal()
+  
+End
+
+Public Sub Button1_KeyPress()
+  
+  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If key.code = key.Enter Or key.code = key.Return Then Button1_Click()
+  
+End
+
+Public Sub FORM_KeyPress()
+  
+  If key.Alt Then
+    If key.code = 80 Then mdp_admin2()
+  Endif
+  
+End
+
+Public Sub mdp_admin2()
+  
+  If Settings["/admin2"] = True Then
+    Mdp.Clear
+    Frame8.visible = True
+    Mdp.SetFocus
+  Else
+    Preferences.ShowModal()
+    Try intitule = Settings["/intitule"]
+    Try Version = Settings["/dbase/Version"]
+    Try Soc = Settings["/Soc"]
+    TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
+  Endif
+  
+End
+
+'*******************************************************
+'*          On gère le mot de passe admin               *
+'*******************************************************
+
+Public Sub Mdp_KeyPress()
+  
+  Dim rResult As Result
+  Dim mdpadmin As String
+  Dim admin As Integer
+  
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where admin = &1", "-1")
+    If rResult.Available Then
+      For Each rResult
+        mdpadmin = hexdblKey.crypt("de", rResult!mdp, "Laurux")
+        If mdpadmin = Mdp.Text Then
+          admin = 1
+          Mdp.Clear
+          Frame8.visible = False
+          Preferences.ShowModal()
+          Button1.SetFocus
+          Break
+        Endif
+      Next
+      If admin = 0 Then
+        If Start.son Then
+          Music.Play
+        Endif
+        Message.Error("Le mot de passe n'est pas valable ! Vérifiez votre saisie SVP !")
+        Mdp.Select
+      Endif
+    Else
+      If Start.son Then
+        Music.Play
+      Endif
+      Message.Warning("Aucun administrateur n'a été déclaré dans la table des vendeurs !")
+      Mdp.Clear
+      Frame8.visible = False
+      Button1.SetFocus
+    Endif
+  Else
+    If key.code = key.Esc Then
+      Mdp.Clear
+      Frame8.visible = False
+      Button1.SetFocus
+    Endif
+  Endif
+  
+End
+
+Public Sub init_ecole()
+  
+  Dim Tabx As String
+  Dim Tabz As String
+  Dim Tabtx As String
+  Dim Tabrgx As String
+  Dim Tabrgz As String
+  Dim Tiketx As String
+  Dim Tiketz As String
+  
+  Tabx = "Fiches_EntTickets" & Ncaisse
+  Tabz = "Fiches_EntTicketz"
+  Tiketx = "Fiches_LigTickets" & Ncaisse
+  Tiketz = "Fiches_LigTicketz"
+  Tabrgx = "Fiches_Reglts" & Ncaisse
+  Tabrgz = "Fiches_Regltz" & Ncaisse
+  Tabtx = "Fiches_Ticketx" & Ncaisse
+  If Start.son Then
+    Music.Play
+  Endif
+  If message.Question("Attention ! Quitter la caisse école va remettre les fichiers de caisse à zéro. Voulez-vous quitter ?", "Oui", "Non") = 1 Then
+    ' on efface
+    Efface = 1
+    Utils.db.Exec("Truncate Table " & Tabx & "")
+    Utils.db.Exec("Truncate Table " & Tiketx & "")
+    Utils.db.Exec("Truncate Table " & Tabrgx & "")
+    Utils.db.Exec("Truncate Table " & Tabtx & "")  
+    'on met à jour le flag de la bande z ainsi que le fond de caisse
+    Utils.db.Exec("UPDATE  " & Cbase.Table("TabCaisses") & "  SET tkz = &2, fndc = &3, dtefm = &4, connecte = &5 WHERE code = &1", Ncaisse, 1, 0, "", 0)
+    Try Kill User.home & "/" & "Caisse" & Ncaisse & ".lock"
+    If Start.son Then
+      Music.Play
+    Endif
+    message.Info("Traitement terminé !")
+  Else
+    Efface = 0
+    Stop Event
+  Endif
+  
+End
+
+Public Sub Label1_MouseDown()
+  
+  Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  
+End
+
+Public Sub Label2_MouseDown()
+  
+  mdp_admin2()
+  
+End
+
+Public Sub Button3_Click()
+  
+  If Settings["/Cnomade"] Then
+    Export.ShowModal()
+  Else
+    mdp_admin2()
+  Endif
+  
+End
+
+Public Sub Button3_KeyPress()
+  
+  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If key.code = key.Enter Or key.code = key.Return Then Button3_Click()
+  
+End
+
+Public Sub Button4_Click()
+  
+  Frestore.ShowModal()
+  
+End
+
+Public Sub Button4_KeyPress()
+  
+  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If key.code = key.Enter Or key.code = key.Return Then Button4_Click()
+  
+End

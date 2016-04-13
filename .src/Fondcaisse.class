@@ -1,0 +1,531 @@
+' Gambas class file
+
+Bbox As Textbox
+Bbox2 As TextBox
+Euro As Float = 0
+Ncaisse As String
+$cai As String
+$vdr As String
+Private Origine As String
+Private Devises As String
+
+Public Sub _new(org As String)
+  
+  Dim rResult As Result
+  Dim Tab As String
+  
+  $cai = Settings["/Cai" & "/Ncai"]
+  Ncaisse = Left$($cai, 1)
+  $vdr = Ouverture.Rvdr($vdr)
+  Origine = org
+  rResult = Utils.db.Exec("select * from  " & Cbase.Table("TabCaisses") & " WHERE code = &1", Ncaisse)
+  Try Box1.Text = Format$(rResult!fndc, "0.00")
+  If Error Then Box1.text = "0,00"
+  Box1.Select
+  Me.Title = "Saisie du fond de caisse numéro " & Ncaisse & " " & $vdr
+  If rResult.Available Then
+    Tab = "Fiches_Parametres"
+    rResult = Utils.db.Exec("SELECT * FROM " & tab & "")
+    If rResult.Available Then
+      devises = rResult!devise
+      If IsNull(devises) Then devises = "Euros"
+      Label1.Text = devises
+    Endif
+  Endif
+  
+End
+
+Public Sub Form_Open()
+  
+  PictureBox1.Picture = Picture[Application.path & "/Images/monnaie/p01.png"]
+  PictureBox2.Picture = Picture[Application.path & "/Images/monnaie/p02.png"]
+  PictureBox3.Picture = Picture[Application.path & "/Images/monnaie/p05.png"]
+  PictureBox4.Picture = Picture[Application.path & "/Images/monnaie/p10.png"]
+  PictureBox5.Picture = Picture[Application.path & "/Images/monnaie/p20.png"]
+  PictureBox6.Picture = Picture[Application.path & "/Images/monnaie/p50.png"]
+  PictureBox7.Picture = Picture[Application.path & "/Images/monnaie/p1.png"]
+  PictureBox8.Picture = Picture[Application.path & "/Images/monnaie/p2.png"]
+  PictureBox9.Picture = Picture[Application.path & "/Images/monnaie/b5.png"]
+  PictureBox10.Picture = Picture[Application.path & "/Images/monnaie/b10.png"]
+  PictureBox11.Picture = Picture[Application.path & "/Images/monnaie/b20.png"]
+  PictureBox12.Picture = Picture[Application.path & "/Images/monnaie/b50.png"]
+  PictureBox13.Picture = Picture[Application.path & "/Images/monnaie/b100.png"]
+  PictureBox14.Picture = Picture[Application.path & "/Images/monnaie/b200.png"]
+  PictureBox15.Picture = Picture[Application.path & "/Images/monnaie/b500.png"]
+  
+End
+
+Public Sub zero_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 0
+  Else
+    Bbox.Text = Bbox.Text & 0
+    Teuros()
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub un_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 1
+  Else
+    Bbox.Text = Bbox.Text & 1
+    Teuros()
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub deux_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 2
+  Else
+    Bbox.Text = Bbox.Text & 2
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub trois_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 3
+  Else
+    Bbox.Text = Bbox.Text & 3
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub quatre_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 4
+  Else
+    Bbox.Text = Bbox.Text & 4
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub cinq_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 5
+  Else
+    Bbox.Text = Bbox.Text & 5
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub six_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 6
+  Else
+    Bbox.Text = Bbox.Text & 6
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub sept_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 7
+  Else
+    Bbox.Text = Bbox.Text & 7
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub huit_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 8
+  Else
+    Bbox.Text = Bbox.Text & 8
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub neuf_Click()
+  
+  If Box1.text = "0,00" Then Box1.Clear
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & 9
+  Else
+    Bbox.Text = Bbox.Text & 9
+    Teuros
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub Virgule_Click()
+  
+  If Panel2.Visible = False Then
+    Box1.text = Box1.text & ","
+  Endif
+  
+End
+
+Public Sub Raz_Click()
+  
+  If Panel2.Visible = False Then
+    Box1.clear
+  Else
+    Bbox.clear
+    Bbox2.clear
+    TotalCaisse(Panel3)
+  Endif
+  
+End
+
+Public Sub Button3_Click()
+  
+  If Button3.text = "&Détail caisse" Then
+    Button3.Text = "&Fond de caisse"
+    Panel2.Visible = True
+    Label17.Visible = True
+    Label18.Visible = True
+    Box1.clear
+    Box30.SetFocus
+    Bbox = Box30
+    Bbox2 = Box31
+    Euro = 500
+  Else
+    Button3.Text = "&Détail caisse"
+    Panel2.visible = False
+    Label17.Visible = False
+    Label18.Visible = False
+    Box1.SetFocus
+  Endif
+  
+End
+
+Public Sub Box1_KeyPress()
+  
+  If key.code = Key.enter Or Key.code = Key.return Or If Key.Code = Key.Tab Then
+    Stop Event
+    Button2_Click()
+  Else
+    ChkPrx()
+  Endif
+  
+End
+
+Public Sub ChkPrx()
+  
+  If InStr("0123456789,.", Key.Text) = 0 Then
+    If key.code <> key.BackSpace And Key.Code <> Key.tab And Key.Code <> Key.Delete And key.code <> 37 And key.code <> 42 And key.code <> 43 And key.code <> 45 And key.code <> 47 Then
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub Box_mousedown()
+  
+  Select Case Last.tag
+    Case 16
+      Bbox = Box16
+      Bbox2 = Box2
+      Euro = 200
+      
+    Case 17
+      Bbox = Box17
+      Bbox2 = Box3
+      Euro = 100
+      
+    Case 18
+      Bbox = Box18
+      Bbox2 = Box4
+      Euro = 50
+      
+    Case 19
+      Bbox = Box19
+      Bbox2 = Box5
+      Euro = 20
+      
+    Case 20
+      Bbox = Box20
+      Bbox2 = Box6
+      Euro = 10
+      
+    Case 21
+      Bbox = Box21
+      Bbox2 = Box7
+      Euro = 5
+      
+    Case 22
+      Bbox = Box22
+      Bbox2 = Box8
+      Euro = 2
+      
+    Case 23
+      Bbox = Box23
+      Bbox2 = Box9
+      Euro = 1
+      
+    Case 24
+      Bbox = Box24
+      Bbox2 = Box10
+      Euro = 0.50
+      
+    Case 25
+      Bbox = Box25
+      Bbox2 = Box11
+      Euro = 0.20
+      
+    Case 26
+      Bbox = Box26
+      Bbox2 = Box12
+      Euro = 0.10
+      
+    Case 27
+      Bbox = Box27
+      Bbox2 = Box13
+      Euro = 0.05
+      
+    Case 28
+      Bbox = Box28
+      Bbox2 = Box14
+      Euro = 0.02
+      
+    Case 29
+      Bbox = Box29
+      Bbox2 = Box15
+      Euro = 0.01
+      
+    Case 30
+      Bbox = Box30
+      Bbox2 = Box31
+      Euro = 500
+  End Select
+  
+End
+
+Public Sub Box_keypress()
+  
+  ChkPrx()
+  If key.code = key.BackSpace Then
+    Try Bbox2.Text = Format$(Euro * Val(Left$(Bbox.text, Len(Bbox.Text) - 1)), "0.00")
+    If Error Then Bbox2.Text = "0,00"
+  Else
+    If Key.Code <> Key.tab And Key.Code <> Key.Delete And Key.code <> Key.enter And Key.code <> Key.return Then
+      If Bbox.selected = True Then Bbox.clear
+      Try Bbox2.Text = Format$(Euro * Val(Bbox.Text) & Val(Utils.cpoint(Key.Text)), "0.00")
+      If Error Then Bbox2.Text = "0,00"
+    Else
+      Select Case Last.tag
+        Case 30
+          Box30.SetFocus
+          Bbox = Box30
+          Bbox2 = Box31
+          Euro = 500
+        Case 16
+          Box16.SetFocus
+          Bbox = Box16
+          Bbox2 = Box15
+          Euro = 200
+        Case 17
+          Box17.SetFocus
+          Bbox = Box17
+          Bbox2 = Box3
+          Euro = 100
+        Case 18
+          Box18.SetFocus
+          Bbox = Box18
+          Bbox2 = Box4
+          Euro = 50
+        Case 19
+          Box19.SetFocus
+          Bbox = Box19
+          Bbox2 = Box5
+          Euro = 20
+        Case 20
+          Box20.SetFocus
+          Bbox = Box20
+          Bbox2 = Box6
+          Euro = 10
+        Case 21
+          Box21.SetFocus
+          Bbox = Box21
+          Bbox2 = Box7
+          Euro = 5
+        Case 21
+          Box22.SetFocus
+          Bbox = Box22
+          Bbox2 = Box8
+          Euro = 2
+        Case 23
+          Box23.SetFocus
+          Bbox = Box23
+          Bbox2 = Box9
+          Euro = 1
+        Case 24
+          Box24.SetFocus
+          Bbox = Box24
+          Bbox2 = Box10
+          Euro = 0.50
+        Case 25
+          Box25.SetFocus
+          Bbox = Box25
+          Bbox2 = Box11
+          Euro = 0.20
+        Case 26
+          Box26.SetFocus
+          Bbox = Box26
+          Bbox2 = Box12
+          Euro = 0.10
+        Case 27
+          Box27.SetFocus
+          Bbox = Box27
+          Bbox2 = Box13
+          Euro = 0.05
+        Case 28
+          Box28.SetFocus
+          Bbox = Box28
+          Bbox2 = Box14
+          Euro = 0.02
+        Case 29
+          Box29.SetFocus
+          Bbox = Box29
+          Bbox2 = Box15
+          Euro = 0.01
+      End Select
+    Endif
+  Endif
+  TotalCaisse(panel3)
+  
+End
+
+Public Sub Box_GotFocus()
+  
+  Select Case Last.tag
+    Case 16
+      Box16.select
+    Case 17
+      Box17.select
+    Case 18
+      Box18.select
+    Case 19
+      Box19.select
+    Case 20
+      Box20.select
+    Case 21
+      Box21.select
+    Case 22
+      Box22.select
+    Case 23
+      Box23.select
+    Case 24
+      Box24.select
+    Case 25
+      Box25.select
+    Case 26
+      Box26.select
+    Case 27
+      Box27.select
+    Case 28
+      Box28.select
+    Case 29
+      Box29.select
+    Case 30
+      Box30.select
+      
+  End Select
+  
+End
+
+Public Sub Teuros()
+  
+  Bbox2.clear
+  Bbox2.Text = Format$(Euro * Val(Utils.cpoint(Bbox.Text)), "0.00")
+  
+End
+
+Public Sub TotalCaisse(hcont As Container)
+  
+  Dim hctrl As Object
+  
+  Box1.Text = "0"
+  For Each hctrl In hcont.Children
+    If hctrl Is TextBox Then Try Box1.text = Format$(Val(Box1.text) + Val(hctrl.Text), "0.00")
+  Next
+  
+End
+
+Public Sub Box1_LostFocus()
+  
+  Try Box1.text = Format$(Val(Utils.cpoint(Box1.text)), "0.00")
+  
+End
+
+Public Sub Button1_Click()
+  
+  Try Kill User.home & "/" & "Caisse.lock"
+  Me.Close
+  
+End
+
+Public Sub Button2_Click()
+  
+  If Origine <> "Cai" Then Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET fndc = &2, dteov = &3, dtefm = &3 WHERE code = &1", Ncaisse, Utils.PointBase(Box1.Text), Utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")))
+  Me.Close
+  
+End
+
+Public Sub PictureBox6_MouseDown()
+  
+End
+
+Public Sub btn_Enter()
+  
+  If Len(Last.name) = 11 And Right(Last.name) >= "9" Or If Len(Last.name) = 12 Then
+    P13.width = 64
+    P13.height = 34
+  Else
+    P13.width = 56
+    P13.height = 48
+  Endif
+  P13.visible = True
+  P13.Picture = Last.picture
+  P13.x = Last.x
+  P13.y = Last.y - 12
+  If Right(Last.name, 2) = "15" Then P13.y = Last.y
+  If Len(Last.name) = 11 And Right(Last.name) = "1" Then 
+    P13.y = Last.y - 20
+  Endif
+  
+End
+
+Public Sub P13_Leave()
+  
+  P13.visible = False
+  
+End

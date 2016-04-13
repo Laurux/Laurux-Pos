@@ -1,0 +1,21 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,71,37)
+  Text = ("Export des données de la caisse nomade")
+  { Button1 Button
+    MoveScaled(35,32,14,4)
+    Text = ("Quitter")
+    Picture = Picture["Icones/exit.png"]
+  }
+  { Button2 Button
+    MoveScaled(11,32,16,4)
+    Text = ("Exporter")
+    Picture = Picture["Icones/open.png"]
+  }
+  { TextArea1 TextArea
+    MoveScaled(0,2,71,27)
+    Background = Color.Background
+    Text = ("Ce programme va exporter les données de la caisse au format csv.\nTrois fichiers vont être générés.\n1- EntTicketz qui contiendra les entêtes des tickets.\n2- LigTicketz qui contiendra les lignes de tickets.\n3- Regltz qui contiendra les règlements.\n\nUne fois les fichiers générés, Ils s'ouvriront dans l'éditeur de votre\nsystème puis, si tout est OK, les tables concernées seront effacées.\nCes fichiers devront être restaurés sur le serveur afin d'effectuer le\nmoulinage des tickets.")
+  }
+}

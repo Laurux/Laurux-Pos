@@ -1,0 +1,23 @@
+' Gambas module file
+
+Public Sub Facture(Fic As String, nb As Integer) As String
+  
+  Dim $Exec As String
+  
+  $Exec = "lpr"
+  If Not CheckProg.Chk($Exec) Then $Exec = "gtklp"
+  If Not CheckProg.Chk($Exec) Then $Exec = "evince"
+  If Not CheckProg.Chk($Exec) Then $Exec = "okular"
+  If $Exec = "okular" Or If $Exec = "evince" Then
+    Shell $Exec & " " & Fic
+  Else
+    If $Exec = "lpr" Then
+      Shell $Exec & " -# " & nb & " " & Fic Wait
+    Else
+      If $Exec = "gtklp" Then
+        Shell $Exec & " -n " & nb & " " & Fic Wait
+      Endif
+    Endif
+  Endif
+  
+End
