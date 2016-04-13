@@ -155,7 +155,7 @@ Private Touche_S As String
 Public BA6X As Socket
 
 ' Méthode de connexion au module BA6X
-Public Sub InitBA6X(uneAdresseIP AS String, unPort AS Int)
+Public Sub InitBA6X(uneAdresseIP AS String, unPort AS Integer)
   'Tentative de connexion pour afficheur BA63
   BA6X = New Socket
   BA6X.Connect("localhost", 3363)
@@ -169,13 +169,13 @@ Public Sub PrintBA6X(uneLigneHaut AS String, uneLigneBas AS String)
   Dim sBuf As String
   sBuf = "print|" & uneLigneHaut & "|" & uneLigneBas
   'Si le socket est operationnel
-  if (BA6X.Status <> 7) And (BA6X.Status > 0)
+  if (BA6X.Status <> 7) And (BA6X.Status > 0) Then
     Write #BA6X, sBuf, Len(sBuf)
     'Attente de fin de transmission
-    Do While Lof(MySock) = 0
+    Do While Lof(BA6X) = 0
       Wait 0.1
     Loop
-  end
+  end if
 end
 
 Public Sub Form_Open()
@@ -285,7 +285,7 @@ Public Sub Form_Open()
   Zone = "Article"
 
   InitBA6X("127.0.0.1", 3363)
-
+  PrintBA6X("Laurux POS", "Bienvenue")
 Catch
   If Start.son Then
     Music.Play
