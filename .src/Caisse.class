@@ -152,31 +152,37 @@ Private rremT As String = "0"
 Private iart As Integer = 0
 Private Touche_P As String
 Private Touche_S As String
-Public BA6X As Socket
+Private BA6X As Socket
+Private bAffUSB As Boolean
 
 ' Méthode de connexion au module BA6X
-Public Sub InitBA6X(uneAdresseIP AS String, unPort AS Integer)
+Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
   'Tentative de connexion pour afficheur BA63
   BA6X = New Socket
-  BA6X.Connect("localhost", 3363)
+  BA6X.Connect(uneAdresseIP, unPort)
   'Dans l'attente de connexion (échec ou réussite)
   Do While (BA6X.Status <> 7) And (BA6X.Status > 0)
     Wait 0.1
   Loop
-end
+  If MySock.Status <> 7 Then
+    Try message.Error("Impossible de joindre l'afficheur USB, vérifiez votre installation !")
+    bAffUSB = False
+  Endif
+  
+End
 
-Public Sub PrintBA6X(uneLigneHaut AS String, uneLigneBas AS String)
+Public Sub PrintBA6X(uneLigneHaut As String, uneLigneBas As String)
   Dim sBuf As String
   sBuf = "print|" & uneLigneHaut & "|" & uneLigneBas
   'Si le socket est operationnel
-  if (BA6X.Status <> 7) And (BA6X.Status > 0) Then
+  If (BA6X.Status <> 7) And (BA6X.Status > 0) Then
     Write #BA6X, sBuf, Len(sBuf)
     'Attente de fin de transmission
     Do While Lof(BA6X) = 0
       Wait 0.1
     Loop
-  end if
-end
+  End If
+End
 
 Public Sub Form_Open()
 
@@ -283,9 +289,14 @@ Public Sub Form_Open()
   'ClavFam()
   Cart.SetFocus
   Zone = "Article"
+  
+  Try bAffUSB = Settings["/affusbwn"]
+  
+  If bAffUSB Then 
+    InitBA6X("127.0.0.1", 3363)
+    PrintBA6X("Laurux POS", "Bienvenue")
+  Endif
 
-  InitBA6X("127.0.0.1", 3363)
-  PrintBA6X("Laurux POS", "Bienvenue")
 Catch
   If Start.son Then
     Music.Play
@@ -346,6 +357,12 @@ Public Sub Form_Close()
     Cart.SetFocus
     Zone = "Article"
   Endif
+  
+  'Fermeture du socket pour communication avec afficheur BA6X
+  If bAffUSB Then
+    Close #BA6X
+  Endif
+  
 
 End
 
@@ -682,8 +699,11 @@ Public Sub Aff_viseur(Texte_aff As String)
     Try Print #Sport, Texte_aff;
     Try Print #Sport, Chr$(&H1B) & "=" & Chr$(1);
   Endif
-  'Imprime sur l'afficheur USB BA6X
-  PrintBA6X(Texte_aff, "");
+  
+  'Imprime sur l'afficheur USB BA6X si disponible
+  If bAffUSB Then 
+    PrintBA6X(Texte_aff, "")
+  Endif
 
 End
 
@@ -4651,15 +4671,20 @@ Public Sub Init_sport2()
     Sport2.DataBits = 8
     Sport2.StopBits = 1
     Sport2.FlowControl = 0
-  Else
-    If Settings["/Tbalance"] = "Mettler Toledo" Then
+  Else If Settings["/Tbalance"] = "Mettler Toledo" Then
       Sport2.PortName = Settings["/portb"]
       Sport2.Speed = "9600"
       Sport2.Parity = 0
       Sport2.DataBits = 7
       Sport2.StopBits = 1
       Sport2.FlowControl = 0
-    Endif
+  Else If Settings["/Tbalance"] = "Precia Molen" Then
+      Sport2.PortName = Settings["/portb"]
+      Sport2.Speed = "9600"
+      Sport2.Parity = 0
+      Sport2.DataBits = 8
+      Sport2.StopBits = 0
+      Sport2.FlowControl = 0
   Endif
   Try Sport2.Open()
   If Error Then Message.Warning("Ouverture du port balance " & Sport2.PortName & " impossible !\nVérifiez vos connexions SVP !")
@@ -4679,10 +4704,10 @@ Public Sub Recup_Poids()
 
   If Settings["/Tbalance"] = "Tropper" Then
     Print #Sport2, "P"; Chr$(13); Chr$(10)
-  Else
-    If Settings["/Tbalance"] = "Mettler Toledo" Then
+  Else If Settings["/Tbalance"] = "Mettler Toledo" Then
       Print #Sport2, "W"; Chr$(13)
-    Endif
+  Else If Settings["/Tbalance"] = "Precia Molen" Then 
+      Print #Sport2, Chr$(1); Chr$(5); Chr$(48); Chr$(51); Chr$(76); Chr$(13); Chr$(10)
   Endif
 
 End
