@@ -4672,19 +4672,19 @@ Public Sub Init_sport2()
     Sport2.StopBits = 1
     Sport2.FlowControl = 0
   Else If Settings["/Tbalance"] = "Mettler Toledo" Then
-      Sport2.PortName = Settings["/portb"]
-      Sport2.Speed = "9600"
-      Sport2.Parity = 0
-      Sport2.DataBits = 7
-      Sport2.StopBits = 1
-      Sport2.FlowControl = 0
+    Sport2.PortName = Settings["/portb"]
+    Sport2.Speed = "9600"
+    Sport2.Parity = 0
+    Sport2.DataBits = 7
+    Sport2.StopBits = 1
+    Sport2.FlowControl = 0
   Else If Settings["/Tbalance"] = "Precia Molen" Then
-      Sport2.PortName = Settings["/portb"]
-      Sport2.Speed = "9600"
-      Sport2.Parity = 0
-      Sport2.DataBits = 8
-      Sport2.StopBits = 0
-      Sport2.FlowControl = 0
+    Sport2.PortName = Settings["/portb"]
+    Sport2.Speed = "9600"
+    Sport2.Parity = 0
+    Sport2.DataBits = 8
+    Sport2.StopBits = 0
+    Sport2.FlowControl = 0
   Endif
   Try Sport2.Open()
   If Error Then Message.Warning("Ouverture du port balance " & Sport2.PortName & " impossible !\nVérifiez vos connexions SVP !")
@@ -4705,11 +4705,11 @@ Public Sub Recup_Poids()
   If Settings["/Tbalance"] = "Tropper" Then
     Print #Sport2, "P"; Chr$(13); Chr$(10)
   Else If Settings["/Tbalance"] = "Mettler Toledo" Then
-      Print #Sport2, "W"; Chr$(13)
+    Print #Sport2, "W"; Chr$(13)
   Else If Settings["/Tbalance"] = "Precia Molen" Then 
-      Print #Sport2, Chr$(1); Chr$(5); Chr$(48); Chr$(51); Chr$(76); Chr$(13); Chr$(10)
+    Print #Sport2, Chr$(1); Chr$(5); Chr$(48); Chr$(51); Chr$(76); Chr$(13); Chr$(10)
   Endif
-
+  
 End
 
 Public Sub Button34_Click()
