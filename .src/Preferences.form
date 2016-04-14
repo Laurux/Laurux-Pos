@@ -108,6 +108,10 @@
       MoveScaled(1,28,59,3)
       Text = ("Le tiroir ne s'ouvre pas pour les paiements  cartes")
     }
+    { GestAffUSB CheckBox
+      MoveScaled(1,32,59,3)
+      Text = ("Gestion de l'afficheur USB Wincor Nixdorf")
+    }
     Index = 1
     Text = ("Synchronisation")
     { Panel1 Panel

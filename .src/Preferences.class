@@ -41,6 +41,7 @@ Public Sub _new()
   Try HistoCli.Value = Settings["/histocli"]
   Try Tircarte.Value = Settings["/tircarte"]
   Try Nbf.Text = Settings["/nbf"]
+  Try GestAffUSB.Value = Settings["/affusbwn"]
   Try Tactile.Value = Settings["/tactile"]
   If IsNull(Nbf.text) Then Nbf.Text = "1"
   If IsNull(fontes) Then
@@ -165,6 +166,7 @@ Public Sub Form_Close()
   Settings["/Cnomade"] = Cnomade.Value
   Settings["/Chmcsv"] = Chmcsv.Text
   Settings["/tircarte"] = Tircarte.Value
+  Settings["/affusbwn"] = GestAffUSB.Value
   Settings.Save
   
 End
