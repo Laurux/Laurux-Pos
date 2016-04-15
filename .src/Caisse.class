@@ -533,8 +533,8 @@ Public Sub Art_man()
         Endif
         Decimal()
         LigTk.Item[4] = Qte.text
-        Texte_vis = Texte_vis & Space$(50 - Len(Texte_vis))
-        Texte_vis = Left$(texte_vis, 16)
+        Texte_vis = Texte_vis & Space$(16 - Len(Texte_vis))
+        'Texte_vis = Left$(texte_vis, 14)
         LigTk.Item[5] = "A"
         If Colvente <> 0 And Val(qte.Text) >= Colvente Then
         Else
@@ -640,7 +640,7 @@ Public Sub Art_man()
         Ligtk.MoveLast()
         'LigTk.item.Selected = True
         Ligtk.item.EnsureVisible
-        Texte_Vis = Texte_vis & Artpu
+        Texte_Vis = Texte_vis & Pvttc.Text
         TotalTk.Text = Format$(Val(.cpoint(TotalTk.Text)) + Val(.cpoint(Artpu)), Nbdec)
         Remise.Text = "0,00"
         iRem = 0
