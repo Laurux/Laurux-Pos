@@ -164,7 +164,7 @@ Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
   Do While (BA6X.Status <> 7) And (BA6X.Status > 0)
     Wait 0.1
   Loop
-  If MySock.Status <> 7 Then
+  If BA6X.Status <> 7 Then
     Try message.Error("Impossible de joindre l'afficheur USB, vérifiez votre installation !")
     bAffUSB = False
   Endif
@@ -175,12 +175,8 @@ Public Sub PrintBA6X(uneLigneHaut As String, uneLigneBas As String)
   Dim sBuf As String
   sBuf = "print|" & uneLigneHaut & "|" & uneLigneBas
   'Si le socket est operationnel
-  If (BA6X.Status <> 7) And (BA6X.Status > 0) Then
+  If BA6X.Status > 0 Then
     Write #BA6X, sBuf, Len(sBuf)
-    'Attente de fin de transmission
-    Do While Lof(BA6X) = 0
-      Wait 0.1
-    Loop
   End If
 End
 
@@ -521,7 +517,13 @@ Public Sub Art_man()
         Else
           LigTk.Item[2] = Design.Text
         Endif
-        Texte_Vis = .Replace(LigTk.Item[2])
+        
+        If Len(Design.Text) >= 13 Then
+          Texte_Vis = Mid$(.Replace(LigTk.Item[2]), 1, 10)
+        Else
+          Texte_Vis = .Replace(LigTk.Item[2])
+        Endif
+        
         If iModif = 1 Then Artpu = Pvttc.Text
         If Val(Qte.text) < 0 Then
           Artpu = "-" & Artpu
@@ -532,7 +534,7 @@ Public Sub Art_man()
         Decimal()
         LigTk.Item[4] = Qte.text
         Texte_vis = Texte_vis & Space$(50 - Len(Texte_vis))
-        Texte_vis = Left$(texte_vis, 20)
+        Texte_vis = Left$(texte_vis, 16)
         LigTk.Item[5] = "A"
         If Colvente <> 0 And Val(qte.Text) >= Colvente Then
         Else
@@ -649,7 +651,7 @@ Public Sub Art_man()
         Remise.Visible = False
         Cart.SetFocus
         Zone = "Article"
-        Aff_viseur(Texte_vis)
+        Aff_viseur(Texte_vis, "Qte: x" & Qte.text & " = " & Str$(Artpu))
         Raz()
         Cart.SetFocus
         Zone = "Article"
@@ -691,7 +693,7 @@ Public Sub Ouv_Tiroir()
 
 End
 
-Public Sub Aff_viseur(Texte_aff As String)
+Public Sub Aff_viseur(Texte_aff As String, Optional Texte_Sup As String = "")
 
   If Left$(Imprimante, 4) = "/dev" Then
     Try Print #Sport, Chr$(&H1B) & "=" & Chr$(2);
@@ -701,8 +703,8 @@ Public Sub Aff_viseur(Texte_aff As String)
   Endif
   
   'Imprime sur l'afficheur USB BA6X si disponible
-  If bAffUSB Then 
-    PrintBA6X(Texte_aff, "")
+  If bAffUSB = True Then 
+    PrintBA6X(Texte_aff, Texte_Sup)
   Endif
 
 End
