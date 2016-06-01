@@ -1,0 +1,262 @@
+' Gambas class file
+
+Private Fontes As String
+Private chkNbase As Boolean = False
+Private Lig As String
+Private Intitule As String
+Private cs As String
+Private cv As String
+Private hImage As Image
+
+Public Sub _new()
+  
+  Try Logo.value = Settings["/logo"]
+  If Logo.Value Then
+    Panlogo.Visible = True
+    Try Logo2.text = Settings["/ilogo"]
+    aff_logo()
+  Endif
+  Try admin.value = Settings["/admin"]
+  Try admin2.value = Settings["/admin2"]
+  Try Qt1.value = Settings["/qt1"]
+  Try Ctrlstk.value = Settings["/ctrlstk"]
+  Try RecapBonus.value = Settings["/recapbonus"]
+  Try Ordre.Text = Settings["/ordre"]
+  Try Lieu.Text = Settings["/lieu"]
+  Try Fontes = Settings["/Soc" & Start.Soc & "/Font"]
+  Try cs = Settings["/Soc"]
+  Try Intitule = Settings["/intitule"]
+  Try son.Value = Settings["/son"]
+  Try Balance.Value = Settings["/balance"]
+  If Balance.value Then 
+    TypeB.Visible = True
+    TypeB.text = Settings["/Tbalance"]
+  Endif
+  Try Portb.Text = Settings["/portb"]
+  Try TypeB.text = Settings["/Tbalance"]
+  Try ChoixImp.Value = Settings["/choiximp"]
+  Try ChoixImp2.Value = Settings["/choiximp2"]
+  Try ChoixImpn.Value = Settings["/choiximpn"]
+  Try ChoixImpc.Value = Settings["/choiximpc"]
+  Try HistoCli.Value = Settings["/histocli"]
+  Try Tircarte.Value = Settings["/tircarte"]
+  Try Nbf.Text = Settings["/nbf"]
+  Try GestAffUSB.Value = Settings["/affusbwn"]
+  Try Tactile.Value = Settings["/tactile"]
+  If IsNull(Nbf.text) Then Nbf.Text = "1"
+  If IsNull(fontes) Then
+    FontChooser1.SelectedFont = "Serif,9"
+  Else
+    FontChooser1.SelectedFont = Fontes
+  Endif
+  Try Cnomade.Value = Settings["/Cnomade"]
+  If Cnomade.value = True Then 
+    Panel1.visible = True
+    Fmenu.Button3.Text = "&Export vers csv"
+    Fmenu.Button4.Visible = True
+    Chmcsv.Text = Settings["/Chmcsv"]
+  Else
+    Panel1.visible = False
+    Fmenu.Button3.Text = "&Préférences"
+    Fmenu.Button4.visible = False
+    
+  Endif
+  Init_Nbase()
+  Nbase.text = "Laurux" & Settings["/Soc"]
+  
+End
+
+Public Sub Init_Nbase()
+  
+  Dim elements As Variant
+  
+  Nbase.Clear
+  For Each elements In Utils.db.Databases
+    Lig = elements.name
+    If Left$(Lig, 6) = "Laurux" Then 
+      If Len(lig) > 6 Then Nbase.Add(Lig)
+    Endif
+  Next
+  
+End
+
+Public Sub Button1_Click()
+  
+  Me.close
+  
+End
+
+Public Sub Logo_Click()
+  
+  If Logo.Value Then
+    Panlogo.Visible = True
+  Else
+    Panlogo.Visible = False
+  Endif
+  
+End
+
+Public Sub Lgo2_Click()
+  
+  Dialog.Filter = FileFilter(True)
+  Dialog.Path = User.home
+  Dialog.Title = "Sélection du logo"
+  If Dialog.OpenFile() Then Return
+  Logo2.Text = Dialog.Path
+  aff_logo()
+Catch
+  Message.Warning(ERROR.Text)
+  
+End
+
+Private Function FileFilter(Optional All As Boolean = False) As String[]
+  
+  Dim filter As New String[]
+  
+  filter.Add("*.png")
+  filter.Add("Portable Network Graphics")
+  filter.Add("*.jpeg *.jpg")
+  filter.Add("Joint Photographic Experts Group")
+  Return filter
+  
+End
+
+Public Sub aff_logo()
+  
+  hImage = Image.Load(Logo2.Text)
+  dwgImage.Clear()
+  Draw.Begin(dwgImage)
+  Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
+  Draw.End
+Catch
+  
+End
+
+Public Sub dwgImage_Draw()
+  
+  Try Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
+  
+End
+
+Public Sub Form_Close()
+  
+  Settings["/logo"] = logo.Value
+  Settings["/admin"] = admin.Value
+  Settings["/admin2"] = admin2.Value
+  Settings["/qt1"] = Qt1.value
+  Settings["/ctrlstk"] = Ctrlstk.value
+  Settings["/recapbonus"] = RecapBonus.value
+  Settings["/ilogo"] = Logo2.Text
+  Settings["/ordre"] = Ordre.Text
+  Settings["/lieu"] = Lieu.Text
+  Settings["/Soc" & Start.Soc & "/Font"] = FontChooser1.SelectedFont
+  Settings["/Soc"] = cs
+  Settings["/intitule"] = Intitule
+  Settings["/son"] = son.Value
+  Settings["/balance"] = Balance.Value
+  Settings["/Tbalance"] = TypeB.text
+  Settings["/portb"] = Portb.Text
+  Settings["/choiximp"] = ChoixImp.Value
+  Settings["/choiximp2"] = ChoixImp2.Value
+  Settings["/choiximpn"] = ChoixImpn.Value 
+  Settings["/choiximpc"] = ChoixImpc.Value
+  Settings["/histocli"] = HistoCli.Value
+  Settings["/nbf"] = Nbf.Text
+  Settings["/tactile"] = Tactile.Value
+  Settings["/Cnomade"] = Cnomade.Value
+  Settings["/Chmcsv"] = Chmcsv.Text
+  Settings["/tircarte"] = Tircarte.Value
+  Settings["/affusbwn"] = GestAffUSB.Value
+  Settings.Save
+  
+End
+
+Public Sub Nbase_MouseDown()
+  
+  ChkNbase = True
+  
+End
+
+Public Sub Nbase_Change()
+  
+  Dim Tab As String
+  Dim rResult As Result
+  
+  If chkNbase = True Then
+    Utils.db.Close
+    Utils.db.name = Nbase.Text
+    Utils.db.Open
+    Utils.db.exec("SET NAMES 'latin1'")
+    cs = Right$(Nbase.text, Len(Nbase.text) - 6)
+    Settings["/Soc"] = cs
+    'Settings["/intitule"] = intitule.Text
+    Settings["/dbase/Name"] = "Laurux" & cs
+    Settings.Save
+    Settings.Reload
+    Start.Soc = cs
+    
+    Tab = "Fiches_Societes"
+    If Not IsNull(cs) Then
+      rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where cd_sc = &1", Cs)
+      If rResult.Available Then
+        Cv = rResult!type_sc
+        intitule = rResult!int_sc
+      Endif
+      message.Warning(" Vous venez de sélectionner la société " & cs & " " & cv & " " & intitule & " ! \n Celle-ci sera donc votre société de travail par défaut..")
+    Endif
+    
+    chkNbase = False
+    Fmenu.text = "Laurux : " & "Société " & cs & " " & cv & " " & intitule
+  Endif
+  
+End
+
+Public Sub Button2_Click()
+  
+  LauruxMaj.Verif_Version()
+  
+End
+
+Public Sub chm_Click()
+  
+  Dialog.Title = "Choisir un repertoire"
+  Dialog.Path = User.home
+  If Not Dialog.SelectDirectory() Then
+    Chmcsv.Text = Dialog.Path
+  Else
+    Chmcsv.Text = User.Home
+  Endif
+  
+End
+
+Public Sub Cnomade_Click()
+  
+  If Cnomade.Value = True Then 
+    Panel1.visible = True
+    Fmenu.Button3.Text = "&Export vers csv"
+    Fmenu.Button4.visible = True
+    Fmenu.Label2.visible = True
+  Else
+    Panel1.Visible = False
+    Fmenu.Button3.Text = "&Préférences"
+    Fmenu.Button4.visible = False
+    Fmenu.Label2.visible = False
+  Endif
+  
+End
+
+Public Sub Balance_Click()
+  
+  If Balance.value Then
+    TypeB.visible = True
+  Else
+    TypeB.Visible = False
+  Endif
+  
+End
+
+Public Sub Button3_Click()
+  
+  LauruxConf.ShowModal()
+  
+End

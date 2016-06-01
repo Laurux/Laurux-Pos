@@ -1,0 +1,226 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,94,100)
+  Border = False
+  { TabStrip1 TabStrip
+    MoveScaled(0,0,94,93)
+    Count = 5
+    Index = 0
+    Text = ("Environnement")
+    { Admin CheckBox
+      MoveScaled(1,0,41,4)
+      ToolTip = ("Si vous activez ce bouton, n'oubliez pas de déclarer un(e) caissier(e) en administrateur.")
+      Text = Shortcut(("Gestion de l'administrateur"), "G")
+    }
+    { Frame1 Frame
+      MoveScaled(15,76,60,13)
+      Text = ("Chèques")
+      { TextLabel1 TextLabel
+        MoveScaled(2,3,8,3)
+        Text = ("Ordre")
+      }
+      { Ordre TextBox
+        MoveScaled(12,3,46,3.4286)
+        Font = Font["Serif,-1"]
+      }
+      { TextLabel2 TextLabel
+        MoveScaled(2,8,9,3)
+        Text = ("Lieu")
+      }
+      { Lieu TextBox
+        MoveScaled(12,8,46,3.4286)
+        Font = Font["Serif,-1"]
+      }
+    }
+    { Admin2 CheckBox
+      MoveScaled(1,4,45,4)
+      ToolTip = ("Si vous activez ce bouton, il faudra saisir le mot de passe administrateur pour acceder à ce menu des préfèrences.")
+      Text = Shortcut(("Mot de passe pour acceder aux préfèrences"), "M")
+    }
+    { Frame2 Frame
+      MoveScaled(15,67,60,8)
+      Text = ("Sélection base de travail")
+      { Label6 Label
+        MoveScaled(2,3,10,3)
+        Text = ("Base")
+      }
+      { Nbase ComboBox
+        MoveScaled(12,3,25,3)
+        Font = Font["Serif,-1"]
+        Background = &HF0F1C7&
+      }
+    }
+    { Qt1 CheckBox
+      MoveScaled(1,8,46,4)
+      ToolTip = ("Si la zone est cochée, la lecture d'un code barre donnera \nune quantité égale à 1 par défaut. \nLa validation sera automatique.")
+      Text = Shortcut(("Qté = 1 par défaut pour lecture code barre"), "1")
+    }
+    { Ctrlstk CheckBox
+      MoveScaled(48,0,41,4)
+      ToolTip = ("Si le stock du produit appelé est <= 0 alors la saisie sera impossible.")
+      Text = ("Contrôle stock")
+    }
+    { RecapBonus CheckBox
+      MoveScaled(48,4,41,4)
+      ToolTip = ("Si le récapitulatif du bonus doit s'afficher en bas de ticket")
+      Text = ("Récapitulatif du bonus")
+    }
+    { Son CheckBox
+      MoveScaled(48,8,23.1429,3)
+      ToolTip = ("A cocher si vous souhaitez un son pendant les messages d'alerte..")
+      Text = Shortcut(("Gestion du son"), "s")
+    }
+    { Label1 Label
+      MoveScaled(1,17,27,6)
+      Text = ("Nombre de Bl & facture\nsi imprimante par défaut")
+    }
+    { Nbf ComboBox
+      MoveScaled(28,18,8,4)
+      List = [("1"), ("2"), ("3"), ("4"), ("5"), ("6"), ("7"), ("8"), ("9")]
+    }
+    { ChoixImp CheckBox
+      MoveScaled(48,16,44,3)
+      ToolTip = ("A cocher si vous souhaitez avoir la possibilité de ne pas imprimer le ticket .")
+      Text = ("Choix impression du ticket")
+    }
+    { HistoCli CheckBox
+      MoveScaled(48,12,44,3)
+      ToolTip = ("A cocher si vous souhaitez conserver les coordonnées des clients divers caisses. Cette fonction est utilisée lors de l'impression des facturettes.")
+      Text = ("Archivage des clients facturettes.")
+    }
+    { ChoixImp2 CheckBox
+      MoveScaled(1,13,44,3)
+      ToolTip = ("Si actif ==> imprimante par défaut sinon ==> imprimante ticket")
+      Text = ("Facturette sur imprimante par défaut")
+    }
+    { ChoixImpc CheckBox
+      MoveScaled(48,20,44,3)
+      ToolTip = ("A cocher si vous ne souhaitez  pas saisir le nom du client lors d'un réglement par carte.")
+      Text = ("Choix saisie nom des cartes")
+    }
+    { ChoixImpn CheckBox
+      MoveScaled(48,24,44,3)
+      ToolTip = ("A cocher si vous souhaitez pas saisir le nom du client lors d'un réglement par chèque.")
+      Text = ("Choix saisie nom des chèques")
+    }
+    { Tircarte CheckBox
+      MoveScaled(1,28,59,3)
+      Text = ("Le tiroir ne s'ouvre pas pour les paiements  cartes")
+    }
+    { GestAffUSB CheckBox
+      MoveScaled(1,32,59,3)
+      Text = ("Gestion de l'afficheur USB Wincor Nixdorf")
+    }
+    Index = 1
+    Text = ("Synchronisation")
+    { Panel1 Panel
+      MoveScaled(22,13,50,11)
+      Visible = False
+      { Label2 Label
+        MoveScaled(7.4286,1,37,3)
+        Text = ("Chemin des générations des csv")
+        Alignment = Align.Center
+      }
+      { chmcsv TextBox
+        MoveScaled(8,5,28,3.4286)
+      }
+      { chm Button
+        MoveScaled(36,5,10,3.4286)
+        Text = Shortcut(("Choisir"), "C")
+      }
+    }
+    { Cnomade CheckBox
+      MoveScaled(32,6,39,4)
+      ToolTip = ("Cela permet une synchronisation de la base avec les données émises par les caisses nomades.")
+      Text = ("Gestion des caisses nomades")
+    }
+    Index = 2
+    Text = ("Caisse tactile")
+    { Tactile CheckBox
+      MoveScaled(3,3,44,3)
+      ToolTip = ("A cocher si vous utilisez un écran tactile.")
+      Text = ("Caisse tactile")
+    }
+    Index = 3
+    Text = ("Balance")
+    { Balance CheckBox
+      MoveScaled(5,2,45,3)
+      ToolTip = ("A cocher si vous avez une balance électronique connectée à la caisse.\nLa balance doit être connectée sur sttyS1.")
+      Text = ("Gestion de la balance électronique")
+    }
+    { TypeB ComboBox
+      MoveScaled(11,5.7143,36,3.1429)
+      Visible = False
+      List = [("Tropper"), ("Mettler Toledo")]
+    }
+    { Label4 Label
+      MoveScaled(5,10,19,3)
+      Text = ("Port balance")
+    }
+    { Portb ComboBox
+      MoveScaled(25,10,22,3.1429)
+      Font = Font["Serif,-1"]
+      List = [("/dev/ttyS0"), ("/dev/ttyS1"), ("/dev/ttyS2"), ("/dev/ttyS3"), ("/dev/ttyS4"), ("/dev/ttyS5"), ("/dev/ttyS6")]
+    }
+    Index = 4
+    Text = ("Logo et police")
+    { Frame12 Frame
+      MoveScaled(2,3,42,41)
+      Text = ("Logo")
+      { Logo CheckBox
+        MoveScaled(1,3,37,3)
+        ToolTip = ("Si ce bouton est actif alors votre logo s'imprimera sur les facturettes et sur les tickets imprimés à partir de l'imprimante par défaut.")
+        Text = Shortcut(("Impression du logo sur les factures"), "I")
+      }
+      { Panlogo Panel
+        MoveScaled(1,7,40.1429,10)
+        Visible = False
+        Border = Border.Plain
+        { Logo2 TextBox
+          MoveScaled(1,5,28,3.4286)
+        }
+        { Lgo2 Button
+          MoveScaled(29,5,10,3.4286)
+          Text = Shortcut(("Choisir"), "C")
+        }
+        { Label14 Label
+          MoveScaled(0.4286,1,32,3)
+          Text = ("Nom et chemin du logo")
+          Alignment = Align.Center
+        }
+      }
+      { dwgImage DrawingArea
+        MoveScaled(12,18,21,21)
+        Enabled = False
+        Border = Border.Etched
+      }
+    }
+    { Frame5 Frame
+      MoveScaled(49,3,43,41)
+      Text = ("Police de Laurux")
+      { FontChooser1 FontChooser
+        MoveScaled(1,5,41,31)
+        ShowStyle = False
+      }
+    }
+    Index = 0
+  }
+  { Button2 Button
+    MoveScaled(10,94,19,5)
+    ToolTip = ("Lance la mise à jour de Laurux.Pos")
+    Text = Shortcut(("Mise à jour"), "M")
+    Picture = Picture["icon:/22/make"]
+  }
+  { Button1 Button
+    MoveScaled(61,94,19,5)
+    Text = Shortcut(("Quitter"), "Q")
+    Picture = Picture["Icones/exit.png"]
+  }
+  { Button3 Button
+    MoveScaled(35,94,19,5)
+    ToolTip = ("Lance le programme de configuration de la base de données.")
+    Text = Shortcut(("Config Mysql"), "C")
+    Picture = Picture["icon:/22/exec"]
+  }
+}

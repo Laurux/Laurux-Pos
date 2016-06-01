@@ -1,0 +1,48 @@
+' Gambas module file
+
+Public Son As Integer
+Public Soc As String
+Public R As Integer = 255
+Public G As Integer = 252
+Public B As Integer = 216
+Public $cai As String
+Private Fontes As String
+Private sFiletxt As String
+Private hfile As File
+
+Public Sub Main()
+  
+  Dim $ok As Boolean = True  
+  
+  sFiletxt = User.home & "/Laurux.Pos.lock"
+  If Exist(sFiletxt) Then
+    If Start.son Then
+      Music.Play
+    Endif
+    If Message.Warning("Cette caisse est déjà connectée ou s'est fermée anormalement!\nVoulez-vous continuer ?", "Oui", "Non") = 1 Then 
+      Try Kill User.home & "/Laurux.Pos.lock"
+      $ok = True
+    Else
+      $ok = False
+    Endif
+  Endif
+  If $ok Then
+    hFile = Open sfiletxt For Write Create
+    Print #hFile, "O"
+    Close #hFile
+    Try Soc = Settings["/Soc"]
+    Try Son = Settings["/son"]
+    Try Music.Load("son/warning.ogg")
+    Try Fontes = Settings["/Soc" & Start.Soc & "/Font"]
+    If IsNull(fontes) Then
+      Application.Font = Font["Serif,10"]
+    Else
+      Application.Font = Font[Fontes]
+    Endif
+    Fmenu.Show
+  Endif
+  'Else"
+  'Fmenu.show"
+  'Endif"
+  
+End
