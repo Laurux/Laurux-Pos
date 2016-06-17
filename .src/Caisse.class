@@ -5300,6 +5300,8 @@ Public Sub Enrg_Tk()
       stype = LigTk.Item[5]
       If stype = "A" Then
         smontantfam = smontant
+        rFam = Utils.db.Exec(" select * from " & Cbase.Table("TabArt") & " where art_code = &1", scode)
+        Fam = rFam!art_fam
       Else
         smontantfam = ""
       Endif

@@ -105,9 +105,13 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=1
+Count=5
 Active=1
-File[1]=".src/Caisse.class:58.5276"
+File[1]=".src/Caisse.class:8.5302"
+File[2]=".src/Ouverture.form"
+File[3]=".src/Start.module:2.14"
+File[4]=".src/Caisse.form"
+File[5]=".src/Fmenu.form"
 
 [Watches]
 Count=0
