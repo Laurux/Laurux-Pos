@@ -19,7 +19,7 @@
     { !Frame1 Frame
       MoveScaled(1,-1,42,65)
       #Public = True
-      Text = ("Laurux.Pos V3.15")
+      Text = ("Laurux.Pos V3.16")
       { VBox2 VBox
         MoveScaled(7,15,27,43)
         Spacing = True
