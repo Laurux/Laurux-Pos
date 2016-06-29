@@ -795,7 +795,10 @@ Public Sub Cart_KeyPress()
       If key.code = key.F5 Then button24_Click()
       If key.code = key.F7 Then Button25_Click()
       If Key.code = key.F8 Then CartesFidelite()
-      If Key.code = key.F9 Then Button33_Click()
+      If Key.code = key.F9 Then 
+        Panel17.visible = False
+        Button33_Click()
+      Endif
       If key.code = key.F12 Then
         If Crt = True Then
           Message.Warning("Saisie d'un client en compte impossible sur une carte de fidélité !")
@@ -1724,8 +1727,9 @@ Public Sub Valid_Remtot()
             LigTk.Item[10] = tva
           Endif
           If LigTk.Item[2] = Space$(15) & "Prix total " Then
-            LigTk.Item[11] = LigTk.Item[3]
+            'LigTk.Item[11] = LigTk.Item[3]
             Try LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - (Val(utils.CPoint(LigTk.Item[3])) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
+            Try LigTk.Item[6] = Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx
           Endif
           If LigTk.Item[5] = "MT" Then Break
           If LigTk.Item[5] = "S" Then
@@ -1738,7 +1742,8 @@ Public Sub Valid_Remtot()
         Inc iligne
         Inc iNlg
         Bloc = iligne
-        sremT = Format$(Val(.CPoint(TotalTk.text)) - Val(.CPoint(rremT)), "0.00")
+        sremT = Format$(Val(.CPoint(TotalTk.text)) - (Val(utils.CPoint(TotalTk.text)) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
+        rremT = Format$(Val(.CPoint(TotalTk.text)) - Val(utils.CPoint(sremT)), "0.00")
         LigTk.Add(iligne, iligne)
         LigTk.Item[0] = iNlg
         LigTk.Item[2] = "total Ticket brut " & Format$(Val(.CPoint(TotalTk.text)), "0.00")
@@ -3717,6 +3722,7 @@ Public Sub button23_Click()
       EspecesE.value = True
       Nmc3.SetFocus
       Zone = "Nmc3"
+      Frame5.Raise
     Endif
   Endif
   
@@ -3871,6 +3877,7 @@ Public Sub button22_Click()
       AcomptesE.Visible = False
       Nmc3.SetFocus
       Zone = "Nmc3"
+      Frame5.Raise
     Endif
   Endif
   
@@ -5318,12 +5325,13 @@ Public Sub Enrg_Tk()
       smontant = LigTk.Item[11]
       sqte = LigTk.Item[4]
       stype = LigTk.Item[5]
-      If stype = "A" Then
+      If stype = "A" Or stype = "S" Then
         smontantfam = smontant
+        smontantFam = Val(Utils.cpoint(smontantFam)) * Val(Utils.cpoint(sqte))
         rFam = Utils.db.Exec(" select * from " & Cbase.Table("TabArt") & " where art_code = &1", scode)
         Fam = rFam!art_fam
       Else
-        smontantfam = ""
+        If stype <> "T" Then smontantfam = ""
       Endif
       smontantht = LigTk.Item[6]
       smrem = Utils.cpoint(LigTk.Item[7])
@@ -7175,6 +7183,7 @@ Public Sub Ligtk_Delete()
       TotalTk.Text = 0
       Totalht = 0
       rremT = 0
+      RemTot.Clear
       For numl = 1 To LigTk.count
         Try LigTk.Item.Selected = True
         If Not Error Then
@@ -7793,6 +7802,7 @@ Public Sub ClavFam()
   
   If Not Panel17.visible Then
     Panel17.Visible = True
+    Cart.SetFocus
   Else
     Fermer2()
   Endif
