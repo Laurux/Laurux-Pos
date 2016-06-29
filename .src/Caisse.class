@@ -5077,7 +5077,7 @@ Public Sub Aff_bastk()
   LigTk.Item[0] = iNlg
   LigTk.Item[1] = ""
   LigTk.Item[2] = "Total TTC "
-  LigTk.Item[3] = TotalTk.Text
+  LigTk.Item[3] = Format$(Val(Utils.cpoint(TotalTk.Text)), "0.00")
   LigTk.Item[11] = LigTk.Item[3]
   LigTk.Item[5] = "BC"
   ColumnView1.MoveFirst()

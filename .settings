@@ -108,7 +108,10 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=0
+Count=2
+Active=1
+File[1]=".src/Caisse.class:32.5080"
+File[2]=".src/Caisse.form"
 
 [Watches]
 Count=0
