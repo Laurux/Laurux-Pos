@@ -517,6 +517,7 @@ Public Sub Art_man()
         LigTk.Add(iligne, iligne)
         LigTk.Item[0] = iNlg
         LigTk.Item[1] = Cart.Text
+        LigTk.Item[12] = Rarts!art_tva
         If iModif = 0 Then
           LigTk.Item[2] = Rarts!art_design
         Else
@@ -609,12 +610,15 @@ Public Sub Art_man()
           LigTk.Item[9] = Mtva
           LigTk.Item[10] = tva
           LigTk.Item[11] = sRem
+          LigTk.Item[12] = Rarts!art_tva
+          
         Endif
         If iQte = 1 Then
           Inc iligne
           Inc iNlg
           If Val(.CPoint(Remise.text)) <> 0 Then
             Artpu = Val(.cpoint(sRem)) * Val(.cpoint(Qte.text))
+            
           Else
             Artpu = Val(.cpoint(Artpu)) * Val(.cpoint(Qte.text))
           Endif
@@ -635,6 +639,7 @@ Public Sub Art_man()
           LigTk.Item[9] = Mtva
           LigTk.Item[10] = tva
           LigTk.Item[11] = Artpu
+          LigTk.Item[12] = Rarts!art_tva
           iQte = 0
         Else
           If iRem = 1 Then
@@ -1715,12 +1720,12 @@ Public Sub Valid_Remtot()
             mremT = Format$((Val(utils.CPoint(LigTk.Item[11])) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
             LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - Val(.CPoint(mremT)), "0.00")
             rremT = Val(utils.CPoint(rremT)) + (Abs(Val(utils.CPoint(mremT))) * Val(utils.CPoint(LigTk.Item[4])))
-            tva = txtva
+            tva = LigTk.Item[12]
             Calc_Tva()
             tx = (1 + (Val(.cpoint(Tva)) / 100))
             Pvht = Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx
             Pvht = Format$(Pvht * Val(utils.CPoint(LigTk.Item[4])), "0.00")
-            Mtva = (Val(Utils.cpoint(LigTk.Item[11])) * Val(utils.CPoint(LigTk.Item[4]))) - Val(Utils.cpoint(Pvht))
+            Mtva = Format$(Val(Utils.cpoint(LigTk.Item[11])) * Val(utils.CPoint(LigTk.Item[4])) - Val(Utils.cpoint(Pvht)), "0.00")
             LigTk.Item[6] = Pvht
             LigTk.Item[7] = "0"
             LigTk.Item[9] = Mtva
@@ -1729,7 +1734,11 @@ Public Sub Valid_Remtot()
           If LigTk.Item[2] = Space$(15) & "Prix total " Then
             'LigTk.Item[11] = LigTk.Item[3]
             Try LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - (Val(utils.CPoint(LigTk.Item[3])) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
-            Try LigTk.Item[6] = Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx
+            tva = LigTk.Item[12]
+            Calc_Tva()
+            tx = (1 + (Val(.cpoint(Tva)) / 100))
+            Try LigTk.Item[6] = Format$(Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx, "0.00")
+            Try LigTk.Item[9] = Format$(Val(utils.CPoint(LigTk.Item[11])) - Val(utils.CPoint(LigTk.Item[6])), "0.00")
           Endif
           If LigTk.Item[5] = "MT" Then Break
           If LigTk.Item[5] = "S" Then
@@ -4996,7 +5005,7 @@ Public Sub Aff_bastk()
   Dim Tatva As String = "Tottva"
   Dim ttva, ttvam As Float = 0
   Dim mttc, mht As Float = 0
-  Dim brem As Boolean = False
+  Dim brem, btot As Boolean = False
   
   Mtrem = RemTot.text
   If IsNull(mtrem) Then mtrem = "0"
@@ -5010,21 +5019,63 @@ Public Sub Aff_bastk()
       If LigTk.Item[5] = "MT" Then mtrem = 0
       If LigTk.Item[5] <> "T" And If LigTk.Item[5] <> "MT" Then
         If LigTk.Item[5] = "A" And If Val(LigTk.Item[0]) < LigTk.count Then
+          mttc = Val(Utils.cpoint(LigTk.Item[11]))
           Ligtk.MoveNext()
           Try LigTk.Item.Selected = True
           If Not Error Then
+            If LigTk.Item[5] = "O" Then
+              Ligtk.MoveNext()
+              Try LigTk.Item.Selected = True 
+            Endif
             If LigTk.Item[5] <> "S" Then
-              LigTk.MovePrevious()
-              LigTk.Item.Selected = True
+              If LigTk.Item[5] = "T" Then
+                btot = True
+                mttc = Val(Utils.cpoint(LigTk.Item[11]))
+                LigTk.MovePrevious()
+                LigTk.Item.Selected = True
+                If LigTk.Item[5] = "O" Then
+                  Ligtk.MovePrevious()
+                  Try LigTk.Item.Selected = True 
+                Endif
+              Else
+                LigTk.MovePrevious()
+                LigTk.Item.Selected = True
+                If LigTk.Item[5] = "O" Then
+                  Ligtk.MovePrevious()
+                  Try LigTk.Item.Selected = True 
+                Endif
+              Endif
             Else
               brem = True
+              Ligtk.MoveNext()
+              Try LigTk.Item.Selected = True
+              If Not Error Then
+                If LigTk.Item[5] <> "T" Then 
+                  LigTk.MovePrevious()
+                  LigTk.Item.Selected = True
+                  btot = False
+                Else
+                  btot = True
+                  mttc = Val(Utils.cpoint(LigTk.Item[11]))
+                  LigTk.MovePrevious()
+                  LigTk.Item.Selected = True
+                Endif
+              Else
+                LigTk.MoveLast()
+                LigTk.Item.Selected = True 
+              Endif
             Endif
           Else
             LigTk.MovePrevious()
             LigTk.Item.Selected = True
           Endif
         Endif
-        mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+        If Not btot Then
+          mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+        Else
+          'If Not brem Then mttc = mttc * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+          
+        Endif
         mht = Val(Utils.cpoint(LigTk.Item[6]))
         Totalht = totalht + mht
         ttvam = mttc - mht
@@ -5088,12 +5139,13 @@ Public Sub Aff_bastk()
         Inc iligne
         Inc iNlg
         LigTk.Add(ColumnView1.Item[0] & iligne, ColumnView1.Item[0] & iligne)
+        LigTk.Item[5] = ColumnView1.Item[0]
         LigTk.Item[0] = iNlg
         LigTk.Item[1] = ""
         LigTk.Item[2] = ColumnView1.Item[1]
         LigTk.Item[3] = ColumnView1.Item[2]
         LigTk.Item[11] = LigTk.Item[3]
-        LigTk.Item[5] = "R" & ColumnView1.Item[0]
+        'LigTk.Item[5] = "R" & ColumnView1.Item[0]
       Endif
     Until ColumnView1.MoveNext()
   Endif
@@ -5181,6 +5233,7 @@ Public Sub Enrg_Tk()
   Dim QteFam As String
   Dim Totpoint As Float = 0
   Dim Esp As String 'Montant des especes versées
+  Dim TypeR As String ' type de règlement
   
   Tab = "Fiches_EntTickets" & Ncaisse
   Tiketx = "Fiches_Ticketx" & Ncaisse
@@ -5335,9 +5388,15 @@ Public Sub Enrg_Tk()
       Endif
       smontantht = LigTk.Item[6]
       smrem = Utils.cpoint(LigTk.Item[7])
+      If IsNull(smrem) Then smrem = 0
       bloc = LigTk.Item[8]
       If iRattente = 0 Then
-        Try smtva = Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht))
+        If stype = "T" Then 
+          'smtva = Val(utils.cpoint(smontantFam)) - Val(utils.cpoint(smontantht)) + Val(utils.cpoint(smrem))
+          Try smtva = LigTk.Item[9]
+        Else
+          Try smtva = Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht))
+        Endif
         If Error Then smtva = ""
         Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", Ntk, snumlig, scode, sdesign, smontant, sqte, stype, fam, smontantht, smrem, smtva, LigTk.Item[8], LigTk.Item[10])
       Else
@@ -5378,6 +5437,11 @@ Public Sub Enrg_Tk()
           LigTk.MoveNext()
           LigTk.Item.Selected = True
           stype = LigTk.Item[5]
+          If stype = "O" Then
+            LigTk.MoveNext()
+            LigTk.Item.Selected = True
+            stype = LigTk.Item[5] 
+          Endif
           If stype <> "M" And If stype <> "S" And If stype <> "T" Then
             LigTk.MovePrevious()
             LigTk.Item.Selected = True
@@ -6052,9 +6116,9 @@ Public Sub Ticketz()
           If rtx.Available Then
             Repeat
               If Not IsNull(rtx!mrem) Then
-                Utils.db.Exec("INSERT INTO " & Tiketz & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9,&{10}, &{11}, &{12}, &{13})", rtx!numero, rtx!numlig, rtx!code, rtx!intitule, rtx!montant, rtx!qte, rtx!type, rtx!fam, rtx!mht, Abs(Val(Utils.cpoint(rtx!mrem))), rtx!mtva, rtx!block, rtx!tva)
+                Utils.db.Exec("INSERT INTO " & Tiketz & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva,marge) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9,&{10}, &{11}, &{12}, &{13}, &{14})", rtx!numero, rtx!numlig, rtx!code, rtx!intitule, rtx!montant, rtx!qte, rtx!type, rtx!fam, rtx!mht, Abs(Val(Utils.cpoint(rtx!mrem))), rtx!mtva, rtx!block, rtx!tva, margeart(rtx!code, rtx!qte, rtx!mht, rtx!mrem))
               Else
-                Utils.db.Exec("INSERT INTO " & Tiketz & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", rtx!numero, rtx!numlig, rtx!code, rtx!intitule, rtx!montant, rtx!qte, rtx!type, rtx!fam, rtx!mht, rtx!mrem, rtx!mtva, rtx!block, rtx!tva)
+                Utils.db.Exec("INSERT INTO " & Tiketz & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva,marge) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14})", rtx!numero, rtx!numlig, rtx!code, rtx!intitule, rtx!montant, rtx!qte, rtx!type, rtx!fam, rtx!mht, rtx!mrem, rtx!mtva, rtx!block, rtx!tva, margeart(rtx!code, rtx!qte, rtx!mht, rtx!mrem))
               Endif
             Until rtx.MoveNext()
           Endif
@@ -6079,6 +6143,7 @@ Public Sub Ticketz()
             "qte Char(12)," &
             "caisse Char(2)," &
             "date Char(17)," &
+            "marge decimal(7,2), " &
             "PRIMARY KEY (lInd))")
           'on met à jour le flag de la bande z ainsi que le fond de caisse
           Utils.db.Exec("UPDATE  " & Cbase.Table("TabCaisses") & "  SET tkz = &2 WHERE code = &1", Ncaisse, 1)
@@ -6108,6 +6173,28 @@ Catch
   Return
   
 End
+
+'****************************************************************************
+'*      CALCUL MARGE PAR ARTICLE                                            *
+'****************************************************************************
+
+Private Function margeart(code As String, qte As String, mht As String, rem As String) As Float
+  
+  Dim res As Result
+  Dim marge As Float
+  Dim fmht, fqte As Float
+  
+  marge = 0
+  res = utils.db.Exec("SELECT * FROM Fiches_Art WHERE art_code=&1", code)
+  If res.Available Then
+    If IsNull(rem) Then rem = "0"
+    fmht = CFloat(Trim(Replace(mht, ",", "."))) - CFloat(Trim(Replace(rem, ",", ".")))
+    fqte = CFloat(Trim(Replace(qte, ",", ".")))
+    marge = fmht - (fqte * res!art_prvt)
+  Endif
+  Return marge
+  
+End 
 
 Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   

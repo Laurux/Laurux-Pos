@@ -217,7 +217,7 @@
         ScrollBar = Scroll.None
       }
       { LigTk ColumnView
-        MoveScaled(0.2857,26,62.2857,26)
+        MoveScaled(0,26,62.2857,26)
         Font = Font["-1"]
         AutoResize = False
         Border = False

@@ -10,6 +10,9 @@ Geometry=[0,0,344,344]
 [DebugWindow/$iSpc2]
 Geometry=[0,0,344,344]
 
+[DebugWindow/A]
+Geometry=[4,13,224,280]
+
 [DebugWindow/Btn]
 Geometry=[0,49,210,210]
 
@@ -43,6 +46,9 @@ Geometry=[18,0,224,280]
 [DebugWindow/Picture[rTch!fond]]
 Geometry=[3,0,224,280]
 
+[DebugWindow/S]
+Geometry=[4,13,224,280]
+
 [DebugWindow/Split(Nmc4.Text, "\n")]
 Geometry=[0,0,210,210]
 
@@ -61,11 +67,14 @@ Geometry=[4,13,224,280]
 [DebugWindow/b]
 Geometry=[2,3,210,210]
 
+[DebugWindow/e]
+Geometry=[4,12,224,281]
+
 [DebugWindow/g]
 Geometry=[4,13,224,280]
 
 [DebugWindow/i]
-Geometry=[0,710,224,280]
+Geometry=[0,569,224,280]
 
 [DebugWindow/l]
 Geometry=[4,13,224,280]
@@ -88,6 +97,9 @@ Geometry=[5,0,210,210]
 [DebugWindow/rtva]
 Geometry=[5,0,210,210]
 
+[DebugWindow/s]
+Geometry=[4,13,224,280]
+
 [DebugWindow/t]
 Geometry=[5,0,224,280]
 
@@ -108,10 +120,12 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=2
+Count=4
 Active=1
-File[1]=".src/Caisse.class:32.5080"
+File[1]=".src/Caisse.class:116.5400"
 File[2]=".src/Caisse.form"
+File[3]=".src/Start.module:0.14"
+File[4]=".src/ImageButton.class:0.93"
 
 [Watches]
 Count=0
