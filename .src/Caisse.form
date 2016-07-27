@@ -233,7 +233,7 @@
     }
     { CArt TextBox
       MoveScaled(1,58,47,3)
-      ToolTip = ("F2 : Recherche produits\nF5 : Appel quantité\nCTRL+X : Appel vendeur")
+      ToolTip = ("F2 : Recherche produits\nF5 : Appel quantité\nCTRL+X : Appel vendeur\nCTRL+N : saisie d'un nom de client")
       MaxLength = 30
     }
     { Qte TextBox

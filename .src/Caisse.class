@@ -95,10 +95,11 @@ GestMdp As Integer = 0
 Public Bsel As Boolean = False
 Public Clicode As String
 Public Clicoded As String
-Clinom As String
-Clipnm As String
-Clicp As String
-Cliburdist As String
+Private Clinom As String
+Private Clipnm As String
+Private Clicp As String
+Private Cliburdist As String
+Private $Cli As String ' variable pour nom des clients divers en recherche tickets
 sDon As Integer = 1 'flag pour savoir s'il y a des données a imprimer sur bande z. 0 pas de donnée, 1 on imprime.
 Tkz As Integer = 0
 Ecole As Boolean
@@ -779,6 +780,12 @@ Public Sub Cart_KeyPress()
       Endif
     Endif
     If key.Control Then
+      If Key.code = 78 Then
+        iavoir = 0
+        Panel17.Visible = False
+        Frame3.visible = True
+        Nmc.SetFocus
+      Endif
       If Key.code = 88 Then
         If Ligtk.Count = 0 Then
           Svendeur.showmodal()
@@ -2161,29 +2168,33 @@ Public Sub button17_Click()
   Dim i As Integer = 0
   Dim sline As String
   
-  Inc iligne
-  Inc iNlg
-  snavoir = Nmc.Text
-  LigTk.Add(iligne, iligne)
-  LigTk.Item[0] = iNlg
-  LigTk.Item[2] = "Avoir " & Nmc.Text
-  LigTk.Item[5] = "TA"
-  Inc iligne
-  Inc iNlg
-  For Each sline In Split(sAvoir, "\n")
-    Inc i
+  If iavoir = "1" Then
+    Inc iligne
+    Inc iNlg
+    snavoir = Nmc.Text
     LigTk.Add(iligne, iligne)
     LigTk.Item[0] = iNlg
-    LigTk.Item[2] = sline
+    LigTk.Item[2] = "Avoir " & Nmc.Text
     LigTk.Item[5] = "TA"
     Inc iligne
     Inc iNlg
-    If i = 4 Then Break
-  Next
-  LigTk.Add(iligne, iligne)
-  LigTk.Item[0] = iNlg
-  LigTk.Item[2] = " "
-  LigTk.Item[5] = "C"
+    For Each sline In Split(sAvoir, "\n")
+      Inc i
+      LigTk.Add(iligne, iligne)
+      LigTk.Item[0] = iNlg
+      LigTk.Item[2] = sline
+      LigTk.Item[5] = "TA"
+      Inc iligne
+      Inc iNlg
+      If i = 4 Then Break
+    Next
+    LigTk.Add(iligne, iligne)
+    LigTk.Item[0] = iNlg
+    LigTk.Item[2] = " "
+    LigTk.Item[5] = "C"
+  Else
+    $Cli = Nmc.Text
+  Endif
   Frame3.Visible = False
   Nmc.Clear
   Cart.SetFocus
@@ -5342,14 +5353,13 @@ Public Sub Enrg_Tk()
       'On regarde si le ticket est déjà archivé.
       rResult = Utils.db.Exec("SELECT * FROM " & tab & " where numero = &1 and caisse = &2", Ntk, Ncaisse)
       If rResult.Available Then Utils.db.Exec("DELETE FROM  " & Tab & " WHERE caisse = &1 and numero = &2", Ncaisse, Ntk)
-      Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31})", Ncaisse, Ntk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat)
+      Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32})", Ncaisse, Ntk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli)
     Else
       If ipaiement = 0 Then
         Utils.db.Exec("UPdate  " & Tab & "  SET mttc = &3, vendeur = &4, statut = &5 WHERE caisse = &1 and numero = &2", Ncaisse, Numtk, TotalTk.Text, Caissiere, "1")
       Else
         Utils.db.Exec("DELETE FROM  " & Tab & " WHERE caisse = &1 and numero = &2", Ncaisse, Numtk)
-        Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31})", Ncaisse, Numtk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat)
-        'Utils.db.Exec("UPdate  " & Tab & "  SET mttc = &3, vendeur = &4, statut = &5 WHERE caisse = &1 and numero = &2", Ncaisse, Numtk, TotalTk.Text, Caissiere, "0")
+        Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32})", Ncaisse, Numtk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli)
         ipaiement = 0
       Endif
     Endif
@@ -5392,7 +5402,6 @@ Public Sub Enrg_Tk()
       bloc = LigTk.Item[8]
       If iRattente = 0 Then
         If stype = "T" Then 
-          'smtva = Val(utils.cpoint(smontantFam)) - Val(utils.cpoint(smontantht)) + Val(utils.cpoint(smrem))
           Try smtva = LigTk.Item[9]
         Else
           Try smtva = Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht))
@@ -5491,17 +5500,6 @@ Public Sub Enrg_Tk()
           Endif
         Endif
       Endif
-      '      If iRattente = 0 Then
-      '        Try smtva = Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht))
-      '       If Error Then smtva = ""
-      '        Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", Ntk, snumlig, scode, sdesign, smontant, sqte, stype, fam, smontantht, smrem, smtva, LigTk.Item[8], LigTk.Item[10])
-      '      Else
-      '        Rcai = Utils.db.Exec("SELECT * FROM " & tab & " where numero = &1 and numlig = &2", Numtk, snumlig)
-      '        If Not Rcai.Available Then
-      '          Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{11}, &{11}, &{12}, &{13})", Numtk, snumlig, scode, sdesign, smontant, sqte, stype, fam, smontantht, smrem, LigTk.Item[9], LigTk.Item[8], LigTk.Item[10])
-      '       Endif
-      '     Endif
-      
     Until LigTk.MoveNext()
     If iRattente = 0 Then
       Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET dntk = &2 WHERE code = &1", Ncaisse, Ntk)
@@ -5547,6 +5545,7 @@ Public Sub Enrg_Tk()
     Label3.Text = ""
     Label4.Text = ""
     scartef = ""
+    $Cli = ""
     ftpointg = 0
     ftpoint = 0
     icartef = 0
@@ -6109,7 +6108,7 @@ Public Sub Ticketz()
           rtx = Utils.db.Exec(" select * from " & Tabx & " order by numero asc")
           If rtx.Available Then
             Repeat
-              Utils.db.Exec("INSERT INTO " & Tabz & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sresto, mresto, sbachat, mbachat) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9,&{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29})", rtx!caisse, rtx!numero, rtx!date, rtx!client, rtx!scheque, rtx!mcheque, rtx!nmcheque, rtx!scarte, rtx!mcarte, rtx!nmcarte, rtx!sespeces, rtx!mespeces, rtx!scredit, rtx!mcredit, rtx!mht, rtx!mtva, rtx!mttc, rtx!statut, rtx!savoir, rtx!scavoir, rtx!mavoir, rtx!type, rtx!vendeur, rtx!carte, rtx!points, rtx!sresto, rtx!mresto, rtx!sbachat, rtx!mbachat)
+              Utils.db.Exec("INSERT INTO " & Tabz & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sresto, mresto, sbachat, mbachat, nom) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9,&{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30})", rtx!caisse, rtx!numero, rtx!date, rtx!client, rtx!scheque, rtx!mcheque, rtx!nmcheque, rtx!scarte, rtx!mcarte, rtx!nmcarte, rtx!sespeces, rtx!mespeces, rtx!scredit, rtx!mcredit, rtx!mht, rtx!mtva, rtx!mttc, rtx!statut, rtx!savoir, rtx!scavoir, rtx!mavoir, rtx!type, rtx!vendeur, rtx!carte, rtx!points, rtx!sresto, rtx!mresto, rtx!sbachat, rtx!mbachat, rtx!nom)
             Until rtx.MoveNext()
           Endif
           rtx = Utils.db.Exec(" select * from " & Tiketx & " order by numero asc , lpad(numlig,2, ' ') asc")
@@ -6442,9 +6441,9 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
             Y2 += 10
           Endif
           If Nbt < 2 Then
-            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11), X2, Posy, 1)
+            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1)
           Else
-            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date, X2, Y2, 1)
+            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1)
           Endif
           If Nbt = 1 Then Posy += 8
           If Nbt = 2 Then Y2 += 8

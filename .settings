@@ -120,12 +120,7 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=4
-Active=1
-File[1]=".src/Caisse.class:116.5400"
-File[2]=".src/Caisse.form"
-File[3]=".src/Start.module:0.14"
-File[4]=".src/ImageButton.class:0.93"
+Count=0
 
 [Watches]
 Count=0
