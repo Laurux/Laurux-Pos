@@ -577,6 +577,7 @@ Public Sub Art_man()
           Else
             LigTk.Item[3] = Valeur_Ecotaxe
           Endif
+          LigTk.Item[11] = LigTk.Item[3]
           LigTk.Item[5] = "O"
           LigTk.Item[8] = bloc
         Endif
@@ -587,7 +588,12 @@ Public Sub Art_man()
           LigTk.Item[0] = iNlg
           LigTk.Item[1] = ""
           LigTk.Item[2] = " Dont Taxe copie privée "
-          LigTk.Item[3] = Valeur_Copp
+          If Val(Qte.text) < 0 Then
+            LigTk.Item[3] = "-" & Valeur_Copp
+          Else
+            LigTk.Item[3] = Valeur_Copp
+          Endif
+          LigTk.Item[11] = LigTk.Item[3]
           LigTk.Item[5] = "O"
           LigTk.Item[6] = Pvht
           LigTk.Item[8] = bloc
@@ -5034,9 +5040,17 @@ Public Sub Aff_bastk()
           Ligtk.MoveNext()
           Try LigTk.Item.Selected = True
           If Not Error Then
-            If LigTk.Item[5] = "O" Then
-              Ligtk.MoveNext()
-              Try LigTk.Item.Selected = True 
+            If LigTk.Item[5] = "O" And If Val(LigTk.Item[0]) = LigTk.count Then
+              'Ligtk.MoveNext()
+              'Try LigTk.Item.Selected = True 
+              'If Error Then 
+              Ligtk.MovePrevious()
+              LigTk.Item.Selected = True
+            Else
+              If LigTk.Item[5] = "O" And If Val(LigTk.Item[0]) < LigTk.count Then
+                Ligtk.MoveNext()
+                LigTk.Item.Selected = True 
+              Endif
             Endif
             If LigTk.Item[5] <> "S" Then
               If LigTk.Item[5] = "T" Then
@@ -5044,16 +5058,19 @@ Public Sub Aff_bastk()
                 mttc = Val(Utils.cpoint(LigTk.Item[11]))
                 LigTk.MovePrevious()
                 LigTk.Item.Selected = True
-                If LigTk.Item[5] = "O" Then
-                  Ligtk.MovePrevious()
-                  Try LigTk.Item.Selected = True 
-                Endif
+                'If LigTk.Item[5] = "O" Then
+                'Ligtk.MovePrevious()
+                'Try LigTk.Item.Selected = True 
+                'Endif
               Else
-                LigTk.MovePrevious()
-                LigTk.Item.Selected = True
+                'LigTk.MovePrevious()
+                'Try LigTk.Item.Selected = True
+                'If Not Error Then
                 If LigTk.Item[5] = "O" Then
                   Ligtk.MovePrevious()
                   Try LigTk.Item.Selected = True 
+                Else
+                  mttc = Val(Utils.cpoint(LigTk.Item[11])) 
                 Endif
               Endif
             Else
@@ -5448,8 +5465,8 @@ Public Sub Enrg_Tk()
           stype = LigTk.Item[5]
           If stype = "O" Then
             LigTk.MoveNext()
-            LigTk.Item.Selected = True
-            stype = LigTk.Item[5] 
+            Try LigTk.Item.Selected = True
+            Try stype = LigTk.Item[5] 
           Endif
           If stype <> "M" And If stype <> "S" And If stype <> "T" Then
             LigTk.MovePrevious()
