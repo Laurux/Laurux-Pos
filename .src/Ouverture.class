@@ -13,6 +13,7 @@ Public Sub _new()
   Dim Rrslt As Result
   
   Music.Load("son/warning.ogg")
+  SetObservers(Me, Me)
   Try Rrslt = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs"))
   If Not Error Then
     If Rrslt.Available Then
@@ -39,6 +40,33 @@ Catch
   
 End
 
+Public Sub SetObservers(hClass As Object, hCont As Container)
+  
+  Dim hCtrl As Object
+  Dim hOBS As Observer
+  Dim hTab As Container
+  
+  For Each hCtrl In hCont.Children
+    If hCtrl Is Button Then
+      hOBS = New Observer(hCtrl) As "OBS"
+    Endif
+    If hCtrl Is Container Then SetObservers(hClass, hCtrl)
+  Next
+  
+End
+
+Public Sub Obs_Enter()
+  
+  Last.Font = Font["" ",Bold," ""]
+  
+End
+
+Public Sub Obs_Leave()
+  
+  Last.Font = Font["" "," "," ""]
+  
+End
+
 Public Sub Mdp_KeyPress()
   
   If Key.code = Key.enter Or If Key.code = Key.RETURN Or If Key.code = Key.Tab Then
@@ -62,7 +90,7 @@ Public Sub Mdp_Vendeurs()
     Mdp.SetFocus
     Mdp.Select
     b = 1
-    If Settings["/tactile"] Then Button40_Click()
+    If Settings["/tactile"] Then Button3_Click()
   Else
     b = 0
   Endif
@@ -103,7 +131,7 @@ Public Sub Caissiere_Click()
     Else
       Mdp.SetFocus
       Mdp.Select
-      If Settings["/tactile"] Then Button40_Click()
+      If Settings["/tactile"] Then Button3_Click()
     Endif
   Endif
 Catch
@@ -144,14 +172,14 @@ Public Sub Button1_Click()
         Endif
         Message.Error("Veuillez saisir votre mot de passe SVP")
         Mdp.SetFocus
-        If Settings["/tactile"] Then Button40_Click()
+        If Settings["/tactile"] Then Button3_Click()
       Else
         Mdp_Vendeurs()
         If b = 1 Then
           Mdp.SetFocus
           Mdp.Select
           b = 0
-          If Settings["/tactile"] Then Button40_Click()
+          If Settings["/tactile"] Then Button3_Click()
         Else
           If Exist(User.home & "/" & sNcaisse & ".lock") Then
             If Start.son Then
@@ -211,7 +239,7 @@ Public Sub button1_KeyPress()
   
 End
 
-Public Sub Button40_Click()
+Public Sub Button3_Click()
   
   Dim MyForm As Clavier
   

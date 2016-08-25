@@ -1179,7 +1179,7 @@
       }
       { b16 Button Clav2
         Name = "b16"
-        MoveScaled(13,50.2857,12.5714,6.5714)
+        MoveScaled(13,50,12.5714,6.5714)
         Font = Font["-1"]
         Background = &HDFE7FF&
         Tag = "16"

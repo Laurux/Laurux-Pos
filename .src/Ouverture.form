@@ -51,15 +51,15 @@
       { !Button1 Button
         MoveScaled(38,45,15.7143,4)
         #Public = True
-        Text = ("&Connecter")
+        Text = Shortcut(("Connecter"), "C")
       }
       { Button2 Button
         MoveScaled(20,45,15.7143,4)
-        Text = ("&Annuler")
+        Text = Shortcut(("Annuler"), "A")
       }
-      { Button40 Button
+      { Button3 Button
         MoveScaled(1,45,16,4)
-        Text = ("C&lavier")
+        Text = Shortcut(("Clavier"), "l")
         Picture = Picture["Icones/Clavier.png"]
       }
     }

@@ -9,9 +9,9 @@
 Public Soc As String
 Public intitule As String
 Public Version As String
-hForm As Fondcaisse
-Ncaisse As String
-Efface As Integer = 1
+Private hForm As Fondcaisse
+Private Ncaisse As String
+Private Efface As Integer = 1
 
 Public Sub _new()
   
@@ -34,6 +34,7 @@ Public Sub _new()
     Button4.Visible = False
     Label2.visible = False
   Endif
+  SetObservers(Me, Me)
   Try Soc = Settings["/Soc"]
   TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
   
@@ -83,6 +84,33 @@ Catch
   
 End
 
+Public Sub SetObservers(hClass As Object, hCont As Container)
+  
+  Dim hCtrl As Object
+  Dim hOBS As Observer
+  Dim hTab As Container
+  
+  For Each hCtrl In hCont.Children
+    If hCtrl Is Button Then
+      hOBS = New Observer(hCtrl) As "OBS"
+    Endif
+    If hCtrl Is Container Then SetObservers(hClass, hCtrl)
+  Next
+  
+End
+
+Public Sub Obs_Enter()
+  
+  Last.Font = Font["" ",Bold," ""]
+  
+End
+
+Public Sub Obs_Leave()
+  
+  Last.Font = Font["" "," "," ""]
+  
+End
+
 Public Sub Button1_Click()
   
   Dim rResult As Result
@@ -107,38 +135,6 @@ Public Sub Button1_Click()
     Endif
   Else
     message.Warning("Il faut d'abord créer vos caisses par la table des caisses sous Laurux !")
-    b = 0
-  Endif
-  
-End
-
-Public Sub Button1_Click2()
-  
-  Dim rResult As Result
-  Dim tab As String
-  Dim b As Integer = 1
-  
-  Tab = "Fiches_ClientCaisse"
-  Try rResult = Utils.db.Exec("SELECT * FROM " & tab & "")
-  If Not Error Then
-    If Not rResult.Available Then
-      If Start.son Then
-        Music.Play
-      Endif
-      Message.Warning("Attention, Vous n'avez pas selectionné le client caisse !")
-      b = 0
-    Endif
-    rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where poste = &1 ", System.host)
-    If Not rResult.Available Then
-      message.Warning("Il faut d'abord créer vos caisses par la table des caisses sous Laurux !")
-      b = 0
-    Endif
-    If b = 1 Then Ouverture.ShowModal()
-  Else
-    If Start.son Then
-      Music.Play
-    Endif
-    Message.Warning("Attention, Vous n'avez pas selectionné le client caisse !")
     b = 0
   Endif
   

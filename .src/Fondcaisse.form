@@ -85,6 +85,7 @@
   { Panel2 Panel
     MoveScaled(2,18,43,60)
     Visible = False
+    Border = Border.Plain
     { Label3 Label
       MoveScaled(0,4,8,3.4286)
       Text = ("200,00")
@@ -337,93 +338,78 @@
         { PictureBox15 PictureBox btn
           Name = "PictureBox15"
           MoveScaled(0,0,4,3.4286)
-          Picture = Picture["Images/monnaie/b500.png"]
           Stretch = True
         }
         { PictureBox14 PictureBox btn
           Name = "PictureBox14"
           MoveScaled(0,4,4,3.4286)
-          Picture = Picture["Images/monnaie/b200.png"]
           Stretch = True
         }
         { PictureBox13 PictureBox btn
           Name = "PictureBox13"
           MoveScaled(0,8,4,3.4286)
-          Picture = Picture["Images/monnaie/b100.png"]
           Stretch = True
         }
         { PictureBox12 PictureBox btn
           Name = "PictureBox12"
           MoveScaled(0,12,4,3.4286)
-          Picture = Picture["Images/monnaie/b50.png"]
           Stretch = True
         }
         { PictureBox11 PictureBox btn
           Name = "PictureBox11"
           MoveScaled(0,16,4,3.4286)
-          Picture = Picture["Images/monnaie/b20.png"]
           Stretch = True
         }
         { PictureBox10 PictureBox btn
           Name = "PictureBox10"
           MoveScaled(0,20,4,3.4286)
-          Picture = Picture["Images/monnaie/b10.png"]
           Stretch = True
         }
         { PictureBox9 PictureBox btn
           Name = "PictureBox9"
           MoveScaled(0,24,4,3.4286)
-          Picture = Picture["Images/monnaie/b5.png"]
           Stretch = True
         }
         { PictureBox8 PictureBox btn
           Name = "PictureBox8"
           MoveScaled(0,28,4,3.4286)
-          Picture = Picture["Images/monnaie/p2.png"]
           Stretch = True
         }
         { PictureBox7 PictureBox btn
           Name = "PictureBox7"
           MoveScaled(0,32,4,3.4286)
-          Picture = Picture["Images/monnaie/p1.png"]
           Stretch = True
         }
         { PictureBox6 PictureBox btn
           Name = "PictureBox6"
           MoveScaled(0,36,4,3.4286)
-          Picture = Picture["Images/monnaie/p50.png"]
           Stretch = True
         }
         { PictureBox5 PictureBox btn
           Name = "PictureBox5"
           MoveScaled(0,40,4,3.4286)
-          Picture = Picture["Images/monnaie/p20.png"]
           Stretch = True
         }
         { PictureBox4 PictureBox btn
           Name = "PictureBox4"
           MoveScaled(0,44,4,3.4286)
-          Picture = Picture["Images/monnaie/p10.png"]
           Stretch = True
         }
         { PictureBox3 PictureBox btn
           Name = "PictureBox3"
           MoveScaled(0,48,4,3.4286)
-          Picture = Picture["Images/monnaie/p05.png"]
           Stretch = True
         }
         { PictureBox2 PictureBox btn
           Name = "PictureBox2"
           MoveScaled(0,52,4,3.4286)
           Tag = "2"
-          Picture = Picture["Images/monnaie/p02.png"]
           Stretch = True
         }
         { PictureBox1 PictureBox btn
           Name = "PictureBox1"
           MoveScaled(0,56,4,3.4286)
           Tag = "1"
-          Picture = Picture["Images/monnaie/p01.png"]
           Stretch = True
         }
       }

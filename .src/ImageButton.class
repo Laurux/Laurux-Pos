@@ -113,8 +113,9 @@ Public Sub View_Draw()
   Paint.font = Me.Font
   Paint.LineWidth = 2
   Paint.Text($sText, iX - 1, iY - 1, Paint.Width + 2, Paint.Height + 2, Align.Center)
+  'Draw.RichText($sText, 0, 0, Me.W + 2, Me.H + 2, Align.Center)
   If $bHover Then 
-    Paint.Brush = Paint.Color(Color.White)
+    Paint.Brush = Paint.Color(Color.Gray)
     Paint.Stroke(True)
   Endif
   Paint.Brush = Paint.Color(Color.ButtonForeground)

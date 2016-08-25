@@ -192,7 +192,7 @@ Public Sub Form_Open()
   Dim tab As String
   
   Music.Load("son/warning.ogg")
-  'Me.Center
+  SetObservers(Me, Me)
   Balloon.Delay = 1500
   'Button38.Visible = False
   'Button39.Visible = False
@@ -305,6 +305,33 @@ Catch
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
+  
+End
+
+Public Sub SetObservers(hClass As Object, hCont As Container)
+  
+  Dim hCtrl As Object
+  Dim hOBS As Observer
+  Dim hTab As Container
+  
+  For Each hCtrl In hCont.Children
+    If hCtrl Is Button Then
+      hOBS = New Observer(hCtrl) As "OBS"
+    Endif
+    If hCtrl Is Container Then SetObservers(hClass, hCtrl)
+  Next
+  
+End
+
+Public Sub Obs_Enter()
+  
+  Last.Font = Font["" ",Bold"]
+  
+End
+
+Public Sub Obs_Leave()
+  
+  Last.Font = Font["" "," "," ""]
   
 End
 
@@ -7972,6 +7999,10 @@ Public Sub Clav2_Click()
       If Pan Then
         hpan.Delete
         Pan = False
+        Panel17.Visible = False
+        'Raz()
+        Cart.SetFocus
+        Zone = "Article" 
       Else
         Panel17.Visible = False
         'Raz()
