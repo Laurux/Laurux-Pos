@@ -152,7 +152,6 @@ Private mavoir As String
 Private rremT As String = "0"
 Private iart As Integer = 0
 Private Touche_P As String
-Private Touche_S As String
 Private BA6X As Socket
 Private bAffUSB As Boolean
 Private $depot As String
@@ -312,7 +311,6 @@ Public Sub SetObservers(hClass As Object, hCont As Container)
   
   Dim hCtrl As Object
   Dim hOBS As Observer
-  Dim hTab As Container
   
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
@@ -323,15 +321,19 @@ Public Sub SetObservers(hClass As Object, hCont As Container)
   
 End
 
-Public Sub Obs_Enter()
+Public Sub OBS_Enter()
   
-  Last.Font = Font["" ",Bold"]
+  Last.Font = Font["" ",Bold," ""]
+  Last.background = Color.Lighter(Color.Buttonbackground)
+  Last.Move(Last.x - 4, Last.y - 4, Last.w + 8, Last.h + 8)
   
 End
 
-Public Sub Obs_Leave()
+Public Sub OBS_Leave()
   
   Last.Font = Font["" "," "," ""]
+  Last.background = Color.ButtonBackground
+  Last.Move(Last.x + 4, Last.y + 4, Last.w - 8, Last.h - 8)
   
 End
 

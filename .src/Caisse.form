@@ -140,7 +140,6 @@
         }
         { Button5 Button
           MoveScaled(1,33,15,7)
-          Background = &HDFEFFF&
           Text = ("Appel familles")
         }
         { Button26 Button
@@ -1171,7 +1170,6 @@
         Name = "b40"
         MoveScaled(52,50.2857,12.5714,6.5714)
         Font = Font["-1"]
-        Background = &HDFE7FF&
         Tag = "40"
         ToolTip = ("Fermer la fenêtre des touches prédéfinies.")
         Text = Shortcut(("Fermer"), "F")
@@ -1181,7 +1179,6 @@
         Name = "b16"
         MoveScaled(13,50,12.5714,6.5714)
         Font = Font["-1"]
-        Background = &HDFE7FF&
         Tag = "16"
         ToolTip = ("Faire une remise sur le total du ticket")
         Text = ("Remise\nsur total")
@@ -1190,7 +1187,6 @@
         Name = "b24"
         MoveScaled(26,50.2857,12.5714,6.5714)
         Font = Font["-1"]
-        Background = &HDFE7FF&
         Tag = "24"
         ToolTip = ("Saisie d'une remise produit en %")
         Text = ("Remise %")
@@ -1199,7 +1195,6 @@
         Name = "b32"
         MoveScaled(39,50.2857,12.5714,6.5714)
         Font = Font["-1"]
-        Background = &HDFE7FF&
         Tag = "32"
         ToolTip = ("Appel quantité. Le programme s'arretera sur la zone \"Quantité\"")
         Text = ("Appel Qte")
@@ -1208,7 +1203,6 @@
         Name = "b8"
         MoveScaled(0.1429,50.2857,12.5714,6.5714)
         Font = Font["-1"]
-        Background = &HDFE7FF&
         Tag = "8"
         ToolTip = ("Imprime une facturette")
         Text = ("Facturette")

@@ -20,54 +20,84 @@
     Border = Border.Etched
   }
   { Panel1 Panel
-    MoveScaled(46,24,21,34)
+    MoveScaled(46,25,23,40)
     { zero Button
-      MoveScaled(0,18,13,6)
+      MoveScaled(2,23,13,6)
       Text = ("0")
     }
     { virgule Button
-      MoveScaled(14,18,6,6)
+      MoveScaled(16,23,6,6)
       Text = (",")
     }
     { un Button
-      MoveScaled(0,12,6,6)
+      MoveScaled(2,16,6,6)
       Text = ("1")
     }
     { deux Button
-      MoveScaled(7,12,6,6)
+      MoveScaled(9,16,6,6)
       Text = ("2")
     }
     { trois Button
-      MoveScaled(14,12,6,6)
+      MoveScaled(16,16,6,6)
       Text = ("3")
     }
     { quatre Button
-      MoveScaled(0,6,6,6)
+      MoveScaled(2,9,6,6)
       Text = ("4")
     }
     { cinq Button
-      MoveScaled(7,6,6,6)
+      MoveScaled(9,9,6,6)
       Text = ("5")
     }
     { six Button
-      MoveScaled(14,6,6,6)
+      MoveScaled(16,9,6,6)
       Text = ("6")
     }
     { sept Button
-      MoveScaled(0,0,6,6)
+      MoveScaled(2,2,6,6)
       Text = ("7")
     }
     { huit Button
-      MoveScaled(7,0,6,6)
+      MoveScaled(9,2,6,6)
       Text = ("8")
     }
     { neuf Button
-      MoveScaled(14,0,6,6)
+      MoveScaled(16,2,6,6)
       Text = ("9")
     }
     { Raz Button
-      MoveScaled(0,26,20,6)
+      MoveScaled(2,32,20,6)
       Text = Shortcut(("Correction"), "C")
+    }
+    { Panel5 Panel
+      MoveScaled(0,13,1,20)
+    }
+    { Panel6 Panel
+      MoveScaled(1,1,21,1)
+    }
+    { Panel7 Panel
+      MoveScaled(1,38,21,1)
+    }
+    { Panel8 Panel
+      MoveScaled(22,3,1,32)
+    }
+    { Panel9 Panel
+      MoveScaled(0,29,21,1)
+    }
+    { Panel10 Panel
+      MoveScaled(0,22,21,1)
+    }
+    { Panel11 Panel
+      MoveScaled(8,2,1,20)
+    }
+    { Panel12 Panel
+      MoveScaled(15,2,1,20)
+    }
+    { Panel13 Panel
+      MoveScaled(2,15,21,1)
+    }
+    { Panel14 Panel
+      MoveScaled(1,8,21,1)
     }
   }
   { Button1 Button

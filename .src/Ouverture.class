@@ -44,7 +44,6 @@ Public Sub SetObservers(hClass As Object, hCont As Container)
   
   Dim hCtrl As Object
   Dim hOBS As Observer
-  Dim hTab As Container
   
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
@@ -58,12 +57,16 @@ End
 Public Sub Obs_Enter()
   
   Last.Font = Font["" ",Bold," ""]
+  Last.background = Color.Lighter(Color.Buttonbackground)
+  Last.Move(Last.x - 4, Last.y - 4, Last.w + 8, Last.h + 8)
   
 End
 
 Public Sub Obs_Leave()
   
   Last.Font = Font["" "," "," ""]
+  Last.background = Color.ButtonBackground
+  Last.Move(Last.x + 4, Last.y + 4, Last.w - 8, Last.h - 8)
   
 End
 
