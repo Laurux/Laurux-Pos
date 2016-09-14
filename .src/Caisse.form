@@ -1048,7 +1048,7 @@
       }
       { A4 ImageButton Clav2
         Name = "A4"
-        MoveScaled(0.1429,21.7143,12.5714,6.5714)
+        MoveScaled(0,22,12.5714,6.5714)
         Background = &HDFE7FF&
         Tag = "4"
       }
@@ -1177,7 +1177,7 @@
       }
       { b16 Button Clav2
         Name = "b16"
-        MoveScaled(13,50,12.5714,6.5714)
+        MoveScaled(13,50.2857,12.5714,6.5714)
         Font = Font["-1"]
         Tag = "16"
         ToolTip = ("Faire une remise sur le total du ticket")

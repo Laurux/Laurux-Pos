@@ -314,26 +314,40 @@ Public Sub SetObservers(hClass As Object, hCont As Container)
   
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
-      hOBS = New Observer(hCtrl) As "OBS"
+      hOBS = New Observer(hCtrl) As "Obs"
+    Endif
+    If hCtrl Is ImageButton Then
+      hOBS = New Observer(hCtrl) As "Obs2"
     Endif
     If hCtrl Is Container Then SetObservers(hClass, hCtrl)
   Next
   
 End
 
-Public Sub OBS_Enter()
+Public Sub Obs_Enter()
   
   Last.Font = Font["" ",Bold," ""]
   Last.background = Color.Lighter(Color.Buttonbackground)
-  Last.Move(Last.x - 4, Last.y - 4, Last.w + 8, Last.h + 8)
   
 End
 
-Public Sub OBS_Leave()
+Public Sub Obs_Leave()
   
   Last.Font = Font["" "," "," ""]
   Last.background = Color.ButtonBackground
-  Last.Move(Last.x + 4, Last.y + 4, Last.w - 8, Last.h - 8)
+  
+End
+
+Public Sub Obs2_Enter()
+  
+  Last.background = &0DFFFFF&
+  
+End
+
+Public Sub Obs2_Leave()
+  
+  Last.Font = Font["" "," "," ""]
+  Last.background = &HDFE7FF&
   
 End
 
@@ -5052,6 +5066,7 @@ Public Sub Aff_bastk()
   Dim ttva, ttvam As Float = 0
   Dim mttc, mht As Float = 0
   Dim brem, btot As Boolean = False
+  Dim $code As String
   
   Mtrem = RemTot.text
   If IsNull(mtrem) Then mtrem = "0"
@@ -5066,6 +5081,9 @@ Public Sub Aff_bastk()
       If LigTk.Item[5] <> "T" And If LigTk.Item[5] <> "MT" Then
         If LigTk.Item[5] = "A" And If Val(LigTk.Item[0]) < LigTk.count Then
           mttc = Val(Utils.cpoint(LigTk.Item[11]))
+          mht = Val(Utils.cpoint(LigTk.Item[6]))
+          mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+          $code = LigTk.Item[10]
           Ligtk.MoveNext()
           Try LigTk.Item.Selected = True
           If Not Error Then
@@ -5099,7 +5117,13 @@ Public Sub Aff_bastk()
                   Ligtk.MovePrevious()
                   Try LigTk.Item.Selected = True 
                 Else
-                  mttc = Val(Utils.cpoint(LigTk.Item[11])) 
+                  If LigTk.Item[5] = "A" Then
+                    LigTk.MovePrevious()
+                    Try LigTk.Item.Selected = True
+                    mttc = Val(Utils.cpoint(LigTk.Item[11])) 
+                  Else
+                    '           mttc = Val(Utils.cpoint(LigTk.Item[11]))
+                  Endif
                 Endif
               Endif
             Else
@@ -5128,22 +5152,23 @@ Public Sub Aff_bastk()
           Endif
         Endif
         If Not btot Then
-          mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+          Try mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+          $code = LigTk.Item[10]
         Else
           'If Not brem Then mttc = mttc * Abs(Val(Utils.cpoint(LigTk.Item[4])))
           
         Endif
-        mht = Val(Utils.cpoint(LigTk.Item[6]))
+        Try mht = Val(Utils.cpoint(LigTk.Item[6]))
         Totalht = totalht + mht
         ttvam = mttc - mht
-        rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", LigTk.Item[10])
+        rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", $code)
         If Not rtva.Available Then
-          Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", LigTk.Item[10], ttvam)
+          Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, ttvam)
           totaltva = totaltva + ttvam
         Else
           ttva = rtva!mtva + Val(Utils.cpoint(ttvam))
           totaltva = totaltva + ttvam
-          Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", LigTk.Item[10], ttva)
+          Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", $code, ttva)
         Endif
       Endif
     Endif
@@ -5290,7 +5315,6 @@ Public Sub Enrg_Tk()
   Dim QteFam As String
   Dim Totpoint As Float = 0
   Dim Esp As String 'Montant des especes versées
-  Dim TypeR As String ' type de règlement
   
   Tab = "Fiches_EntTickets" & Ncaisse
   Tiketx = "Fiches_Ticketx" & Ncaisse
@@ -7266,7 +7290,6 @@ Public Sub Ligtk_Delete()
   Dim pu, quantite As String
   Dim tot As String
   Dim Rem, Trem As Boolean = False
-  Dim Art As Boolean = False
   
   If ColumnView1.count = 0 Then
     If message.Question("Voulez-vous supprimer cette ligne ?\nLes lignes de remise sur total seront également supprimées.", "Oui", "Non") = 1 Then
@@ -7942,8 +7965,6 @@ Public Sub ClavFam()
 End
 
 Public Sub Clav2_Click()
-  
-  Dim DesignA As String
   
   Touche_P = Last.name
   If ToucheS[Last.Tag] = 0 Or If IsNull(ToucheS[Last.Tag]) Then

@@ -120,17 +120,10 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=9
-Active=9
-File[1]=".src/Caisse.class:22.323"
-File[2]=".src/Caisse.form"
-File[3]=".src/Ouverture.class:57.59"
-File[4]=".src/Preferences.class:57.86"
-File[5]=".src/Fmenu.class:57.103"
-File[6]=".src/Fondcaisse.class:57.75"
-File[7]=".src/LauruxMaj.module:55.48"
-File[8]=".src/Ouverture.form"
-File[9]=".src/Fondcaisse.form"
+Count=2
+Active=1
+File[1]=".src/Caisse.class:30.5080"
+File[2]=".src/Utils.module:0.188"
 
 [Watches]
 Count=0

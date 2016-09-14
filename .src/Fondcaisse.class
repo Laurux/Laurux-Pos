@@ -74,7 +74,7 @@ Public Sub Obs_Enter()
   
   Last.Font = Font["" ",Bold," ""]
   Last.background = Color.Lighter(Color.Buttonbackground)
-  Last.Move(Last.x - 4, Last.y - 4, Last.w + 8, Last.h + 8)
+  'Last.Move(Last.x - 2, Last.y - 2, Last.w + 4, Last.h + 4)
   
 End
 
@@ -82,7 +82,7 @@ Public Sub Obs_Leave()
   
   Last.Font = Font["" "," "," ""]
   Last.background = Color.ButtonBackground
-  Last.Move(Last.x + 4, Last.y + 4, Last.w - 8, Last.h - 8)
+  'Last.Move(Last.x + 2, Last.y + 2, Last.w - 4, Last.h - 4)
   
 End
 
