@@ -5122,7 +5122,10 @@ Public Sub Aff_bastk()
                     Try LigTk.Item.Selected = True
                     mttc = Val(Utils.cpoint(LigTk.Item[11])) 
                   Else
-                    '           mttc = Val(Utils.cpoint(LigTk.Item[11]))
+                    If LigTk.Item[5] = "MT" Then
+                      LigTk.MovePrevious()
+                      Try LigTk.Item.Selected = True
+                    Endif
                   Endif
                 Endif
               Endif

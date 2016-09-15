@@ -95,7 +95,7 @@ Geometry=[4,13,224,280]
 Geometry=[5,0,210,210]
 
 [DebugWindow/rtva]
-Geometry=[5,0,210,210]
+Geometry=[5,0,224,280]
 
 [DebugWindow/s]
 Geometry=[4,13,224,280]
@@ -122,7 +122,7 @@ SearchString=True
 [OpenFile]
 Count=2
 Active=1
-File[1]=".src/Caisse.class:30.5080"
+File[1]=".src/Caisse.class:23.5128"
 File[2]=".src/Utils.module:0.188"
 
 [Watches]
