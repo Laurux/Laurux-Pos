@@ -393,12 +393,12 @@ Public Sub Ent_tk()
   Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entete.Text &= "Caissier(e) : " & $Caissiere
   If Imprimante = "Défaut" Then
-    Entete.text = Entete.text & Space$(45) & "Bonjour" & "\n"
+    Entete.text = Entete.text & "Bonjour" & "\n"
   Else
     Entete.text = Entete.text & "Bonjour "
   Endif
   If Imprimante = "Défaut" Then
-    Entete.Text = Entete.Text & Pointille & Pointille & Left$(Pointille, 26) & "\n"
+    Entete.Text = Entete.Text & Pointille & Pointille & Left$(Pointille, 10) & "\n"
   Else
     If Typeimp = "6000III" Then Entete.Text = Entete.Text & Pointille & "\n"
     If Typeimp = "Tmu950" Then Entete.Text = Entete.Text & Left$(Pointille, 26) & "\n"
@@ -413,7 +413,7 @@ Public Sub Ent_tk()
   Endif
   Ecole = rResult!ecole
   If Imprimante = "Défaut" Then
-    Entete.Text = Entete.Text & "Ticket No " & Ntk & Space$(40) & datetk '& "\n"
+    Entete.Text = Entete.Text & "Ticket No " & Ntk & Space$(10) & datetk '& "\n"
   Else
     Entete.Text = Entete.Text & "Ticket No " & Ntk & Space$(3) & datetk & "\n"
   Endif
@@ -2022,7 +2022,7 @@ Public Sub ColTka_Click()
   Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entete.Text &= "Caissier(e) : " & $Caissiere
   If Imprimante = "Défaut" Then
-    Entete.text = Entete.text & Space$(45) & "Bonjour" & "\n"
+    Entete.text = Entete.text & "Bonjour" & "\n"
   Else
     Entete.text = Entete.text & "Bonjour "
   Endif
@@ -2033,7 +2033,7 @@ Public Sub ColTka_Click()
     If Typeimp = "Tmu950" Then Entete.Text = Entete.Text & Left$(Pointille, 26) & "\n"
   Endif
   'rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
-  Entete.Text = Entete.Text & "Ticket no " & Numtk & Space$(35) & heuretk
+  Entete.Text = Entete.Text & "Ticket no " & Numtk & "\n" & heuretk & "\n"
   TotalTk.Text = RTck!mttc
   'Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Tab = "Fiches_LigTickets" & Ncaisse
@@ -3921,7 +3921,7 @@ Public Sub Imp_Especes(tpesp As String)
   Dim sline As String
   
   Filename = User.home & "/Ticket.pdf"
-  pdf = New Cfacture("P", "mm", "A4")
+  pdf = New Cfacture("P", "mm", "80mm")
   pdf.Open()
   pdf.AliasNbPages()
   pdf.newPage()
@@ -4610,7 +4610,7 @@ Public Sub Defaut_Tk()
   
   If ColumnView1.Count > 0 Or iavoir = 1 Or clicompte = 1 Then
     Filename = User.home & "/Ticket.pdf"
-    pdf = New Cfacture("P", "mm", "A4")
+    pdf = New Cfacture("P", "mm", "80mm")
     pdf.Open()
     pdf.AliasNbPages()
     pdf.newPage()
@@ -5631,10 +5631,10 @@ Public Sub Init_LigTk()
   LigTk.Columns.count = 5
   LigTk.Columns[0].Width = 0
   LigTk.Columns[1].Width = 80
-  LigTk.Columns[2].Width = 228
+  LigTk.Columns[2].Width = 220
   LigTk.Columns[3].Width = 65
   LigTk.Columns[3].Alignment = 2
-  LigTk.Columns[4].Width = 30
+  LigTk.Columns[4].Width = 40
   LigTk.Columns[4].Alignment = 2
   
 End
@@ -5753,7 +5753,7 @@ Public Sub Valid_Nticket()
         Entetet = Entetet & Pointille & "\n"
         If Imprimante = "Défaut" Then
           If clicompte = 1 Then
-            Entetet = Entetet & "Bon de caisse No " & Nticket.text & Space$(35) & Datetk2 & "\n"
+            Entetet = Entetet & "Bon de caisse No " & Nticket.text & "\n" & Datetk2 & "\n"
           Else
             Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2 & "\n"
           Endif
@@ -5801,7 +5801,7 @@ Public Sub impressionbon(clientc As String)
   If Imprimante = "Défaut" Then
     If clicompte = 1 Then
       'Entetet = Entete.Text
-      Entetet = Entetet & "Bon de caisse No " & Nticket.text & Space$(35) & Datetk2 & "\n"
+      Entetet = Entetet & "Bon de caisse No " & Nticket.text & "\n" & Datetk2 & "\n"
     Else
       Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2 & "\n"
     Endif
@@ -5879,10 +5879,10 @@ Public Sub Ent_tk2()
   
   Entetet = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entetet = Entetet & "Caissier(e) : " & $Caissiere
-  Entetet = Entetet & Pointille & Left$(pointille, 60) & "\n"
+  Entetet = Entetet & Pointille & Left$(pointille, 30) & "\n"
   'IF Imprimante = "Défaut" THEN Entetet = Entetet & "Facture No " & Nticket.text & Space$(35) & Datetk2 & "\n"
   'IF Imprimante = "/dev/ttyS0" THEN Entetet = Entetet & "Facture No " & Nticket.text & Space$(3) & datetk2
-  Entetet = Entetet & "Facture No " & Nticket.text & Space$(59) & "Le " & Datetk2 & "\n"
+  Entetet = Entetet & "Facture No " & Nticket.text & Space$(10) & "Le " & Datetk2 & "\n"
   
 Catch
   If Start.son Then
@@ -5970,7 +5970,7 @@ Public Sub Defaut_Facture()
   
   Tabe = "Fiches_LigTickets" & Ncaisse
   Filename = User.home & "/Ticket.pdf"
-  pdf = New Cfacture("p", "mm", "A4")
+  pdf = New Cfacture("p", "mm", "80mm")
   pdf.Open()
   pdf.AliasNbPages()
   pdf.newPage()
