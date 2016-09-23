@@ -5970,7 +5970,7 @@ Public Sub Defaut_Facture()
   
   Tabe = "Fiches_LigTickets" & Ncaisse
   Filename = User.home & "/Ticket.pdf"
-  pdf = New Cfacture("p", "mm", "80mm")
+  pdf = New Cfacture("p", "mm", "A4")
   pdf.Open()
   pdf.AliasNbPages()
   pdf.newPage()
