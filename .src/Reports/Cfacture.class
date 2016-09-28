@@ -111,7 +111,7 @@ Public Sub Level2T(PosX As Integer, PosY As Integer)
   Me.SetFillColor(R, G, B)
   Me.cell(20 * $xratio, 5 * $yratio, "Code", True, 0, "C", True)
   Me.cell(60 * $xratio, 5 * $yratio, "Intitulé", True, 0, "C", True)
-  Me.cell(12 * $xratio, 5 * $yratio, "prix", True, 0, "C", True)
+  Me.cell(12 * $xratio, 5 * $yratio, "Prix", True, 0, "C", True)
   Me.cell(12 * $xratio, 5 * $yratio, "Qte", True, 0, "C", True)
   
 End
@@ -204,12 +204,12 @@ End
 Public Sub Level2F(PosY As Integer)
   
   Me.SetXY(4 * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 10))
+  Me.SetFont("Helvetica", "", Round($fratio * 8))
   Me.SetFillColor(R, G, B)
   Me.cell(20 * $xratio, 5 * $yratio, "Code", True, 0, "C", True)
   Me.cell(60 * $xratio, 5 * $yratio, "Intitulé", True, 0, "C", True)
-  Me.cell(20 * $xratio, 5 * $yratio, "PU TTC", True, 0, "C", True)
-  Me.cell(20 * $xratio, 5 * $yratio, "Qté", True, 0, "C", True)
+  Me.cell(12 * $xratio, 5 * $yratio, "PU TTC", True, 0, "C", True)
+  Me.cell(12 * $xratio, 5 * $yratio, "Qté", True, 0, "C", True)
   
 End
 
