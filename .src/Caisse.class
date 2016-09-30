@@ -5317,7 +5317,7 @@ Public Sub Enrg_Tk()
   Dim MntFam As String
   Dim QteFam As String
   Dim Totpoint As Float = 0
-  Dim Esp As String 'Montant des especes versées
+  Dim Esp As Float = 0 'Montant des especes versées
   
   Tab = "Fiches_EntTickets" & Ncaisse
   Tiketx = "Fiches_Ticketx" & Ncaisse
@@ -5336,10 +5336,19 @@ Public Sub Enrg_Tk()
         If LigTk.Item[5] = "BC" Then smttc = LigTk.Item[3]
         If Right$(LigTk.Item[5], 1) = "N" Then
           sespeces = "N"
-          smespeces = LigTk.Item[3]
-          Esp = smespeces
-          If Val(utils.cpoint(smespeces)) > Val(utils.cpoint(TotalTk.text)) Then smespeces = TotalTk.Text
+          'smespeces = LigTk.Item[3]
+          'Esp = smespeces
+          'Esp += Val(utils.cpoint(LigTk.Item[3]))
+          'If Val(utils.cpoint(smespeces)) > Val(utils.cpoint(TotalTk.text)) Then smespeces = TotalTk.Text
+          Esp += Val(utils.cpoint(LigTk.Item[3]))
+          smespeces = Esp
           Maj_Paiements(sespeces, smespeces, "1")
+          sstatut = 0
+        Endif
+        If Right$(LigTk.Item[5], 1) = "Q" Then
+          Esp -= Val(utils.cpoint(LigTk.Item[3]))
+          smespeces = Esp
+          Maj_Paiements("Q", smespeces, "1")
           sstatut = 0
         Endif
         If Right$(LigTk.Item[5], 1) = "U" Then
