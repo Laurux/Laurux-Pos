@@ -5,10 +5,10 @@ Private hpb As ProgressBar
 
 Public Sub Verif_Version()
   
-  If Settings["/dbase/Version"] = "Laurux.Pos V3.13" Or If Settings["/dbase/Version"] = "Laurux.Pos V3.15" Then 
+  If Settings["/dbase/Version"] = "Laurux.Pos V3.18" Then 
     Maj()
-    Settings["/dbase/Version"] = "Laurux.Pos V3.18"
-    Fmenu.Frame1.text = "Laurux.Pos V3.18"
+    Settings["/dbase/Version"] = "Laurux.Pos V3.19"
+    Fmenu.Frame1.text = "Laurux.Pos V3.19"
     Settings.save
     Try Kill User.home & "/Laurux.Pos.lock"
   Else

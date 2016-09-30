@@ -83,7 +83,7 @@ Public Sub Button1_Click()
   $ready_connect = True
   Soc = "01"
   intitule = "  "
-  Settings["/dbase/Version"] = "Laurux.Pos V3.15"
+  Settings["/dbase/Version"] = "Laurux.Pos V3.19"
   '# -- Partie commune aux connexions avec ou sans tunnel
   Settings["/dbase/type"] = "mysql"
   Settings["/dbase/Name"] = "Laurux01"
