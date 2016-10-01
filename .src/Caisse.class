@@ -2541,24 +2541,28 @@ Public Sub Valid_Carte()
         Carte.Text = Format$(Val(Carte.Text), "0.00")
         Calc_reste(Carte.text)
         Try ColumnView1.Add("U", "U")
-        If Not Error Then
-          ColumnView1.Item[0] = "U"
-          ColumnView1.Item[1] = "Carte " & snmcarte
-          ColumnView1.Item[2] = carte.Text
-        Else
-          ColumnView1.MoveFirst()
-          Repeat
-            If ColumnView1.Item[0] = "U" Then
-              If Val(Utils.cpoint(carte.Text)) < 0 Then
-                carte.Text = Abs(Val(Utils.cpoint(carte.Text)))
-                ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) - Val(Utils.cpoint(carte.Text)), "0.00")
-              Else
-                ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) + Val(Utils.cpoint(carte.Text)), "0.00")
-              Endif
-              Break
-            Endif
-          Until ColumnView1.MoveNext()
+        If Error Then
+          ColumnView1.Add("U" & nbc, "U" & nbc)
+          Inc nbc
         Endif
+        'If Not Error Then
+        ColumnView1.Item[0] = "U"
+        ColumnView1.Item[1] = "Carte " & snmcarte
+        ColumnView1.Item[2] = carte.Text
+        ' Else
+        ' ColumnView1.MoveFirst()
+        'Repeat
+        'If ColumnView1.Item[0] = "U" Then
+        ' If Val(Utils.cpoint(carte.Text)) < 0 Then
+        '  carte.Text = Abs(Val(Utils.cpoint(carte.Text)))
+        ' ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) - Val(Utils.cpoint(carte.Text)), "0.00")
+        ' Else
+        ' ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) + Val(Utils.cpoint(carte.Text)), "0.00")
+        'Endif
+        'Break
+        'Endif
+        'Until ColumnView1.MoveNext()
+        'Endif
         carte.Clear
         Carte.Visible = False
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
