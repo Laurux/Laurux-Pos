@@ -6,6 +6,7 @@ Public R As Integer = 255
 Public G As Integer = 252
 Public B As Integer = 216
 Public $cai As String
+Public $tcai As String
 Private Fontes As String
 Private sFiletxt As String
 Private hfile As File
@@ -38,6 +39,13 @@ Public Sub Main()
       Application.Font = Font["Serif,10"]
     Else
       Application.Font = Font[Fontes]
+    Endif
+    If Not IsNull(Settings["/Cai" & "/Ncai"]) Then 
+      If Settings["/choixtouches"] Then
+        $tcai = Left$(Settings["/Cai" & "/Ncai"], 1)
+      Else
+        $tcai = 0
+      Endif
     Endif
     Fmenu.Show
   Endif

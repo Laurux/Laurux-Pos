@@ -45,7 +45,7 @@ Public Sub Init()
     Try btn = Me.Controls[t]
     Try btn.Text = ""
   Next
-  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where left(touche,1) = &1 order by touche", "A")
+  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where left(touche,1) = &1 and cai = &2 order by touche", "A", Start.$Tcai)
   If rTch.Available Then
     Repeat
       Try Me.Controls[rTch!touche].Name = rTch!touche
@@ -66,6 +66,28 @@ Public Sub Init()
   
 End
 
+Public Sub Cart_LostFocus()
+  
+  If Cart.Text <> Right$(Bouton.Text, Len(Bouton.Text) - 1) Then TestArt()
+  
+End
+
+Public Sub TestArt()
+  
+  Dim Rarts As Result
+  
+  If Not CheckBox1.Value And Not IsNull(Cart.Text) Then
+    Rarts = Utils.db.Exec("SELECT * FROM Fiches_Art where art_code = &1", Cart.Text)
+    If Not Rarts.Available Then
+      Message.Warning("Cet article n'existe pas !")
+      Cart.Clear
+      Label3.text = ""
+      Cart.SetFocus
+    Endif
+  Endif
+  
+End
+
 Public Sub Button2_Click()
   
   Me.close
@@ -76,6 +98,9 @@ Public Sub Clav2_Click()
   
   TextArea1.Clear
   TextArea1.Text = Last.text
+  Cart.Clear
+  Label3.Text = ""
+  CheckBox1.Value = False
   Bouton.Text = Last.name
   Cart.Text = CodeA[Last.tag]
   If IsNull(Cart.text) Then Cart.Text = Right$(Bouton.Text, Len(Bouton.Text) - 1)
@@ -84,6 +109,7 @@ Public Sub Clav2_Click()
   fnd = Touche_P
   TextArea1.Select
   TextArea1.setfocus
+  If Cart.Text <> Right$(Bouton.Text, Len(Bouton.Text) - 1) Then TestArt()
   
 End
 
@@ -105,7 +131,7 @@ Public Sub Clav2_Dblclick()
     hCont.Foreground = IIf(hFormat.Foreground = -1, color.TextForeground, hFormat.Foreground)
     rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where touche = &1", Bouton.Text)
     If rTch.Available Then
-      Try Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set coul = &1 where touche = &2", hCont.background, Bouton.Text)
+      Try Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set coul = &1 where touche = &2 and cai = &3", hCont.background, Bouton.Text, start.$tcai)
     Endif
     Init()
   Endif
@@ -116,7 +142,7 @@ Public Sub Bouton_KeyPress()
   
   If Key.code = Key.Del Then
     If Not IsNull(Bouton.Text) Then
-      Utils.db.Exec("delete  From " & Cbase.Table("TabTouches") & " where touche = &1", Bouton.Text)
+      Utils.db.Exec("delete  From " & Cbase.Table("TabTouches") & " where touche = &1 and cai = &2", Bouton.Text, start.$tcai)
       Me.Controls[Bouton.Text].Name = Bouton.Text
       Btn = Me.Controls[Bouton.Text]
       btn.text = ""
@@ -136,11 +162,12 @@ Public Sub Button1_Click()
   Dim rTch As Result
   
   If Not IsNull(Cart.Text) And If Not IsNull(Bouton.Text) Then
-    rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where touche = &1", Bouton.Text)
+    rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where touche = &1 and cai = &2", Bouton.Text, start.$tcai)
     If rTch.Available Then
-      Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set libelle = &1, code = &2, touche_s = &4 where touche = &3", TextArea1.text, Cart.Text, Bouton.Text, CheckBox1.value)
+      Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set libelle = &1, code = &2, touche_s = &4 where touche = &3 and cai = &5", TextArea1.text, Cart.Text, Bouton.Text, CheckBox1.value, Start.$tcai)
     Else
-      Utils.db.Exec("INSERT INTO " & Cbase.Table("TabTouches") & " (touche, libelle, code, touche_s) VALUES (&1, &2, &3, &4)", Bouton.Text, TextArea1.text, Cart.Text, CheckBox1.value)
+      Try Utils.db.Exec("INSERT INTO " & Cbase.Table("TabTouches") & " (touche, libelle, code, touche_s, cai) VALUES (&1, &2, &3, &4, &5)", Bouton.Text, TextArea1.text, Cart.Text, CheckBox1.value, start.$tcai)
+      If Error Then Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set cai = &1 where touche = &2", start.$tcai, Cart.Text)
     Endif
     Me.Controls[Bouton.Text].Name = Bouton.Text
     Btn = Me.Controls[Bouton.Text]
@@ -176,7 +203,7 @@ Public Sub CheckBox1_Click()
   If CheckBox1.Value Then
     Button4.Visible = True
   Else
-    Button4.Visible = False
+    If Not pan Then Button4.Visible = False
   Endif
   
 End
@@ -190,6 +217,7 @@ Public Sub Button4_Click()
       Bouton.Clear
       TextArea1.Clear
       Cart.clear
+      CheckBox1.Enabled = True
       CheckBox1.value = False
       hpan.Delete
       Pan = False
@@ -203,7 +231,9 @@ Public Sub Button4_Click()
         hpan.visible = True
         Cbutton(Panel1)
         Pan = True
+        CheckBox1.Enabled = False
         Button4.Text = "Familles"
+        CheckBox1.Value = False
       Endif
     Endif
   Endif
@@ -265,7 +295,7 @@ Public Sub Init2()
     Try btn.Text = ""
   Next
   i = Len(Touche_P)
-  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " order by touche")
+  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where cai = &1 order by touche", start.$tcai)
   If rTch.Available Then
     Repeat
       If Left(rTch!touche, i) = Touche_p And InStr(rTch!touche, "B") <> 0 Then
@@ -303,11 +333,11 @@ Public Sub Fond_ImageButton()
     hCont.Background = IIf(hFormat.Background = -1, color.TextBackground, hFormat.Background)
     Couleur = hCont.Background
     hCont.Foreground = IIf(hFormat.Foreground = -1, color.TextForeground, hFormat.Foreground)
-    rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where touche = &1", Bouton.Text)
+    rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where touche = &1 and cai = &2", Bouton.Text, start.$tcai)
     If rTch.Available Then
-      Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set coul = &1 where touche = &2", hCont.background, Bouton.Text)
+      Utils.db.Exec("UPDATE " & Cbase.Table("TabTouches") & " set coul = &1 where touche = &2 and cai = &3", hCont.background, Bouton.Text, start.$tcai)
     Else
-      Try Utils.db.Exec("INSERT INTO " & Cbase.Table("TabTouches") & " (touche, libelle, code, coul) VALUES (&1, &2, &3, &4)", Bouton.Text, TextArea1.text, Cart.Text, hCont.background)
+      Try Utils.db.Exec("INSERT INTO " & Cbase.Table("TabTouches") & " (touche, libelle, code, coul, cai) VALUES (&1, &2, &3, &4, &5)", Bouton.Text, TextArea1.text, Cart.Text, hCont.background, start.$tcai)
     Endif
     If hpan.visible = False Then
       Init()

@@ -3,7 +3,7 @@
 Title=Laurux.Pos
 Startup=Start
 Icon=Icones/caisse3.png
-Version=3.18.10
+Version=3.20.3
 Component=gb.image
 Component=gb.qt4
 Component=gb.form
@@ -24,6 +24,7 @@ TabSize=2
 Language=fr
 SourcePath=/media/Lexar
 Maintainer=Jacky Tripoteau
+Vendor=GIT
 Address=jscops@wanadoo.fr
 License=General Public Licence
 Packager=1

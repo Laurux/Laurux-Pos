@@ -152,8 +152,18 @@ End
 Public Sub Button2_KeyPress()
   
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If Key.code = Key.F12 Then ControleCai() 
   If key.code = key.Enter Or key.code = key.Return Then Button2_Click()
+  
+End
+
+Public Sub ControleCai()
+  
+  If Not IsNull(Start.$tcai) Then
+    Attrib.ShowModal()
+  Else
+    Message.Warning("Veuillez connecter la caisse avant de paramétrer les touches") 
+  Endif
   
 End
 
@@ -208,7 +218,7 @@ End
 Public Sub Button10_KeyPress()
   
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button10_Click()
   
 End
@@ -229,7 +239,7 @@ End
 Public Sub Button11_KeyPress()
   
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If Key.code = Key.F12 Then ControleCai() 
   If key.code = key.Enter Or key.code = key.Return Then Button11_Click()
   
 End
@@ -243,7 +253,7 @@ End
 Public Sub Button1_KeyPress()
   
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If Key.code = Key.F12 Then ControleCai() 
   If key.code = key.Enter Or key.code = key.Return Then Button1_Click()
   
 End
@@ -388,7 +398,7 @@ End
 Public Sub Button3_KeyPress()
   
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If Key.code = Key.F12 Then ControleCai() 
   If key.code = key.Enter Or key.code = key.Return Then Button3_Click()
   
 End
@@ -402,7 +412,7 @@ End
 Public Sub Button4_KeyPress()
   
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then Attrib.ShowModal()
+  If Key.code = Key.F12 Then ControleCai() 
   If key.code = key.Enter Or key.code = key.Return Then Button4_Click()
   
 End

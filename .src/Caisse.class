@@ -139,7 +139,7 @@ Private Zone As String
 Private $saisie As String
 Private TouchFam As Boolean = False
 Private btn As ImageButton
-Private codeA As New String[38]
+Private codeA As New String[72]
 Private ToucheS As New String[41]
 Private hpan As Panel
 Private hbutton As ImageButton
@@ -193,15 +193,6 @@ Public Sub Form_Open()
   Music.Load("son/warning.ogg")
   SetObservers(Me, Me)
   Balloon.Delay = 1500
-  'Button38.Visible = False
-  'Button39.Visible = False
-  'Button43.Visible = False
-  'Button44.Visible = False
-  'Button46.Visible = False
-  'Button47.Visible = False
-  'Button48.Visible = False
-  'Button49.Visible = False
-  'Button50.Visible = False
   If Settings["/tactile"] Then
     Button38.Visible = True
     Button39.Visible = True
@@ -334,20 +325,19 @@ End
 Public Sub Obs_Leave()
   
   Last.Font = Font["" "," "," ""]
-  Last.background = Color.ButtonBackground
+  Last.background = Color.Buttonbackground
   
 End
 
 Public Sub Obs2_Enter()
   
-  Last.background = &0DFFFFF&
+  Last.Font = Font["" ",Bold," ""]
   
 End
 
 Public Sub Obs2_Leave()
   
   Last.Font = Font["" "," "," ""]
-  Last.background = &HDFE7FF&
   
 End
 
@@ -355,7 +345,7 @@ Public Sub InitTouche()
   
   Dim rTch As Result
   
-  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " order by touche")
+  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where cai = &1 order by touche", Start.$tcai)
   If rTch.Available Then
     Repeat
       Try Me.Controls[rTch!touche].Name = rTch!touche
@@ -414,7 +404,7 @@ End
 Public Sub Ent_tk()
   
   Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
-  Entete.Text = Entete.text & "Caissier(e) : " & $Caissiere
+  Entete.Text &= "Caissier(e) : " & $Caissiere
   If Imprimante = "Défaut" Then
     Entete.text = Entete.text & Space$(45) & "Bonjour" & "\n"
   Else
@@ -5686,10 +5676,6 @@ Public Sub Init_LigTk()
   LigTk.Columns[3].Alignment = 2
   LigTk.Columns[4].Width = 30
   LigTk.Columns[4].Alignment = 2
-  'LigTk.Columns[5].Width = 40
-  'LigTk.Columns[5].Alignment = 2
-  'LigTk.Columns[6].Width = 0
-  'LigTk.Columns[7].Width = 0
   
 End
 
@@ -8009,22 +7995,24 @@ Public Sub Clav2_Click()
               Panel17.Visible = False
               Button33_Click()
             Else
-              Raz()
-              Cart.Text = codeA[Last.Tag]
-              Valid_Cart()
-              If iart = 0 Then
-                Qte.text = 1
-                bFam = True
-                iModif = 1
-                If Pvttc.text <> "0,00" Then
-                  Qte.setfocus
-                  Qte.select
-                Else
-                  Pvttc.setfocus
-                  Pvttc.Select
+              If Not IsNull(ToucheS[Last.Tag]) Then
+                Raz()
+                Cart.Text = codeA[Last.Tag]
+                Valid_Cart()
+                If iart = 0 Then
+                  Qte.text = 1
+                  bFam = True
+                  iModif = 1
+                  If Pvttc.text <> "0,00" Then
+                    Qte.setfocus
+                    Qte.select
+                  Else
+                    Pvttc.setfocus
+                    Pvttc.Select
+                  Endif
+                  Famille = Cart.Text
+                  Zone = "Pvttc"
                 Endif
-                Famille = Cart.Text
-                Zone = "Pvttc"
               Else
                 iart = 0
                 Raz()
@@ -8038,7 +8026,7 @@ Public Sub Clav2_Click()
       If Pan Then
         hpan.Delete
         Pan = False
-        Panel17.Visible = False
+        'Panel17.Visible = False
         'Raz()
         Cart.SetFocus
         Zone = "Article" 
@@ -8350,7 +8338,7 @@ Public Sub Init2()
     Try btn.Text = ""
   Next
   i = Len(Touche_P)
-  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " order by touche")
+  rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where cai = &1 order by touche", Start.$tcai)
   If rTch.Available Then
     Repeat
       If Left(rTch!touche, i) = Touche_p And Mid(rTch!touche, i + 1, 1) = "B" Then

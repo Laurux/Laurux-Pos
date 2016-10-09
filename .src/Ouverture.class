@@ -189,6 +189,11 @@ Public Sub Button1_Click()
               Music.Play
             Endif
             Message.Warning("Cette caisse est déjà connéctée !")
+            If Settings["/choixtouches"] Then
+              Start.$tcai = sNcai
+            Else
+              Start.$tcai = 0
+            Endif
             Clavier.Close
           Else
             b = TestCaisses.TestCai(sNcai, Left$(Caissiere.Text, 1))
@@ -200,6 +205,11 @@ Public Sub Button1_Click()
               Close #hFile
               Settings["/Cai" & "/Ncai"] = sNcai & ";" & Left$(Caissiere.Text, 1)
               Settings.Save
+              If Settings["/choixtouches"] Then
+                Start.$tcai = sNcai
+              Else
+                Start.$tcai = 0
+              Endif
               Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET dteov = &1, connecte = &2, tkz = &3 WHERE code = &4", utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")), 1, 0, sNcai)
               If Start.son Then
                 Music.Play

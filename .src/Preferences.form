@@ -4,7 +4,7 @@
   MoveScaled(0,0,94,100)
   Border = False
   { TabStrip1 TabStrip
-    MoveScaled(0,0,94,93)
+    MoveScaled(0,1,94,93)
     Count = 5
     Index = 0
     Text = ("Environnement")
@@ -105,12 +105,17 @@
       Text = ("Choix saisie nom des chèques")
     }
     { Tircarte CheckBox
-      MoveScaled(1,28,59,3)
+      MoveScaled(1,31,59,3)
       Text = ("Le tiroir ne s'ouvre pas pour les paiements  cartes")
     }
     { GestAffUSB CheckBox
-      MoveScaled(1,32,59,3)
+      MoveScaled(1,35,59,3)
       Text = ("Gestion de l'afficheur USB Wincor Nixdorf")
+    }
+    { ChoixTouches CheckBox
+      MoveScaled(1,27,44,3)
+      ToolTip = ("A cocher si vous souhaitez avoir des touches préparamétrées propres à chaque caisse")
+      Text = ("Touches familles propre à chaque caisse")
     }
     Index = 1
     Text = ("Synchronisation")

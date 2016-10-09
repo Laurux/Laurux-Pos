@@ -957,7 +957,7 @@
       Border = Border.Plain
       { A1 ImageButton Clav2
         Name = "A1"
-        MoveScaled(0.1429,0.2857,12.5714,6.5714)
+        MoveScaled(0,0.2857,12.5714,6.5714)
         Background = &HDFE7FF&
         Tag = "1"
         Picture = Picture["Icones/Bachat.png"]

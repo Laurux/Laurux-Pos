@@ -44,6 +44,7 @@ Public Sub _new()
   Try Nbf.Text = Settings["/nbf"]
   Try GestAffUSB.Value = Settings["/affusbwn"]
   Try Tactile.Value = Settings["/tactile"]
+  Try ChoixTouches.Value = Settings["/choixtouches"]
   If IsNull(Nbf.text) Then Nbf.Text = "1"
   If IsNull(fontes) Then
     FontChooser1.SelectedFont = "Serif,9"
@@ -198,6 +199,7 @@ Public Sub Form_Close()
   Settings["/Chmcsv"] = Chmcsv.Text
   Settings["/tircarte"] = Tircarte.Value
   Settings["/affusbwn"] = GestAffUSB.Value
+  Settings["/choixtouches"] = ChoixTouches.Value 
   Settings.Save
   
 End
