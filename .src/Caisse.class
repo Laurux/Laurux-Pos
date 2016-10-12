@@ -6455,15 +6455,15 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         Posy += 5
       Endif
       'On imprime les tickets supprimés.
-      pdf.Baspage()
-      pdf.newPage
-      Posy = 5
-      Y2 = 5
-      pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente non repris)", 40, Posy, 1)
-      Posy += 10
-      Y2 += 10
       rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 order by numero", 0, True)
       If rTkx.Available Then
+        pdf.Baspage()
+        pdf.newPage
+        Posy = 5
+        Y2 = 5
+        pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", 40, Posy, 1)
+        Posy += 10
+        Y2 += 10
         Repeat
           Inc NBT
           If Nbt = 2 Then
@@ -6476,7 +6476,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
             pdf.newPage
             Posy = 5
             Y2 = 5
-            pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente non repris)", 40, Posy, 1)
+            pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", 40, Posy, 1)
             Posy += 10
             Y2 += 10
           Endif
@@ -6504,7 +6504,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
                 pdf.newPage
                 Posy = 5
                 Y2 = 5
-                pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente non repris)", 40, Posy, 1)
+                pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", 40, Posy, 1)
                 Posy += 10
                 Y2 += 10
               Endif
@@ -6513,6 +6513,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           If Nbt = 2 Then nbt = 0
         Until rTkx.MoveNext()
       Endif
+      nbt = 0
       pdf.Baspage()
       'On imprime les tickets.
       pdf.Baspage()
