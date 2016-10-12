@@ -210,6 +210,7 @@ Public Sub Form_Open()
   If IsNull(nbf) Then nbf = 1
   Try Txtvis = Settings["/Txt_viseur"]
   If IsNull(Txtvis) Then Txtvis = "Bienvenue"
+  Try bAffUSB = Settings["/affusbwn"]
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCliCaisse") & "")
   Clicaisse = rResult!nom
   Codeclient = rResult!code
@@ -236,7 +237,11 @@ Public Sub Form_Open()
   Else
     Adr = rResult!type_sc & " " & rResult!int_sc & "\n" & rResult!adr1_sc & "\n" & rResult!adr2_sc & "\n" & rResult!cp_sc & " " & rResult!burdis_sc
   Endif
-  Siret = Settings["/Soc" & Start.Soc & "/Siret"] & " : " & rResult!siret_sc
+  If IsNull(Settings["/Soc" & Start.Soc & "/Siret"]) Then
+    siret = "Siret : " & rResult!siret_sc
+  Else
+    Siret = Settings["/Soc" & Start.Soc & "/Siret"] & " : " & rResult!siret_sc
+  Endif
   Tel = "Tel : " & rResult!tel_sc
   Tvaintra = "Tva intra : " & rResult!tvaintra_sc
   Datetk = Format$(Now, "dd-mm-yyyy  hh-nn")
@@ -282,13 +287,6 @@ Public Sub Form_Open()
   'ClavFam()
   Cart.SetFocus
   Zone = "Article"
-  
-  Try bAffUSB = Settings["/affusbwn"]
-  
-  If bAffUSB Then 
-    InitBA6X("127.0.0.1", 3363)
-    PrintBA6X("Laurux POS", "Bienvenue")
-  Endif
   
 Catch
   If Start.son Then
@@ -374,29 +372,18 @@ End
 
 Public Sub Form_Close()
   
-  bt = 1
-  
   If LigTk.count > 0 Then
-    If message.Question("Vous avez un ticket en cours. Voulez-vous quitter ?", "Oui", "Non") = 1 Then
-      bt = 1
-    Else
-      bt = 0
-    Endif
-  Endif
-  If bt = 1 Then
-    Try sport.Close
-    Try sport2.Close
-    If Exist(User.home & "/Ticket.ps") Then Kill User.home & "/Ticket.ps"
-    Me.CLOSE
-  Else
+    message.Warning("Vous avez un ticket en cours. Vous ne pouvez pas quitter !")
     Stop Event
     Cart.SetFocus
     Zone = "Article"
-  Endif
-  
-  'Fermeture du socket pour communication avec afficheur BA6X
-  If bAffUSB Then
-    Close #BA6X
+  Else
+    Try sport.Close
+    Try sport2.Close
+    If Exist(User.home & "/Ticket.ps") Then Kill User.home & "/Ticket.ps"
+    'Fermeture du socket pour communication avec afficheur BA6X
+    If bAffUSB Then Close #BA6X
+    Me.CLOSE
   Endif
   
 End
@@ -2031,18 +2018,24 @@ Public Sub ColTka_Click()
   ColTka.clear
   RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Client2 = Rtck!client
-  Entete.text = Adr & "\n" & Siret & " \n" & Tel & "\n"
-  Entete.Text = Entete.Text & "Client : " & Client2 & "\n"
-  Entete.Text = Entete.text & "Caissier(e) : " & $Caissiere
+  Utils.db.Exec("UPDATE " & Tab & " set statut = &1 where caisse = &2 and numero = &3", 0, Ncaisse, Numtk)
+  Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
+  Entete.Text &= "Caissier(e) : " & $Caissiere
   If Imprimante = "Défaut" Then
     Entete.text = Entete.text & Space$(45) & "Bonjour" & "\n"
   Else
     Entete.text = Entete.text & "Bonjour "
   Endif
-  Entete.Text = Entete.Text & Pointille & "\n"
+  If Imprimante = "Défaut" Then
+    Entete.Text = Entete.Text & Pointille & Pointille & Left$(Pointille, 26) & "\n"
+  Else
+    If Typeimp = "6000III" Then Entete.Text = Entete.Text & Pointille & "\n"
+    If Typeimp = "Tmu950" Then Entete.Text = Entete.Text & Left$(Pointille, 26) & "\n"
+  Endif
   'rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
-  Entete.Text = Entete.Text & "Ticket no " & Numtk & Space$(35) & heuretk & "\n"
+  Entete.Text = Entete.Text & "Ticket no " & Numtk & Space$(35) & heuretk
   TotalTk.Text = RTck!mttc
+  'Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Tab = "Fiches_LigTickets" & Ncaisse
   rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where numero = &1 order by numlig", Numtk)
   If rResult.Available Then
@@ -2067,6 +2060,7 @@ Public Sub ColTka_Click()
         Totalht = Format$(Totalht, "0.00")
       Endif
     Until rResult.MoveNext()
+    'Try Utils.db.Exec("delete FROM " & Tab & " where numero = &1", Numtk)
     iRattente = 1
   Endif
   Cart.SetFocus
@@ -2106,61 +2100,27 @@ Public Sub suppr_Tk()
     If Message.Warning("Attention ! Etes-vous sur de vouloir supprimer ce ticket ? ", "Oui", "Non") = 1 Then
       rResult = Utils.db.Exec("select * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
       If rResult.Available Then
-        Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
-        If Not Error Then
-          Tab = "Fiches_LigTickets" & Ncaisse
-          rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where numero = &1", Numtk)
-          If rResult.Available Then
-            Repeat
-              Utils.db.Exec("delete FROM " & Tab & " where numero = &1", Numtk)
-            Until rResult.MoveNext()
-            LigTk.Clear
-            Init_LigTk()
-            Ent_tk()
-            TotalTk.Text = "0,00"
-            Cart.SetFocus
-            Zone = "Article"
-            iQte = 0
-            iRem = 0
-            iAttente = 0
-            iRattente = 0
-            iAvoir = 0
-            inlg = 0
-            iligne = 0
-            Tottva = 0
-            Totalht = 0
-            Clicompte = 0
-            rremT = 0
-          Endif
-        Else
-          If Start.son Then
-            Music.Play
-          Endif
-          Try Message.Error("Suppression impossible ! Il y a un problème sur le ticket numero " & Numtk)
-          Cart.setfocus
-        Endif
-      Else
-        LigTk.Clear
-        Init_LigTk()
-        Clicompte = 0
-        TotalTk.Text = 0
-        Cart.SetFocus
-        Zone = "Article"
-        Aff_viseur(Txtvis)
-        TotalTk.Text = 0
-        Tottva = 0
-        Totalht = 0
-        Label1.Text = ""
-        Label2.Text = ""
-        Label3.Text = ""
-        Label4.Text = ""
-        Bdc.Text = ""
-        icartef = 0
-        Crt = False
-        Clicompte = 0
-        inlg = 0
-        RemTot.Text = ""
+        Try Utils.db.Exec("UPDATE " & Tab & " set suppr = &1 where caisse = &2 and numero = &3", 1, Ncaisse, Numtk)
       Endif
+      LigTk.Clear
+      Init_LigTk()
+      Ent_tk()
+      TotalTk.Text = "0,00"
+      Cart.SetFocus
+      Zone = "Article"
+      iQte = 0
+      iRem = 0
+      iAttente = 0
+      iRattente = 0
+      iAvoir = 0
+      inlg = 0
+      iligne = 0
+      Tottva = 0
+      Totalht = 0
+      Clicompte = 0
+      rremT = 0
+      RemTot.Text = ""
+    Else
     Endif
   Endif
   
@@ -6176,6 +6136,14 @@ Public Sub Ticketz()
         Endif
         If sDon = 1 Then
           Me.mouse = Mouse.Wait
+          'On supprime les tickets supprimés
+          rtx = Utils.db.Exec("SELECT * FROM " & Tabx & " where suppr = &1", True)
+          If rtx.Available Then
+            Repeat
+              Try Utils.db.Exec("delete FROM " & Tabx & " where numero = &1", rtx!numero)
+              Try Utils.db.Exec("delete FROM " & Tiketx & " where numero = &1", rtx!numero)  
+            Until rtx.MoveNext()
+          Endif
           'on met a jour les fichiers tampons du serveur
           rtx = Utils.db.Exec(" select * from " & Tabx & " order by numero asc")
           If rtx.Available Then
@@ -6486,6 +6454,66 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         Try pdf.Level2(sFam & " " & sLFam & " " & Format$(Val(utils.cpoint(sMTfam)) / Totventes * 100, "0.00") & " %", sMTfam, sqte, Posy)
         Posy += 5
       Endif
+      'On imprime les tickets supprimés.
+      pdf.Baspage()
+      pdf.newPage
+      Posy = 5
+      Y2 = 5
+      pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente non repris)", 40, Posy, 1)
+      Posy += 10
+      Y2 += 10
+      rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 order by numero", 0, True)
+      If rTkx.Available Then
+        Repeat
+          Inc NBT
+          If Nbt = 2 Then
+            X2 = 106
+          Else
+            X2 = 2
+          Endif
+          If Posy >= 278 Or If Y2 >= 278 Then
+            pdf.Baspage()
+            pdf.newPage
+            Posy = 5
+            Y2 = 5
+            pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente non repris)", 40, Posy, 1)
+            Posy += 10
+            Y2 += 10
+          Endif
+          If Nbt < 2 Then
+            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1)
+          Else
+            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1)
+          Endif
+          If Nbt = 1 Then Posy += 8
+          If Nbt = 2 Then Y2 += 8
+          rTkl = Utils.db.Exec(" select * from " & Tabl & " where numero = &1 order by LInd", rTkx!numero)
+          If rTkl.Available Then
+            Repeat
+              $code = rTkl!code & String$(15 - Len(rTkl!code), " ")
+              $intitule = rTkl!intitule & String$(40 - (Len(rTkl!intitule) - 10), " ")
+              If Nbt < 2 Then
+                pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, PosY, "")
+              Else
+                pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, Y2, "")
+              Endif
+              If Nbt = 1 Then Posy += 3
+              If Nbt = 2 Then Y2 += 3
+              If Posy >= 280 Or If Y2 >= 280 Then
+                pdf.Baspage()
+                pdf.newPage
+                Posy = 5
+                Y2 = 5
+                pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente non repris)", 40, Posy, 1)
+                Posy += 10
+                Y2 += 10
+              Endif
+            Until rTkl.MoveNext()
+          Endif
+          If Nbt = 2 Then nbt = 0
+        Until rTkx.MoveNext()
+      Endif
+      pdf.Baspage()
       'On imprime les tickets.
       pdf.Baspage()
       pdf.newPage
@@ -6494,7 +6522,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 80, Posy, 1)
       Posy += 10
       Y2 += 10
-      rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 order by numero", 0)
+      rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 order by numero", 0, False)
       If rTkx.Available Then
         Repeat
           Inc NBT
@@ -6536,7 +6564,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
                 pdf.newPage
                 Posy = 5
                 Y2 = 5
-                pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 2, Posy, 1)
+                pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 80, Posy, 1)
                 Posy += 10
                 Y2 += 10
               Endif
