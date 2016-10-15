@@ -7376,6 +7376,8 @@ Public Sub Ligtk_Delete()
       'On recalcule le total du ticket
       LigTk.MoveFirst
       TotalTk.Text = 0
+      Mticket.Text = TotalTk.text
+      Rticket.text = TotalTk.Text
       Totalht = 0
       rremT = 0
       RemTot.Clear
@@ -7443,6 +7445,8 @@ Public Sub Ligtk_Delete()
           Endif
         Endif
       Next
+      Mticket.Text = TotalTk.text
+      Rticket.text = TotalTk.Text
     Endif
   Else
     Message.Warning("Suppression impossible, un règlement a été saisi !")
