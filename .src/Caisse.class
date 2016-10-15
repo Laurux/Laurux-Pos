@@ -7350,7 +7350,7 @@ Public Sub Ligtk_Delete()
             Endif
             Try $Block = LigTk.Item[8]
             If Error Then Break
-          Until LigTk.Item[8] > Block
+          Until Val(LigTk.Item[8]) > Val(Block)
           Break
         Endif
       Until Ligtk.MoveNext()
