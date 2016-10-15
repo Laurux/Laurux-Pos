@@ -5138,6 +5138,7 @@ Public Sub Aff_bastk()
       Endif
     Endif
     brem = False
+    btot = False
   Until LigTk.MoveNext()
   Inc iligne
   Inc iNlg
