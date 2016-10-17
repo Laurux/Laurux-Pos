@@ -1116,6 +1116,7 @@ End
 Public Sub Valid_Cart()
   
   Dim Rarts As Result
+  Dim cbarr As String
   
   If Left$(Cart.Text, 1) = "*" Then
     If Len(Cart.Text) = 14 And Mid$(Cart.Text, 2, 6) = "299999" Then
@@ -1128,7 +1129,8 @@ Public Sub Valid_Cart()
         Cart.Text = Format$(Cart.text, "000000")
         Crt = True
       Else
-        Cart.Text = Utils.Find_cbarre(Mid$(Cart.Text, 2, Len(Cart.Text) - 1))
+        cbarr = Mid$(Cart.Text, 2, Len(Cart.Text) - 1)
+        Cart.Text = Utils.Find_cbarre(cbarr)
         ibarre = 1
       Endif
     Endif
@@ -1149,7 +1151,7 @@ Public Sub Valid_Cart()
     If Not Rarts.Available Then
       Rarts = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabArt") & " where art_cfour = &1", Cart.Text)
     Endif
-    If Rarts.Available Then
+    If Rarts.Available And (Len(Cart.Text) <> 0) Then
       Cart.Text = Rarts!art_code
       Nbd = Rarts!art_nbd
       Nbdec = Utils.Find_Nbdec(Nbd)
@@ -1228,7 +1230,13 @@ Public Sub Valid_Cart()
       If Start.son Then
         Music.Play
       Endif
-      Message.Warning("Ce produit n'existe pas !")
+      If ibarre = 1 Then
+        Message.Warning("Le code barre (" & cbarr & ") n'existe pas !")
+        ibarre = 0
+      Else
+        Message.Warning("Le produit (" & Cart.Text & ") n'existe pas !")
+      Endif
+      Cart.Text = ""
       iart = 1
     Endif
   Endif
@@ -5130,6 +5138,7 @@ Public Sub Aff_bastk()
       Endif
     Endif
     brem = False
+    btot = False
   Until LigTk.MoveNext()
   Inc iligne
   Inc iNlg
@@ -7341,7 +7350,7 @@ Public Sub Ligtk_Delete()
             Endif
             Try $Block = LigTk.Item[8]
             If Error Then Break
-          Until LigTk.Item[8] > Block
+          Until Val(LigTk.Item[8]) > Val(Block)
           Break
         Endif
       Until Ligtk.MoveNext()
@@ -7367,6 +7376,8 @@ Public Sub Ligtk_Delete()
       'On recalcule le total du ticket
       LigTk.MoveFirst
       TotalTk.Text = 0
+      Mticket.Text = TotalTk.text
+      Rticket.text = TotalTk.Text
       Totalht = 0
       rremT = 0
       RemTot.Clear
@@ -7434,6 +7445,8 @@ Public Sub Ligtk_Delete()
           Endif
         Endif
       Next
+      Mticket.Text = TotalTk.text
+      Rticket.text = TotalTk.Text
     Endif
   Else
     Message.Warning("Suppression impossible, un règlement a été saisi !")
