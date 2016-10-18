@@ -16,11 +16,11 @@ Public Sub Ticket(Fic As String, nb As Integer) As String
       Shell $Exec & " -# " & nb & " " & Fic Wait
     Else
       If $Exec = "gtklp" Then
-        Shell $Exec & " -l -n " & nb & " " & Fic Wait
+        Shell $Exec & " -n " & nb & " " & Fic Wait
       Endif
     Endif
   Endif
-
+  
 End
 
 Public Sub Ticketxz(Fic As String, nb As Integer) As String
@@ -39,7 +39,7 @@ Public Sub Ticketxz(Fic As String, nb As Integer) As String
       Shell $Exec & " -# " & nb & " " & Fic Wait
     Else
       If $Exec = "gtklp" Then
-        Shell $Exec & " -l -n " & nb & " " & Fic Wait
+        Shell $Exec & " -n " & nb & " " & Fic Wait
       Endif
     Endif
   Endif

@@ -120,9 +120,10 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=1
+Count=2
 Active=1
-File[1]=".src/Caisse.class:19.6160"
+File[1]=".src/Caisse.class:0.7449"
+File[2]=".src/Impression.module:28.40"
 
 [Watches]
 Count=0
