@@ -120,10 +120,12 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=2
-Active=1
-File[1]=".src/Caisse.class:0.7449"
+Count=4
+Active=4
+File[1]=".src/Caisse.class:0.1453"
 File[2]=".src/Impression.module:28.40"
+File[3]=".src/Reports/PdfWriter.class:0.989"
+File[4]=".src/LauruxMaj.module:0.0"
 
 [Watches]
 Count=0
