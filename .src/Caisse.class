@@ -1752,8 +1752,8 @@ Public Sub Valid_Remtot()
   
   rremt = 0
   With Utils
-    If Not IsNull(RemTot.text) Then
-      If Val(.cpoint(RemTot.text)) <> 0 And If Val(.cpoint(RemTot.text)) <> 100 Then
+    If Not IsNull(RemTot.text) And If IsNumber(.cpoint(RemTot.text)) Then
+      If Val(.cpoint(RemTot.text)) > 0 And If Val(.cpoint(RemTot.text)) <= 100 Then
         LigTk.Movelast()
         Repeat
           LigTk.item.Selected = True
@@ -1824,7 +1824,7 @@ Public Sub Valid_Remtot()
         Zone = "Article"
         'ClavFam()
       Else
-        Message.Warning("La saisie d'une remise égale à zéro ou à 100 n'est pas autorisée !")
+        Message.Warning("La saisie d'une remise (en %) inféreur ou égale à zéro ou supérieur à 100 n'est pas autorisée !")
         iremT = 0
         RemTot.Clear
         RemTot.SetFocus
@@ -5128,12 +5128,12 @@ Public Sub Aff_bastk()
         ttvam = mttc - mht
         rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", $code)
         If Not rtva.Available Then
-          Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, ttvam)
+          Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, Format$(ttvam, "0.00"))
           totaltva = totaltva + ttvam
         Else
-          ttva = rtva!mtva + Val(Utils.cpoint(ttvam))
+          ttva = Val(Utils.cpoint(rtva!mtva)) + ttvam
           totaltva = totaltva + ttvam
-          Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", $code, ttva)
+          Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", $code, Format$(ttva, "0.00"))
         Endif
       Endif
     Endif
@@ -5449,7 +5449,7 @@ Public Sub Enrg_Tk()
         If stype = "T" Then 
           Try smtva = LigTk.Item[9]
         Else
-          Try smtva = Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht))
+          Try smtva = Format$(Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht)), "0.00")
         Endif
         If Error Then smtva = ""
         Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", Ntk, snumlig, scode, sdesign, smontant, sqte, stype, fam, smontantht, smrem, smtva, LigTk.Item[8], LigTk.Item[10])
