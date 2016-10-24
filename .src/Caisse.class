@@ -6308,8 +6308,8 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   Dim Fdc As String = "0"
   Dim Pnm, itva As Float = 0
   Dim Enc As Boolean = False
-  Dim Totnbtck, Boncaisse, X2, Y2, NBT As Integer = 0
-  Dim tcheque, tcarte, tespece As Float
+  Dim Totnbtck, X2, Y2, NBT As Integer = 0
+  Dim Boncaisse, tcheque, tcarte, tespece As Float
   
   Tabe = "Fiches_EntTickets" & Ncaisse
   Tabx = "Fiches_Ticketx" & Ncaisse
@@ -6424,11 +6424,11 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       FndCaisse = Totcaisse
       Posy += 5
       pdf.Lines2(Posy)
-      rTkx = Utils.db.Exec(" select * from " & Tabe & " where type = &1", "1")
+      rTkx = Utils.db.Exec(" select * from " & Tabr & " where type = &1", "M")
       If rTkx.Available Then
         'totventes = 0
         Repeat
-          Try Boncaisse = Val(.cpoint(Boncaisse)) + Val(.cpoint(rTkx!mttc))
+          Try Boncaisse = Val(Utils.cpoint(Boncaisse)) + Val(Utils.cpoint(rTkx!montant))
         Until rTkx.MoveNext()
         'Posy += 5
         pdf.Level2("Total bons de caisse ", Format$(Val(.cpoint(Boncaisse)), "0.00"), "", Posy)
