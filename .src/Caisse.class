@@ -6573,7 +6573,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 80, Posy, 1)
       Posy += 10
       Y2 += 10
-      rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 or statut = &1 and isnull(suppr) = &3 order by numero", 0, False, 1)
+      rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 or statut = &1 and isnull(suppr) order by numero", 0, False, 1)
       If rTkx.Available Then
         Repeat
           Inc NBT
