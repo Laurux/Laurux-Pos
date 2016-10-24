@@ -156,6 +156,7 @@ Private BA6X As Socket
 Private bAffUSB As Boolean
 Private $depot As String
 Private bretro As Boolean = False
+Private Val_retro As String ' variable pour coeff retrocession
 
 ' Méthode de connexion au module BA6X
 Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
@@ -278,6 +279,7 @@ Public Sub Form_Open()
   If IsNull(Ctrlstk) Then Ctrlstk = False
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabParam") & "")
   If rResult.Available Then
+    Val_retro = rResult!coretro
     devises = rResult!devise
     If IsNull(devises) Then devises = "Euros"
   Endif
@@ -479,7 +481,10 @@ Public Sub Art_man()
         arr = Rarts!art_cdarr
         Tva = Rarts!art_tva
         Txtva = Rarts!art_tva
-        If bretro Then pvht = Rarts!art_prvt
+        If bretro Then 
+          pvht = Format$(Rarts!art_prvt * Val(Val_retro), Nbdec)
+          Calc_TTC()
+        Endif
         If Colvente <> 0 And Val(qte.Text) >= Colvente Then
           Pvht = Format$(Val(Utils.CPoint(Pvht2)), Nbdec)
           Calc_TTC()
@@ -1187,7 +1192,7 @@ Public Sub Valid_Cart()
       Tva = Rarts!art_tva
       Txtva = Rarts!art_tva
       If bretro Then 
-        Pvht = Val(Utils.cpoint(Rarts!art_prvt))
+        If bretro Then pvht = Format$(Rarts!art_prvt * Val(Val_retro), Nbdec)
         Calc_TTC()
       Endif
       Tva = Rarts!art_tva
@@ -6925,7 +6930,7 @@ Public Sub Aff_Art()
     Tva = Rarts!art_tva
     Txtva = Rarts!art_tva
     If bretro Then 
-      Pvht = Val(Utils.cpoint(Rarts!art_prvt))
+      If bretro Then pvht = Format$(Rarts!art_prvt * Val(Val_retro), Nbdec)
       Calc_TTC()
     Endif
     Artpu = Pvttc.Text
