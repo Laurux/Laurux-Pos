@@ -106,6 +106,9 @@ Geometry=[5,0,224,280]
 [DebugWindow/u]
 Geometry=[4,13,224,280]
 
+[DebugWindow/v]
+Geometry=[4,13,224,280]
+
 [DebugWindow/z]
 Geometry=[2,3,210,210]
 
@@ -120,12 +123,10 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=4
-Active=4
-File[1]=".src/Caisse.class:0.1453"
-File[2]=".src/Impression.module:28.40"
-File[3]=".src/Reports/PdfWriter.class:0.989"
-File[4]=".src/LauruxMaj.module:0.0"
+Count=2
+File[1]=".src/Caisse.form"
+Active=2
+File[2]=".src/Caisse.class:72.1712"
 
 [Watches]
 Count=0
