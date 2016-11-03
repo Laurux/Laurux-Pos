@@ -967,7 +967,7 @@ Public Sub aff_Photo()
   Try hImage = Image.Load(Photo)
   If Not Error Then
     Draw.Begin(Photos)
-    Draw.Image(hImage, 0, 0, Photos.Width, Photos.Height)
+      Draw.Image(hImage, 0, 0, Photos.Width, Photos.Height)
     Draw.End
   Endif
 Catch
@@ -6132,12 +6132,18 @@ Public Sub button24_Click()
     Zone = "Mdp"
   Else
     If Val(Utils.cpoint(TotalTk.Text)) = 0 Then
-      Ticketz()
+      If Not IsNull(Settings["/ChmZ"]) Then
+        Ticketz()
+      Else
+        Message.Error("Impression Bande Z impossible ! Le chemin de l'historique n'est pas défini dans les préférences de la caisse")
+      Endif
     Else
       Message.Warning("Il y a un ticket en cours ! Bande Z impossible !")
       Cart.setfocus
     Endif
   Endif
+Catch
+  Message.Error("Impression Bande Z impossible ! Le chemin de l'historique n'est pas défini dans les préférences de la caisse") 
   
 End
 
@@ -6627,6 +6633,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Baspage()
       Dec Application.Busy
       pdf.Output(Filename, False)
+      DupliZ(Filename)
       If Org Then
         Impression.Ticketxz(Filename, "1")
         Visualiseur.Prog_Editeur(Filename)
@@ -6640,6 +6647,19 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       Cart.SetFocus
     Endif
   End With
+  
+End
+
+Public Sub DupliZ(Zfile As String)
+  
+  If Not Exist(Settings["/ChmZ"]) Then Try Mkdir Settings["/ChmZ"]
+  If Error Then
+    Message.Error("Problème lors de la création d'un répertoire\nMerci de créer manuellement un répertoire nommé 'Impressions'")
+  Else
+    Shell "cd " & User.Home & "" Wait
+    Shell "cp " & Zfile & " " & Settings["/ChmZ"] & "/" & "Ticket.pdf" & Format$(Now, "ddmmyyyy-hh-nn") Wait
+    Wait 0.5
+  Endif
   
 End
 

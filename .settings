@@ -123,9 +123,7 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=1
-Active=1
-File[1]=".src/Caisse.class:14.6577"
+Count=0
 
 [Watches]
 Count=0
