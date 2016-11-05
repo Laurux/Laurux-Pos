@@ -94,6 +94,7 @@ Private $DefOrientation As String 'default orientation
 Private $CurOrientation As String 'current orientation
 Private $OrientationChanges As Boolean[] 'array indicating orientation changes
 Private $k As Float 'scale factor (number of points in user unit)
+Private $form As String 'format of the page
 Private $fwPt As Float 'width of page format in points
 Private $fhPt As Float 'height of page format in points
 Private $fw As Float 'width of page format in user unit
@@ -170,6 +171,7 @@ Public Sub _new(Optional orientation As String = "P", Optional unit As String = 
   $columnAligns = New String[]
   $angle = 0
   $page = -1
+  $form = form
   $buffer = ""
   $pages = New String[]
   $OrientationChanges = New Boolean[]
@@ -262,6 +264,9 @@ Public Sub _new(Optional orientation As String = "P", Optional unit As String = 
     Case "a3"
       $fwPt = 841.89
       $fhPt = 1190.55
+    Case "80mm"
+      $fwPt = 210
+      $fhPt = 841.89
     Case "a4"
       $fwPt = 595.28
       $fhPt = 841.89
@@ -2249,6 +2254,12 @@ Public Function GetH() As Float
   'Get height
   
   Return ($h)
+  
+End
+
+Public Sub GetFormat() As String
+  
+  Return ($form)
   
 End
 
