@@ -2011,6 +2011,7 @@ Public Sub ColTka_Click()
   Dim RTck As Result
   Dim Tab As String
   Dim heuretk As String
+  Dim Clitab As Result
   
   heuretk = Format$(Now, "dd-mm-yyyy  hh-nn")
   
@@ -2041,8 +2042,18 @@ Public Sub ColTka_Click()
     If Typeimp = "Tmu950" Then Entete.Text = Entete.Text & Left$(Pointille, 26) & "\n"
   Endif
   'rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
-  Entete.Text = Entete.Text & "Ticket no " & Numtk & "\n" & heuretk & "\n"
+  Entete.Text = Entete.Text & "Ticket no " & Numtk & " " & heuretk & "\n"
   TotalTk.Text = RTck!mttc
+  If (RTck!type = 1) Then
+    Clicompte = 1
+    clicode = RTck!client
+    Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCli") & " as c inner join  " & Cbase.Table("TabComptes") & " as a on a.compte_cc = c.cli_code where cli_code = &1", Clicode)
+    If Not Error Then
+      Bdc.Text = "Bon de caisse " & Clitab!cli_nom & " " & Clitab!cli_pnm
+    Else
+      Bdc.Text = "Bon de caisse " & clicode
+    Endif
+  Endif
   'Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Tab = "Fiches_LigTickets" & Ncaisse
   rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where numero = &1 order by numlig", Numtk)
@@ -2130,6 +2141,9 @@ Public Sub suppr_Tk()
       RemTot.Text = ""
     Else
     Endif
+  Else
+    Bdc.Text = ""
+    Clicompte = 0
   Endif
   
 End
@@ -5403,7 +5417,7 @@ Public Sub Enrg_Tk()
       If rResult.Available Then Utils.db.Exec("DELETE FROM  " & Tab & " WHERE caisse = &1 and numero = &2", Ncaisse, Ntk)
       Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32})", Ncaisse, Ntk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli)
     Else
-      If ipaiement = 0 Then
+      If ipaiement = 0 And Clicompte = 0 Then
         Utils.db.Exec("UPdate  " & Tab & "  SET mttc = &3, vendeur = &4, statut = &5 WHERE caisse = &1 and numero = &2", Ncaisse, Numtk, TotalTk.Text, Caissiere, "1")
       Else
         Utils.db.Exec("DELETE FROM  " & Tab & " WHERE caisse = &1 and numero = &2", Ncaisse, Numtk)
@@ -5649,6 +5663,8 @@ Public Sub Init_LigTk()
   LigTk.Columns[4].Width = 40
   LigTk.Columns[4].Alignment = 2
   TextLabel5.text = "Reste à payer :"
+  Clicompte = 0
+  Bdc.Text = ""
   
 End
 
@@ -6934,7 +6950,10 @@ Public Sub Button30_click()
         Music.Play
       Endif
     Endif
-    Message.Warning("Il y a déjà un bon de caisse en cours de saisie !")
+    If Message.Question("Il y a déjà un bon de caisse en cours de saisie\nVoulez-vous le supprimer ?", "Oui", "Non") = 1 Then
+      Clicompte = 0
+      Bdc.Text = ""
+    Endif
   Endif
   
 End
