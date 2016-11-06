@@ -228,11 +228,11 @@ Public Sub Form_Open()
   ColTka.Columns[2].Width = 80
   ColTka.Columns[2].Text = " Montant"
   ColumnView1.Columns[2].Alignment = 2
-  If Imprimante = "DéfautA4" Then
-    Pointille = String$(38, "-")
-  Else
-    Pointille = String$(34, "-")
-  Endif
+  'If Imprimante = "DéfautA4" Then
+  'pointille = String$(38, "-")
+  'Else
+  Pointille = String$(34, "-")
+  'Endif
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabSoc") & " where cd_sc = &1", Start.Soc)
   If IsNull(rResult!type_sc) Then
     Adr = rResult!int_sc & "\n" & rResult!adr1_sc & "\n" & rResult!adr2_sc & "\n" & rResult!cp_sc & " " & rResult!burdis_sc
@@ -4031,7 +4031,7 @@ Public Sub Imp_Especes(tpesp As String)
       tpesp = "F"
     Endif
   Endif
-  If Imprimante = "DéfautA4" Then
+  If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
     For Each sline In Split(Entete.Text, "\n")
       If Left$(sline, 6) = "Ticket" Then Break
       pdf.Entete(sline, Posx, Posy, "B")
@@ -6174,7 +6174,7 @@ Public Sub Button20_Click()
   Dim sIntitule As String
   
   sIntitule = "Caisse No" & Ncaisse & " : Impression du ticket X le " & Format$(Now, "dd-mm-yyyy  hh-nn")
-  If Imprimante = "DéfautA4" Then
+  If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
     Defaut_Ticketxz(sIntitule, False)
   Else
     sIntitule = Utils.Replace(sIntitule)
@@ -6250,7 +6250,7 @@ Public Sub Ticketz()
         sIntitule = "Caisse No" & Ncaisse & " : Impression du ticket Z le " & Format$(Now, "dd-mm-yyyy  hh-nn")
         ' on imprime la bande z
         Tkz = 1
-        If Imprimante = "DéfautA4" Then
+        If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
           Defaut_Ticketxz(sIntitule, True)
           Dupli()
         Else
@@ -6477,11 +6477,12 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           If rTkhv!type = "M" Then sreg = "Tot. clients compte "
           'IF rTkhv!type = "G" THEN sreg = "Tot. acomptes verses"
           If rTkhv!type = "C" Then sreg = "Tot. acomptes utilises "
+          sreg &= " du " & rTkhv!date
           sMtreg = Format$(Val(.cpoint(rTkhv!montant)), "0.00")
-          If rTkhv!type = "N" Then
-            totcaisse = Val(.cpoint(Totcaisse)) + tespece
-            sMtreg = Format$(Val(.cpoint(tespece)), "0.00")
-          Endif
+          ' If rTkhv!type = "N" Then
+          ' totcaisse = Val(.cpoint(Totcaisse)) + tespece
+          ' sMtreg = Format$(Val(.cpoint(tespece)), "0.00")
+          ' Endif
           'If rTkhv!type = "N" Then totcaisse = Val(.cpoint(Totcaisse)) + Val(.cpoint(rTkhv!montant))
           'If rTkhv!type = "Q" Then totcaisse = Val(.cpoint(Totcaisse)) - Val(.cpoint(rTkhv!montant))
           sqte = rTkhv!qte
@@ -6496,7 +6497,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           Endif
         Until rTkhv.MoveNext()
       Endif
-      'Posy += 5
+      totcaisse = Val(.cpoint(Totcaisse)) + tespece
       pdf.Level2("Total ventes ", Format$(Val(.cpoint(Totventes)), "0.00"), "", Posy)
       Posy += 5
       pdf.Lines2(Posy)
