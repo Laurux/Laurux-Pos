@@ -4179,7 +4179,7 @@ Public Sub Button15_Click()
       '$iSpc2.Clear
       'impressionbon(clicode)
     Else
-      If Abs(Val(Utils.cpoint(Rticket.Text))) = 0 And LigTk.count > 0 Or If TextLabel5.text = "A rendre " Then
+      If Abs(Val(Utils.cpoint(Rticket.Text))) = 0 And LigTk.count > 0 Or If TextLabel5.text = "A rendre :" Then
         'Aff_bastk()
         If Imprimante = "Défaut" Then
           Defaut_Tk()
@@ -4204,7 +4204,7 @@ Public Sub Button37_Click()
   If Clicompte = 1 And If LigTk.count > 0 Then
     Defaut_Tk()
   Else
-    If Abs(Val(Utils.cpoint(Rticket.Text))) = 0 And LigTk.count > 0 Or If TextLabel5.text = "A rendre " Then
+    If ((Abs(Val(Utils.cpoint(Rticket.Text))) = 0) Or TextLabel5.text = "A rendre :") And If LigTk.count > 0 Then
       If ecole = False Then 
         If IsNull($depot) Then
           Maj_Quantite()
@@ -4996,8 +4996,11 @@ Public Sub Calc_reste(Montant As String)
   Rticket.text = Val(Utils.cpoint(Rticket.text)) - Val(Utils.cpoint(Montant))
   Rticket.Text = Format$(Rticket.Text, "0.00")
   If Val(Utils.cpoint(Rticket.Text)) < 0 Then
-    TextLabel5.Text = "A rendre "
-    Aff_viseur("A rendre " & Format$(Abs(Val(Rticket.text)), "#######.00"))
+    TextLabel5.Text = "A rendre :"
+    Aff_viseur("A rendre :" & Format$(Abs(Val(Rticket.text)), "#######.00"))
+  Else
+    TextLabel5.Text = "Reste à payer :"
+    Aff_viseur("Reste à payer :" & Format$(Abs(Val(Rticket.text)), "#######.00"))
   Endif
   
 End
@@ -5645,6 +5648,7 @@ Public Sub Init_LigTk()
   LigTk.Columns[3].Alignment = 2
   LigTk.Columns[4].Width = 40
   LigTk.Columns[4].Alignment = 2
+  TextLabel5.text = "Reste à payer :"
   
 End
 
@@ -7297,6 +7301,7 @@ Public Sub ColumnView1_Delete()
       Next
       ColumnView1.Clear
       Rticket.text = Mticket.Text
+      TextLabel5.Text = "Reste à payer :"
       Cart.SetFocus
     Endif
   Endif
