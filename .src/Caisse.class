@@ -68,7 +68,8 @@ Tri As String
 Rms As New String[] ' Tableau des remises quantitatives
 artrmq As String ' remise quantitative
 Clicaisse As String ' nom client caisse
-Codeclient As String ' code client caisse
+Codeclient As String ' code client caisse ou compte
+CodeclientDefault As String ' code client caisse
 Clicompte As Integer 'si 1 bon de caisse pour client en compte, si 0 client caisse
 Coulfc As Integer
 Datetk As String
@@ -214,6 +215,7 @@ Public Sub Form_Open()
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCliCaisse") & "")
   Clicaisse = rResult!nom
   Codeclient = rResult!code
+  CodeclientDefault = rResult!code
   Frmt = Utils.FColr(Settings["/Coul/Focus"])
   Coulfc = Val(Frmt[0])
   Init_LigTk()
@@ -5662,6 +5664,7 @@ Public Sub Init_LigTk()
   LigTk.Columns[3].Alignment = 2
   LigTk.Columns[4].Width = 40
   LigTk.Columns[4].Alignment = 2
+  Codeclient = CodeclientDefault
   TextLabel5.text = "Reste à payer :"
   Clicompte = 0
   Bdc.Text = ""
