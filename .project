@@ -1,9 +1,9 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.8.4
+# Compiled with Gambas 3.9.1
 Title=Laurux.Pos
 Startup=Start
 Icon=Icones/caisse3.png
-Version=3.21.0
+Version=3.21.2
 Component=gb.image
 Component=gb.qt4
 Component=gb.form
