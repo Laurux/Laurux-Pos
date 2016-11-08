@@ -123,10 +123,7 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=2
-File[1]=".src/Caisse.form"
-Active=2
-File[2]=".src/Caisse.class:28.397"
+Count=0
 
 [Watches]
 Count=0

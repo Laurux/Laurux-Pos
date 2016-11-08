@@ -134,6 +134,7 @@ Private bt As Integer = 0
 Private iligne As Integer = 0
 Public Codearticle As String
 Public $Vendeur As Boolean = False
+Public Ba4 As Boolean
 Private slind As String 'Index des clients divers pour facturettes
 Private Zone As String
 Private $saisie As String
@@ -4034,7 +4035,7 @@ Public Sub Imp_Especes(tpesp As String)
   If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
     For Each sline In Split(Entete.Text, "\n")
       If Left$(sline, 6) = "Ticket" Then Break
-      pdf.Entete(sline, Posx, Posy, "B")
+      pdf.Entete(sline, Posx, Posy, "B", "")
       Posy += 5
     Next
     Posy += 3
@@ -4686,9 +4687,11 @@ Public Sub Defaut_Tk()
     Filename = User.home & "/Ticket.pdf"
     If Imprimante = "DéfautA4" Then
       pdf = New Cfacture("P", "mm", "A4")
+      Ba4 = True
     Else
       If Imprimante = "Défaut80" Then
         pdf = New Cfacture("P", "mm", "80mm")
+        Ba4 = False
       Endif
     Endif
     pdf.Open()
@@ -4697,12 +4700,12 @@ Public Sub Defaut_Tk()
     Posy = 12
     For Each sline In Split(Entete.Text, "\n")
       If i < 2 Then
-        pdf.Entete2(sline, 4, Posy, "B")
+        pdf.Entete2(sline, 4, Posy, "B", Ba4)
       Else
         If i = 9 Then
-          pdf.Entete(sline, 4, Posy, "")
+          pdf.Entete(sline, 4, Posy, "", Ba4)
         Else
-          If i <> 8 Then pdf.Entete2(sline, 4, Posy, "")
+          If i <> 8 Then pdf.Entete2(sline, 4, Posy, "", Ba4)
         Endif
       Endif
       Posy += 5
@@ -4717,9 +4720,9 @@ Public Sub Defaut_Tk()
       i = 1
       For Each sline In Split(Entetcli, "\n")
         If i = 1 Then
-          pdf.Entete3(sline, Posy, "B")
+          pdf.Entete3(sline, Posy, "B", Ba4)
         Else
-          pdf.Entete3(sline, Posy, "")
+          pdf.Entete3(sline, Posy, "", Ba4)
         Endif
         Posy += 5
         Inc i
@@ -5966,7 +5969,7 @@ Public Sub button29_Click()
   If Not IsNull(Nmc4.Text) Then
     If Settings["/histocli"] Then Enrg_Clientd()
     Ent_tk2()
-    If Settings["/choiximp2"] Then
+    If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
       Defaut_Facture()
     Else
       Serial_Facture()
@@ -6079,15 +6082,24 @@ Public Sub Defaut_Facture()
   Dim Filename As String
   Dim sline As String
   Dim i As Integer = 0
+  Dim Ba4 As Boolean
+  Dim ipos As Integer
   
   Tabe = "Fiches_LigTickets" & Ncaisse
   Filename = User.home & "/Ticket.pdf"
   If Imprimante = "DéfautA4" Then
     pdf = New Cfacture("P", "mm", "A4")
+    Ba4 = True
   Else
     If Imprimante = "Défaut80" Then
       pdf = New Cfacture("P", "mm", "80mm")
+      Ba4 = False
     Endif
+  Endif
+  If Ba4 Then
+    ipos = 90
+  Else
+    ipos = 60
   Endif
   pdf.Open()
   pdf.AliasNbPages()
@@ -6111,18 +6123,18 @@ Public Sub Defaut_Facture()
   Endif
   i = 0
   pdf.Logo2("fac") 'On imprime le logo
-  pdf.Entete2($iSpc[i], Posx, Posy, "B")
+  pdf.Entete2($iSpc[i], Posx, Posy, "B", Ba4)
   Posy += 5
   For i = 1 To 10
     If Left$($iSpc[i], 5) = "-----" Then
       Posy += 8
       pdf.Lines(Posy)
     Else
-      Try pdf.Entete($iSpc[i], Posx, Posy, "")
+      Try pdf.Entete($iSpc[i], Posx, Posy, "", Ba4)
       If i = 3 Then
-        Try pdf.Entete2($iSpc2[i - 3], Posx + 90, Posy, "B")
+        Try pdf.Entete2($iSpc2[i - 3], Posx + ipos, Posy, "B", Ba4)
       Else
-        Try pdf.Entete2($iSpc2[i - 3], Posx + 90, Posy, "")
+        Try pdf.Entete2($iSpc2[i - 3], Posx + ipos, Posy, "", Ba4)
       Endif
     Endif
     Posy += 5
@@ -6384,6 +6396,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   Dim Enc As Boolean = False
   Dim Totnbtck, X2, Y2, NBT As Integer = 0
   Dim Boncaisse, tcheque, tcarte, tespece As Float
+  Dim ipos As Integer
   
   Tabe = "Fiches_EntTickets" & Ncaisse
   Tabx = "Fiches_Ticketx" & Ncaisse
@@ -6393,9 +6406,11 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
     Filename = User.home & "/Ticket.pdf"
     If Imprimante = "DéfautA4" Then
       pdf = New Cfacture("P", "mm", "A4")
+      Ba4 = True
     Else
       If Imprimante = "Défaut80" Then
         pdf = New Cfacture("P", "mm", "80mm")
+        Ba4 = False
       Endif
     Endif
     pdf.Open()
@@ -6424,9 +6439,9 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       rTkhv = Utils.db.Exec(" select * from " & Tabr & " order by type")
       If rTkhv.Available Then
         Posy += 5
-        Pdf.Level3(sIntitule, Posy)
+        Pdf.Level3(sIntitule, Posy, Ba4)
         Posy += 8
-        Pdf.Level3("Caissier(e) " & $caissiere, Posy)
+        Pdf.Level3("Caissier(e) " & $caissiere, Posy, Ba4)
         Posy += 8
         pdf.Level2E(Posy)
         Posy += 8
@@ -6586,13 +6601,18 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         Posy += 5
       Endif
       'On imprime les tickets supprimés.
+      If Ba4 Then
+        ipos = 80
+      Else
+        ipos = 10
+      Endif
       rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 order by numero", 0, True)
       If rTkx.Available Then
         pdf.Baspage()
         pdf.newPage
         Posy = 5
         Y2 = 5
-        pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", 40, Posy, 1)
+        pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", ipos, Posy, 1, Ba4)
         Posy += 10
         Y2 += 10
         Repeat
@@ -6602,19 +6622,22 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           Else
             X2 = 2
           Endif
+          If Not Ba4 Then X2 = 2
           If Posy >= 278 Or If Y2 >= 278 Then
             pdf.Baspage()
             pdf.newPage
             Posy = 5
             Y2 = 5
-            pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", 40, Posy, 1)
-            Posy += 10
-            Y2 += 10
+            If Ba4 Then
+              pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", ipos, Posy, 1, Ba4)
+              Posy += 10
+              Y2 += 10
+            Endif
           Endif
           If Nbt < 2 Then
-            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1)
+            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1, "")
           Else
-            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1)
+            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1, "")
           Endif
           If Nbt = 1 Then Posy += 8
           If Nbt = 2 Then Y2 += 8
@@ -6635,9 +6658,11 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
                 pdf.newPage
                 Posy = 5
                 Y2 = 5
-                pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", 40, Posy, 1)
-                Posy += 10
-                Y2 += 10
+                If Ba4 Then
+                  pdf.Entete("Récapitulatif des tickets supprimés du " & Format$(Now, "dd.mm.yyyy") & " (ticket en attente)", ipos, Posy, 1, Ba4)
+                  Posy += 10
+                  Y2 += 10
+                Endif
               Endif
             Until rTkl.MoveNext()
           Endif
@@ -6651,7 +6676,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.newPage
       Posy = 5
       Y2 = 5
-      pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 80, Posy, 1)
+      pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
       Posy += 10
       Y2 += 10
       rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 or statut = &1 and isnull(suppr) order by numero", 0, False, 1)
@@ -6663,42 +6688,63 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           Else
             X2 = 2
           Endif
+          If Not Ba4 Then X2 = 2
           If Posy >= 278 Or If Y2 >= 278 Then
             pdf.Baspage()
             pdf.newPage
             Posy = 5
             Y2 = 5
-            pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 80, Posy, 1)
-            Posy += 10
-            Y2 += 10
+            If Ba4 Then
+              pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+              Posy += 10
+              Y2 += 10
+            Endif
           Endif
-          If Nbt < 2 Then
-            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1)
+          If Ba4 Then
+            If Nbt < 2 Then
+              pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1, "")
+            Else
+              pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1, "")
+            Endif
           Else
-            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1)
+            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1, "")
           Endif
-          If Nbt = 1 Then Posy += 8
-          If Nbt = 2 Then Y2 += 8
+          If Ba4 Then
+            If Nbt = 1 Then Posy += 8
+            If Nbt = 2 Then Y2 += 8
+          Else
+            Posy += 8
+          Endif
           rTkl = Utils.db.Exec(" select * from " & Tabl & " where numero = &1 order by LInd", rTkx!numero)
           If rTkl.Available Then
             Repeat
               $code = rTkl!code & String$(15 - Len(rTkl!code), " ")
               $intitule = rTkl!intitule & String$(40 - (Len(rTkl!intitule) - 10), " ")
-              If Nbt < 2 Then
-                pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, PosY, "")
+              If Ba4 Then
+                If Nbt < 2 Then
+                  pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, PosY, "")
+                Else
+                  pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, Y2, "")
+                Endif
               Else
-                pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, Y2, "")
+                pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, PosY, "")
               Endif
-              If Nbt = 1 Then Posy += 3
-              If Nbt = 2 Then Y2 += 3
+              If Ba4 Then
+                If Nbt = 1 Then Posy += 3
+                If Nbt = 2 Then Y2 += 3
+              Else
+                Posy += 3
+              Endif
               If Posy >= 280 Or If Y2 >= 280 Then
                 pdf.Baspage()
                 pdf.newPage
                 Posy = 5
                 Y2 = 5
-                pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), 80, Posy, 1)
-                Posy += 10
-                Y2 += 10
+                If Ba4 Then
+                  pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+                  Posy += 10
+                  Y2 += 10
+                Endif
               Endif
             Until rTkl.MoveNext()
           Endif
