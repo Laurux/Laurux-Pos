@@ -5,10 +5,10 @@
   Text = ("Laurux.Pos")
   Border = False
   { Panel1 Panel
-    MoveScaled(0,0,145.75,100)
+    MoveScaled(0,0,146,101)
     Border = Border.Plain
     { VBox1 VBox
-      MoveScaled(65,14,65,57)
+      MoveScaled(65,14,65,57.5)
       { Panel4 Panel
         MoveScaled(0,0,65,16)
         Background = Color.Background
@@ -49,10 +49,10 @@
         }
       }
       { Panel8 Panel
-        MoveScaled(1,17,10,2)
+        MoveScaled(1,17,10,1)
       }
       { Panel3 Panel
-        MoveScaled(0,16,65,41)
+        MoveScaled(0,16,65,40.5)
         Background = Color.Background
         Border = Border.Plain
         { Button10 Button
@@ -95,7 +95,7 @@
           Picture = Picture["Icones/Sauve.png"]
         }
         { Button3 Button
-          MoveScaled(22.625,25,20,7)
+          MoveScaled(23,25,20,7)
           Background = Color.ButtonBackground
           Text = ("F6\nRemise produit")
           Picture = Picture["Icones/remise.png"]
@@ -613,7 +613,7 @@
       }
     }
     { Panel12 Panel
-      MoveScaled(0,71.125,130.125,28.75)
+      MoveScaled(0,72,130.125,28.75)
       Background = &HE7FFDF&
       Foreground = Color.Foreground
       Border = Border.Raised

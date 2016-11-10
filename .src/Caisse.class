@@ -320,14 +320,14 @@ End
 Public Sub Obs_Enter()
   
   Last.Font = Font["" ",Bold," ""]
-  Last.background = Color.Lighter(Color.Buttonbackground)
+  'Last.background = Color.Lighter(Color.Buttonbackground)
   
 End
 
 Public Sub Obs_Leave()
   
   Last.Font = Font["" "," "," ""]
-  Last.background = Color.Buttonbackground
+  'Last.background = Color.Buttonbackground
   
 End
 
@@ -560,9 +560,9 @@ Public Sub Art_man()
         LigTk.Item[1] = Cart.Text
         LigTk.Item[12] = Rarts!art_tva
         If iModif = 0 Then
-          LigTk.Item[2] = Rarts!art_design
+          LigTk.Item[2] = Left$(Rarts!art_design, 30)
         Else
-          LigTk.Item[2] = Design.Text
+          LigTk.Item[2] = Left$(Design.Text, 30)
         Endif
         
         If Len(Design.Text) >= 13 Then
@@ -4711,7 +4711,7 @@ Public Sub Defaut_Tk()
       Posy += 5
       Inc i
     Next
-    pdf.Logo2("tk") 'On imprime le logo
+    pdf.Logo2("tk", Ba4) 'On imprime le logo
     'on imprime la ligne de bon si c'est un bon de caisse.
     If clicompte = 1 Then
       rcli = Utils.db.Exec(" select * from " & Cbase.Table("TabCli") & " where cli_code = &1", clicode)
@@ -4727,7 +4727,11 @@ Public Sub Defaut_Tk()
         Posy += 5
         Inc i
       Next
-      PosY = 75
+      If Ba4 Then
+        PosY = 75
+      Else
+        Posy = 68
+      Endif
       pdf.Com("Bon de caisse " & clicode & " " & clinom & " " & clipnm, Posy)
       Posy += 5
       pdf.Com("Les prix mentionnés sont les prix public TTC", Posy)
@@ -4745,7 +4749,7 @@ Public Sub Defaut_Tk()
     Repeat
       LigTk.Item.Selected = True
       pdf.Level1(LigTk.Item[1], LigTk.Item[2], LigTk.Item[3], LigTk.Item[4], 4, Posy, LigTk.Item[5])
-      Posy += 5
+      Posy += 4
     Until LigTk.MoveNext()
     pdf.Output(Filename, False)
     If Clicompte = "1" Then
@@ -6016,12 +6020,21 @@ Public Sub Serial_Facture()
   Dim sline As String
   Dim i As Integer = 0
   Dim intit As String
+  Dim ispc As Integer = 0 'Compteur des lignes d'entete
   
   Tabe = "Fiches_LigTickets" & Ncaisse
   With Utils
     i = 0
     Datetk = Format$(Now, "dd-mm-yyyy  hh-nn")
-    Entete_Tck("1")
+    'Entete_Tck("1")
+    Print #Sport, Chr$(&H1B); "c0"; Chr$(4); ' On activel'imprimante cheque
+    For Each sline In Split(Entete.Text, "\n")
+      If ispc = 0 Then Print #Sport, Chr$(&H1B) & "!" & Chr$(17); 'on imprime en double hauteur la premiere ligne d 'entete
+      'If ispc = 8 And i = 1 And origine = "1" Then Print #sport, Chr$(&H1B) & "m"; ' on coupe le papier
+      Print #Sport, .Replace(sline)
+      If ispc = 0 Then Print #Sport, Chr$(&H1B) & "!" & Chr$(1); 'on remet le caractere normal
+      Inc ispc
+    Next
     Wait 0.5
     If clicompte <> 1 Then
       For Each sline In Split(Nmc4.Text, "\n")
@@ -6034,7 +6047,7 @@ Public Sub Serial_Facture()
         $iSpc2.Add(sline)
       Next
     Endif
-    Print #Sport, Chr$(&H1B); "c0"; Chr$(4);
+    'Print #Sport, Chr$(&H1B); "c0"; Chr$(4); ' On activel'imprimante cheque
     Print #Sport, "Facture numero " & Nticket.text & "  " & datetk
     Print #Sport, " "
     For i = 0 To 2
@@ -6059,7 +6072,7 @@ Public Sub Serial_Facture()
     Frame7.visible = False
     Cart.SetFocus
     Zone = "Article"
-    Print #sport, Chr$(&H1D) & "V" & Chr$(66) & Chr$(0); ' on coupe le papier
+    ' Print #sport, Chr$(&H1D) & "V" & Chr$(66) & Chr$(0); ' on coupe le papier
     Print #Sport, Chr$(&HC);
     'Entete_Tck("1")
   End With
@@ -6082,7 +6095,6 @@ Public Sub Defaut_Facture()
   Dim Filename As String
   Dim sline As String
   Dim i As Integer = 0
-  Dim Ba4 As Boolean
   Dim ipos As Integer
   
   Tabe = "Fiches_LigTickets" & Ncaisse
@@ -6109,7 +6121,7 @@ Public Sub Defaut_Facture()
     $iSpc.add(sline)
   Next
   i = 0
-  Posy = 12
+  Posy = 4
   If clicompte <> 1 Then
     For Each sline In Split(Nmc4.Text, "\n")
       'Inc i
@@ -6122,12 +6134,20 @@ Public Sub Defaut_Facture()
     Next
   Endif
   i = 0
-  pdf.Logo2("fac") 'On imprime le logo
+  pdf.Logo2("fac", Ba4) 'On imprime le logo
   pdf.Entete2($iSpc[i], Posx, Posy, "B", Ba4)
-  Posy += 5
+  If Ba4 Then
+    Posy += 5
+  Else
+    Posy += 2
+  Endif
   For i = 1 To 10
     If Left$($iSpc[i], 5) = "-----" Then
-      Posy += 8
+      If Ba4 Then
+        Posy += 8
+      Else
+        Posy += 6
+      Endif
       pdf.Lines(Posy)
     Else
       Try pdf.Entete($iSpc[i], Posx, Posy, "", Ba4)
@@ -6137,22 +6157,38 @@ Public Sub Defaut_Facture()
         Try pdf.Entete2($iSpc2[i - 3], Posx + ipos, Posy, "", Ba4)
       Endif
     Endif
-    Posy += 5
+    If Ba4 Then
+      Posy += 5
+    Else
+      Posy += 5
+    Endif
   Next
-  Posy += 6
+  If Ba4 Then
+    Posy += 6
+  Else
+    Posy += 3
+  Endif
   pdf.Level2F(posy)
-  Posy += 10
+  If Ba4 Then
+    Posy += 10
+  Else
+    Posy += 8
+  Endif
   rntck = Utils.db.Exec(" select * from " & Tabe & " where numero = &1 order by lind", Nticket.Text)
   If rntck.Available Then
     Repeat
       If rntck!type <> "K"
         If Left$(rntck!intitule, 5) = "-----" Then
-          'Posy += 5
+          Posy += 3
           pdf.Lines2(Posy)
           Posy += 2
         Else
           pdf.Level4(rntck!code, rntck!intitule, rntck!montant, rntck!qte, PosY)
-          Posy += 5
+          If Ba4 Then
+            Posy += 5
+          Else
+            Posy += 5
+          Endif
         Endif
       Endif
     Until rntck.MoveNext()
@@ -6403,16 +6439,17 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   Tabr = "Fiches_Reglts" & Ncaisse
   Tabl = "Fiches_LigTickets" & Ncaisse
   With Utils
+    Ba4 = True
     Filename = User.home & "/Ticket.pdf"
-    If Imprimante = "DéfautA4" Then
-      pdf = New Cfacture("P", "mm", "A4")
-      Ba4 = True
-    Else
-      If Imprimante = "Défaut80" Then
-        pdf = New Cfacture("P", "mm", "80mm")
-        Ba4 = False
-      Endif
-    Endif
+    ' If Imprimante = "DéfautA4" Or If Left$(Imprimante, 4) = "/dev" Then
+    pdf = New Cfacture("P", "mm", "A4")
+    'Ba4 = True
+    'Else
+    'If Imprimante = "Défaut80" Then
+    ' pdf = New Cfacture("P", "mm", "80mm")
+    'Ba4 = False
+    'Endif
+    ' Endif
     pdf.Open()
     pdf.AliasNbPages()
     pdf.newPage()
@@ -6756,7 +6793,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Output(Filename, False)
       DupliZ(Filename)
       If Org Then
-        Impression.Ticketxz(Filename, "1")
+        'Impression.Ticketxz(Filename, "1")
         Visualiseur.Prog_Editeur(Filename)
       Else
         Visualiseur.Prog_Editeur(Filename)

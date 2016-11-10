@@ -29,7 +29,7 @@ Geometry=[0,0,344,344]
 Geometry=[4,13,224,280]
 
 [DebugWindow/Last]
-Geometry=[0,49,349,280]
+Geometry=[0,49,349,320]
 
 [DebugWindow/LigTk]
 Geometry=[0,0,210,210]
@@ -123,9 +123,7 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=1
-Active=1
-File[1]=".src/LauruxMaj.module:0.0"
+Count=0
 
 [Watches]
 Count=0
