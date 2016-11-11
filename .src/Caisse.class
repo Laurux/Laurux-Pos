@@ -560,9 +560,9 @@ Public Sub Art_man()
         LigTk.Item[1] = Cart.Text
         LigTk.Item[12] = Rarts!art_tva
         If iModif = 0 Then
-          LigTk.Item[2] = Left$(Rarts!art_design, 30)
+          LigTk.Item[2] = Left$(Rarts!art_design, 32)
         Else
-          LigTk.Item[2] = Left$(Design.Text, 30)
+          LigTk.Item[2] = Left$(Design.Text, 32)
         Endif
         
         If Len(Design.Text) >= 13 Then
@@ -6134,12 +6134,11 @@ Public Sub Defaut_Facture()
     Next
   Endif
   i = 0
-  pdf.Logo2("fac", Ba4) 'On imprime le logo
   pdf.Entete2($iSpc[i], Posx, Posy, "B", Ba4)
   If Ba4 Then
     Posy += 5
   Else
-    Posy += 2
+    Posy += 5
   Endif
   For i = 1 To 10
     If Left$($iSpc[i], 5) = "-----" Then
@@ -6157,10 +6156,11 @@ Public Sub Defaut_Facture()
         Try pdf.Entete2($iSpc2[i - 3], Posx + ipos, Posy, "", Ba4)
       Endif
     Endif
+    pdf.Logo2("fac", Ba4) 'On imprime le logo
     If Ba4 Then
       Posy += 5
     Else
-      Posy += 5
+      Posy += 4
     Endif
   Next
   If Ba4 Then
