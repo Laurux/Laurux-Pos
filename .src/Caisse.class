@@ -2124,7 +2124,7 @@ Public Sub ColTka_Click()
   Endif
   'Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Tab = "Fiches_LigTickets" & Ncaisse
-  rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where numero = &1 order by numlig", Numtk)
+  rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where numero = &1 order by cast(numlig as unsigned)", Numtk)
   If rResult.Available Then
     Repeat
       Inc iligne
