@@ -1,0 +1,72 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,63,58)
+  Border = False
+  { !Colcli GridView
+    MoveScaled(0,0,60,52)
+    #Public = True
+    Font = Font["Serif"]
+    Background = &HFFFFF6&
+    Mode = Select.Single
+    Header = GridView.Horizontal
+    ScrollBar = Scroll.None
+    Resizable = False
+  }
+  { HBox1 HBox
+    MoveScaled(0,0,60,3)
+    { !C1 TextBox
+      MoveScaled(0,0,15,3)
+      #Public = True
+      Font = Font["Serif"]
+      ToolTip = ("Un double clic sur la zone inverse l'ordre de tri.")
+      Alignment = Align.Center
+    }
+    { !N1 TextBox
+      MoveScaled(15,0,20,3)
+      #Public = True
+      Font = Font["Serif"]
+      ToolTip = ("Un double clic sur la zone inverse l'ordre de tri.")
+      Alignment = Align.Center
+    }
+    { P1 TextBox
+      MoveScaled(35,0,14,3)
+      Enabled = False
+      Font = Font["Serif"]
+      Background = &HCCCC9B&
+      Foreground = &H636363&
+    }
+    { CheckBox1 CheckBox
+      MoveScaled(52,0,10,4)
+    }
+  }
+  { Frame1 Frame
+    MoveScaled(60,4,3,54.875)
+    Background = Color.Background
+    { Descendre Button
+      MoveScaled(0,29,3,7)
+      Picture = Picture["Icones/next.png"]
+    }
+    { Remonter Button
+      MoveScaled(0,0,3,7)
+      Picture = Picture["Icones/previous.png"]
+    }
+  }
+  { Valider ToggleButton
+    MoveScaled(47,53,12,4)
+    Text = ("Valider")
+  }
+  { Annuler ToggleButton
+    MoveScaled(1,53,12,4)
+    Text = ("Annuler")
+  }
+  { Total TextBox
+    MoveScaled(32,53,11,4)
+    ToolTip = ("Montant total des BL selectionnés")
+    ReadOnly = True
+  }
+  { Label1 Label
+    MoveScaled(24,53,7,4)
+    Text = ("total BL")
+  }
+}

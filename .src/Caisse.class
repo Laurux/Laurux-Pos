@@ -159,6 +159,7 @@ Private bAffUSB As Boolean
 Private $depot As String
 Private bretro As Boolean = False
 Private Val_retro As String ' variable pour coeff retrocession
+Private Blexists As Boolean = False
 
 ' Méthode de connexion au module BA6X
 Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
@@ -444,6 +445,46 @@ Catch
 
 End
 
+'***********************************
+'*        On gère l' arrondi       *
+'***********************************
+Public Sub arrondi(arr As String, Arttc As String) As String
+  
+  Try Arttc = Format$(Val(Utils.CPoint(Arttc)), "0.00")
+  If Not Arttc Then Arttc = "0,00"
+  If arr = "0,05" Then
+    If Right$(Arttc) Like "[34567]*" Then
+      Arttc = Left$(Arttc, (Len(Arttc) - 1)) & "5"
+    Else
+      Arttc = Round(Val(Arttc), -1)
+    Endif
+  Endif
+  
+  If arr = "0,10" Then
+    Arttc = Round(Val(Arttc), -1)
+  Endif
+  
+  If arr = "0,50" Then
+    If Abs(Val(Arttc)) <= Abs(Val(Left$(Arttc, (Len(Arttc) - 2)) & 25)) Then
+      Arttc = Left$(Arttc, (Len(Arttc) - 2)) & "00"
+    Else
+      If Abs(Val(Arttc)) <= Abs(Val(Left$(Arttc, (Len(Arttc) - 2)) & 75)) Then
+        Arttc = Left$(Arttc, (Len(Arttc) - 2)) & "50"
+      Endif
+      If Abs(Val(Arttc)) >= Abs(Val(Left$(Arttc, (Len(Arttc) - 2)) & 76)) Then
+        Arttc = Round(Val(Arttc))
+      Endif
+    Endif
+  Endif
+  
+  If arr = "1,00" Then
+    Arttc = Round(Val(Arttc))
+  Endif
+  
+  Return Format$(Val(Utils.CPoint(Arttc)), "0.00")
+  
+End
+
 '**************************************
 '* On Selectionne l'article saisi     *
 '**************************************
@@ -573,7 +614,11 @@ Public Sub Art_man()
           Texte_Vis = .Replace(LigTk.Item[2])
         Endif
 
-        If iModif = 1 Then Artpu = Pvttc.Text
+        If iModif = 1 Then
+          'Si modif du prix on conserve la gestion d'arrondi
+          'BL incohérent en gestion compte
+          Artpu = arrondi(arr, Pvttc.Text)
+        Endif
         If Val(Qte.text) < 0 Then
           Artpu = "-" & Artpu
           LigTk.Item[3] = Artpu
@@ -1164,6 +1209,7 @@ Public Sub Valid_commentaire()
 
 End
 
+
 Public Sub Valid_Cart()
 
   Dim Rarts As Result
@@ -1751,6 +1797,10 @@ End
 '******************** Gestion des remises sur le total du ticket ***************************
 Public Sub Button33_Click()
 
+  If (Blexists = True) Then
+    Message.Warning("La saisie d'une remise sur total est impossible lorsque des BL sont règlés en caisse!")
+    Return
+  Endif
   With Utils
     If IsNull(RemTot.text) Then
       If Val(.cpoint(TotalTk.text)) <> 0 Then
@@ -1942,6 +1992,10 @@ End
 Public Sub Button6_Click()
 
   Aff_viseur("Total ticket " & TotalTk.text)
+  'Empeche le passage en règlement si attente de mot de passe
+  If (Frame8.visible = True)
+    Return
+  Endif
   If Clicompte = 1 Then
     If LigTk.count > 0 Then
       Aff_bastk()
@@ -2189,6 +2243,7 @@ Public Sub suppr_Tk()
       If rResult.Available Then
         Try Utils.db.Exec("UPDATE " & Tab & " set suppr = &1 where caisse = &2 and numero = &3", 1, Ncaisse, Numtk)
       Endif
+      Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, Ntk)
       LigTk.Clear
       Init_LigTk()
       Ent_tk()
@@ -5129,7 +5184,7 @@ End
 
 Public Sub Aff_bastk()
 
-  Dim rtva As Result
+  Dim rtva, lBl As Result
   Dim Tatva As String = "Tottva"
   Dim ttva, ttvam As Float = 0
   Dim mttc, mht As Float = 0
@@ -5240,6 +5295,29 @@ Public Sub Aff_bastk()
           ttva = Val(Utils.cpoint(rtva!mtva)) + ttvam
           totaltva = totaltva + ttvam
           Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", $code, Format$(ttva, "0.00"))
+        Endif
+      Endif
+    Else
+      'Cas du Règlement des BL depuis la caisse. Il faut recalculer le montant de TVA à partir des lignes
+      If LigTk.Item[5] = "BL" Then
+        Try mht = Val(Utils.cpoint(LigTk.Item[6]))
+        Totalht = totalht + mht
+        lBl = Utils.db.Exec(" select * from " & Cbase.Table("TabLigbl") & " where num_ligbl = &1 and typel_ligbl = \"A\"", LigTk.Item[7])
+        If lBl.Available Then
+          Repeat
+            Tva = lBl!tx_ligbl
+            Calc_Tva()
+            ttvam = Val(Utils.cpoint(lBl!nettc_ligbl)) - Val(Utils.cpoint(lBl!netht_ligbl))
+            rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", Tva)
+            If Not rtva.Available Then
+              Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", Tva, Format$(ttvam, "0.00"))
+              totaltva = totaltva + ttvam
+            Else
+              ttva = Val(Utils.cpoint(rtva!mtva)) + ttvam
+              totaltva = totaltva + ttvam
+              Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", Tva, Format$(ttva, "0.00"))
+            Endif
+          Until lBl.MoveNext()
         Endif
       Endif
     Endif
@@ -5756,6 +5834,7 @@ Public Sub Init_LigTk()
   TextLabel5.text = "Reste à payer :"
   Clicompte = 0
   Bdc.Text = ""
+  Blexists = False
 
 End
 
@@ -7164,20 +7243,99 @@ Public Sub Aff_Art()
 End
 
 '******************************************* Gestion des clients *************************************************
+Public Sub Ajout_Reg_Bl(numtick As String) As Boolean
+  
+  Dim rBl As Result
+  Dim numl As Integer
+  Dim Blexists As Boolean = False
+
+  'Remove all previously created BL lines
+  Ligtk.MoveFirst()
+  Repeat
+    Try LigTk.item.Selected = True
+    If Not Error Then
+      While LigTk.Item[5] = "BL"
+          TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) - LigTk.Item[3], "0.00")
+          LigTk.current.delete
+          Ligtk.MoveFirst()
+          Try LigTk.Item.Selected = True
+          If Error Then Break
+      Wend
+    Endif
+  Until Ligtk.MoveNext()
+  RenameLigne()
+  
+  rBl = Utils.db.Exec("Select * from " & Cbase.Table("TabBl") & " where numtick = &1", numtick)
+  If rBl.Available Then
+    Blexists = True
+    Repeat
+      Inc iligne
+      Inc iNlg
+      Qte.text = "1"
+      LigTk.Add(iligne, iligne)
+      LigTk.Item[0] = iNlg
+      LigTk.Item[1] = rBl!nmclibl
+      LigTk.Item[2] = "Règlement BL " & rBl!numbl
+      LigTk.Item[3] = rBl!totalttc
+      LigTk.Item[4] = Qte.text
+      LigTk.Item[5] = "BL"
+      LigTk.Item[6] = rBl!totalht
+      LigTk.Item[7] = rBl!numbl
+      LigTk.Item[8] = iligne
+      LigTk.Item[9] = rBl!totalttc - rBl!totalht
+      LigTk.Item[11] = rBl!totalttc
+      iComm = 0
+      iRem = 0
+      iQte = 1
+      pvht = rBl!totalht
+      TextLabel1.Text = "Article"
+      calc_total()
+      TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + rBl!totalttc, "0.00")
+      Remise.Text = "0,00"
+      TextLabel7.Visible = False
+      Remise.Visible = False
+    Until rBl.MoveNext()
+  Zone = "Article"
+  Cart.Clear
+  Cart.SetFocus
+  Endif
+  
+  Return Blexists
+  
+End
 '**********************************************************
 '*      Le bouton sert a rechercher les clients           *
 '**********************************************************
 Public Sub Button30_click()
 
-  'Dim MyForm As Triclients
+  Dim MyForm As Tribl
 
   bsel = False
   If clicompte = 0 Then
-    'MyForm = New Triclients()
-    Triclients.Showmodal()
-    If Bsel = True Then
-      Recup_Client()
-    Endif
+
+    Select Case Message.Question("Que voulez-vous faire ?\n1- Saisir un nouveau bon de caisse\n2- Règler des bons de caisses\n3 -Sortir", "1", "2", "3")
+      Case 1
+        If (Blexists = False) Or If ((Blexists = True) And Message.Question("Il y a déjà des règlements de Bon de caisse\nVoulez-vous les supprimer ?", "Oui", "Non") = 1) Then
+          'Ceci revient a supprimer la selection des BL
+          If (Blexists = True) Then
+            Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, Ntk)
+            Blexists = Ajout_Reg_Bl(Ntk)
+          Endif
+          Triclients.Showmodal()
+          If Bsel = True Then
+            Recup_Client()
+          Endif
+        Endif
+      Case 2
+        Triclients.Showmodal()
+        If Bsel = True Then
+          MyForm = New Tribl(Clicode, Ntk)
+          MyForm.Showmodal()
+          Blexists = Ajout_Reg_Bl(Ntk)
+        Endif
+      Case 3
+        'do nothing
+    End Select
   Else
     If Start.son Then
       If Start.son Then
@@ -7198,17 +7356,37 @@ End
 Public Sub Recup_Client()
 
   Dim Clitab As Result
-  Dim solde, encours As Float
+  Dim Clibl As Result
+  Dim solde, soldebl, encours As Float
 
   Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCli") & " as c inner join  " & Cbase.Table("TabComptes") & " as a on a.compte_cc = c.cli_code where cli_code = &1", Clicode)
   If Not Error Then
     Try encours = Val(Utils.cpoint(Clitab!cli_plaf_ecrs))
     If Error Then encours = 0
+    soldebl = 0
+    Clibl = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabBl") & " where cdclibl = &1 and imp = 0 and numtick is Null", Clicode)
+    If Clibl.Available Then
+      Repeat
+        If Clibl!totalttc <> Null Then soldebl = soldebl + Val(Utils.cpoint(Clibl!totalttc))
+      Until Clibl.MoveNext()
+    Endif
     solde = Val(Utils.cpoint(Clitab!solde))
     If encours > 0 Then
-      If encours < solde Then
-        Message.Warning("Saisie impossible ! L'encours de ce compte est dépassé...")
-        Return
+      If encours < (solde + soldebl) Then
+        If message.Question("Saisie impossible ! L'encours actuel (" & (solde + soldebl) & ") a dépassé\nle plafond défini (" & encours & ") pour ce ce compte!\nVoulez-vous autoriser le dépassement", "Non", "Oui") = 2 Then
+          mdp_admin()
+          If GestMdp = 1 Then
+            org = "EF12"
+            If Start.son Then
+              Music.Play
+            Endif
+            Frame8.visible = True
+            Mdp.SetFocus
+            Zone = "Mdp"
+          Endif
+        Else
+          Return
+        Endif
       Endif
     Endif
   Endif
@@ -7216,7 +7394,7 @@ Public Sub Recup_Client()
   Clipnm = Clitab!cli_pnm
   Clicp = Clitab!cli_cd_ptl
   Cliburdist = Clitab!cli_ville
-  Bdc.Text = "Bon de caisse " & Clitab!cli_nom & " " & Clitab!cli_pnm
+  Bdc.Text = "Bon de caisse " & Clitab!cli_nom & " " & Clitab!cli_pnm & " (solde = " & Format$((solde + soldebl), "0.00") & ")"
   Clicompte = 1
   Cart.SetFocus
   Zone = "Article"
@@ -7602,6 +7780,9 @@ Public Sub Ligtk_Delete()
             Try LigTk.item.Selected = True
             If Not Error Then
               If Val(LigTk.Item[8]) = Val(Block) Then
+                If LigTk.Current[5] = "BL" Then
+                  Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numbl = &2", Null, LigTk.Current[7])
+                Endif
                 LigTk.current.delete
                 Ligtk.MoveFirst()
                 Try LigTk.Item.Selected = True
@@ -7635,6 +7816,7 @@ Public Sub Ligtk_Delete()
       Next
 
       'On recalcule le total du ticket
+      Blexists = False
       LigTk.MoveFirst
       TotalTk.Text = 0
       Mticket.Text = TotalTk.text
@@ -7645,6 +7827,11 @@ Public Sub Ligtk_Delete()
       For numl = 1 To LigTk.count
         Try LigTk.Item.Selected = True
         If Not Error Then
+          If LigTk.Item[5] = "BL" Then
+            Blexists = True
+            TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(LigTk.Current[11])), "0.00")
+            Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(LigTk.Current[6]))
+          Endif
           If LigTk.Item[5] = "A" Then
             Tligne = LigTk.Item[5]
             Pu = LigTk.Current[3]
