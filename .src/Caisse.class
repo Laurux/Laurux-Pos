@@ -162,7 +162,7 @@ Private Val_retro As String ' variable pour coeff retrocession
 ' Méthode de connexion au module BA6X
 Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
   'Tentative de connexion pour afficheur BA63
-  
+
   BA6X = New Socket
   BA6X.Connect(uneAdresseIP, unPort)
   'Dans l'attente de connexion (échec ou réussite)
@@ -173,26 +173,26 @@ Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
     Try message.Error("Impossible de joindre l'afficheur USB, vérifiez votre installation !")
     bAffUSB = False
   Endif
-  
+
 End
 
 Public Sub PrintBA6X(uneLigneHaut As String, uneLigneBas As String)
-  
+
   Dim sBuf As String
-  
+
   sBuf = "print|" & uneLigneHaut & "|" & uneLigneBas
   'Si le socket est operationnel
   If BA6X.Status > 0 Then
     Write #BA6X, sBuf, Len(sBuf)
   End If
-  
+
 End
 
 Public Sub Form_Open()
-  
+
   Dim Frmt As String[]
   Dim tab As String
-  
+
   Music.Load("son/warning.ogg")
   SetObservers(Me, Me)
   Balloon.Delay = 1500
@@ -284,27 +284,27 @@ Public Sub Form_Open()
     devises = rResult!devise
     If IsNull(devises) Then devises = "Euros"
   Endif
-  
+
   createPanel()
   Cbutton(Panel17)
   InitTouche()
   'ClavFam()
   Cart.SetFocus
   Zone = "Article"
-  
+
 Catch
   If Start.son Then
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub SetObservers(hClass As Object, hCont As Container)
-  
+
   Dim hCtrl As Object
   Dim hOBS As Observer
-  
+
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
       hOBS = New Observer(hCtrl) As "Obs"
@@ -314,39 +314,39 @@ Public Sub SetObservers(hClass As Object, hCont As Container)
     Endif
     If hCtrl Is Container Then SetObservers(hClass, hCtrl)
   Next
-  
+
 End
 
 Public Sub Obs_Enter()
-  
+
   Last.Font = Font["" ",Bold," ""]
   'Last.background = Color.Lighter(Color.Buttonbackground)
-  
+
 End
 
 Public Sub Obs_Leave()
-  
+
   Last.Font = Font["" "," "," ""]
   'Last.background = Color.Buttonbackground
-  
+
 End
 
 Public Sub Obs2_Enter()
-  
+
   Last.Font = Font["" ",Bold," ""]
-  
+
 End
 
 Public Sub Obs2_Leave()
-  
+
   Last.Font = Font["" "," "," ""]
-  
+
 End
 
 Public Sub InitTouche()
-  
+
   Dim rTch As Result
-  
+
   rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where cai = &1 order by touche", Start.$tcai)
   If rTch.Available Then
     Repeat
@@ -361,21 +361,21 @@ Public Sub InitTouche()
       Endif
     Until rTch.MoveNext()
   Endif
-  
+
 End
 
 Public Sub Timer1_Timer()
-  
+
   Dim heuretk As String
-  
+
   Datetk = Format$(Now, "dd-mm-yyyy  hh-nn")
   heuretk = Right$(Datetk, 5)
   Entete.Text = Left$(Entete.text, Len(Entete.text) - 5) & heuretk
-  
+
 End
 
 Public Sub Form_Close()
-  
+
   If LigTk.count > 0 Then
     message.Warning("Vous avez un ticket en cours. Vous ne pouvez pas quitter !")
     Stop Event
@@ -389,11 +389,11 @@ Public Sub Form_Close()
     If bAffUSB Then Close #BA6X
     Me.CLOSE
   Endif
-  
+
 End
 
 Public Sub Ent_tk()
-  
+
   Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entete.Text &= "Caissier(e) : " & $Caissiere
   If Imprimante = "DéfautA4" Then
@@ -434,19 +434,19 @@ Public Sub Ent_tk()
     Endif
   Endif
 Catch
-  
+
   If Start.son Then
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 '**************************************
 '* On Selectionne l'article saisi     *
 '**************************************
 Public Sub Art_man()
-  
+
   Dim Sk As String
   Dim Rarts As Result
   Dim Artrm As String
@@ -459,7 +459,7 @@ Public Sub Art_man()
   Dim Valeur_Ecotaxe As String
   Dim Taxepv As String
   Dim Valeur_Copp As String
-  
+
   With utils
     bt = 0
     Inc iligne
@@ -494,7 +494,7 @@ Public Sub Art_man()
         arr = Rarts!art_cdarr
         Tva = Rarts!art_tva
         Txtva = Rarts!art_tva
-        If bretro Then 
+        If bretro Then
           pvht = Format$(Rarts!art_prvt * Val(Val_retro), Nbdec)
           Calc_TTC()
         Endif
@@ -564,13 +564,13 @@ Public Sub Art_man()
         Else
           LigTk.Item[2] = Left$(Design.Text, 32)
         Endif
-        
+
         If Len(Design.Text) >= 13 Then
           Texte_Vis = Mid$(.Replace(LigTk.Item[2]), 1, 10)
         Else
           Texte_Vis = .Replace(LigTk.Item[2])
         Endif
-        
+
         If iModif = 1 Then Artpu = Pvttc.Text
         If Val(Qte.text) < 0 Then
           Artpu = "-" & Artpu
@@ -658,14 +658,14 @@ Public Sub Art_man()
           LigTk.Item[10] = tva
           LigTk.Item[11] = sRem
           LigTk.Item[12] = Rarts!art_tva
-          
+
         Endif
         If iQte = 1 Then
           Inc iligne
           Inc iNlg
           If Val(.CPoint(Remise.text)) <> 0 Then
             Artpu = Val(.cpoint(sRem)) * Val(.cpoint(Qte.text))
-            
+
           Else
             Artpu = Val(.cpoint(Artpu)) * Val(.cpoint(Qte.text))
           Endif
@@ -729,89 +729,89 @@ Catch
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub calc_total()
-  
+
   With utils
     Totalht = Val(.cpoint(Totalht)) + (Val(.cpoint(Pvht)) * Val(.cpoint(Qte.text)))
     Totalht = Format$(Totalht, "0.00")
   End With
-  
+
 End
 
 Public Sub Ouv_Tiroir()
-  
+
   If Left$(Imprimante, 4) = "/dev" Then
     Try Print #Sport, Chr$(&H1B) & "p" & Chr$(0);
     Try Print #Sport, Chr$(&H1D) & "a" & Chr$(1);
   Endif
-  
+
 End
 
 Public Sub Aff_viseur(Texte_aff As String, Optional Texte_Sup As String = "")
-  
+
   If Left$(Imprimante, 4) = "/dev" Then
     Try Print #Sport, Chr$(&H1B) & "=" & Chr$(2);
     Try Print #sport, Chr$(&H1B) & "@";
     Try Print #Sport, Texte_aff;
     Try Print #Sport, Chr$(&H1B) & "=" & Chr$(1);
   Endif
-  
+
   'Imprime sur l'afficheur USB BA6X si disponible
-  If bAffUSB = True Then 
+  If bAffUSB = True Then
     PrintBA6X(Texte_aff, Texte_Sup)
   Endif
-  
+
 End
 
 Public Sub Cart_MouseDown()
-  
+
   Zone = "Article"
   'ClavFam()
-  
+
 End
 
 Public Sub Design_MouseDown()
-  
+
   Zone = "Design"
-  
+
 End
 
 Public Sub Pvttc_MouseDown()
-  
+
   Zone = "Pvttc"
-  
+
 End
 
 Public Sub Qte_Mousedown()
-  
+
   Zone = "Qte"
-  
+
 End
 
 Public Sub Cart_GotFocus()
-  
+
   $saisie = ""
   Zone = "Article"
-  
+
 End
 
 Public Sub Design_GotFocus()
-  
+
   $saisie = ""
   Zone = "Design"
   Design.select
-  
+
 End
 
 Public Sub Cart_KeyPress()
-  
+
   With utils
-    If Key.code = Key.Esc Then 
+    If Key.code = Key.Esc Then
       If Frame2.visible Then
-        Frame2.visible = False 
+        Frame2.visible = False
       Else
         Photos_MouseDown()
       Endif
@@ -866,7 +866,7 @@ Public Sub Cart_KeyPress()
           Endif
         Endif
       Endif
-      
+
       If Key.code = 84 Then Ouv_Tiroir()
       If key.code = key.F2 Then button22_Click()
       If key.code = key.F3 Then button23_Click()
@@ -875,7 +875,7 @@ Public Sub Cart_KeyPress()
       If key.code = key.F5 Then button24_Click()
       If key.code = key.F7 Then Button25_Click()
       If Key.code = key.F8 Then CartesFidelite()
-      If Key.code = key.F9 Then 
+      If Key.code = key.F9 Then
         Panel17.visible = False
         Button33_Click()
       Endif
@@ -961,22 +961,22 @@ Public Sub Cart_KeyPress()
       Endif
     Endif
   End With
-  
+
 End
 
 Public Sub panel17_KeyPress()
-  
+
   If Key.code = Key.Esc Then
     Panel17.visible = False
     Cart.SetFocus
   Endif
-  
+
 End
 
 Public Sub aff_Photo()
-  
+
   Dim hImage As Image
-  
+
   Try hImage = Image.Load(Photo)
   If Not Error Then
     Draw.Begin(Photos)
@@ -985,18 +985,18 @@ Public Sub aff_Photo()
   Endif
 Catch
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Photos_MouseDown()
-  
+
   Photos.clear
   Panel10.visible = False
-  
+
 End
 
 Public Sub Prix_promo()
-  
+
   If Promo Then Apromo = ArtPromo.art_Promo(Cart.text, Cpromo)
   If apromo = True Then Balloon.Info(("Ce produit est actuellement en promotion"), Cart)
   If apromo = True Then
@@ -1006,13 +1006,13 @@ Public Sub Prix_promo()
     Pvttc.Text = Format$(Val(Pvttc.Text), "0.00")
     Artpu = Pvttc.Text
   Endif
-  
+
 End
 
 Public Sub Recup_Carte()
-  
+
   Dim Rcarte As Result
-  
+
   Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
   If Rcarte.Available Then
     icartef = 1
@@ -1035,22 +1035,22 @@ Public Sub Recup_Carte()
     Cart.SetFocus
     Zone = "Article"
   Endif
-  
+
 End
 
 '*********************************
 '*  Validation de la quantité    *
 '*********************************
 Public Sub Qte_GotFocus()
-  
+
   $saisie = ""
   Qte.select
   Zone = "Qte"
-  
+
 End
 
 Public Sub Qte_KeyPress()
-  
+
   Panel10.Visible = False
   Photos.Clear
   Photo = ""
@@ -1111,31 +1111,38 @@ Public Sub Qte_KeyPress()
     Cart.Select
     Zone = "Article"
   Endif
-  
+
 End
 
 Public Sub Valid_Qte()
-  
-  If Val(utils.cpoint(qte.text)) <> 0 Then
-    If iRem = 0 Then
-      Init_Art()
-      If bt <> 1 Then calc_total()
-    Else
-      Remise.SetFocus
-      Zone = "Remise"
-    Endif
-    iQte = 0
-  Else
-    Message.Warning("La saisie d'une quantité égale à zéro n'est pas autorisée !")
+
+  If IsNull(Val(utils.cpoint(qte.text))) Then
+    Message.Warning("Vérifiez votre saisie SVP !")
     qte.SetFocus
     Qte.Select
     Zone = "Qte"
+  Else
+    If Val(utils.cpoint(qte.text)) <> 0 Then
+      If iRem = 0 Then
+        Init_Art()
+        If bt <> 1 Then calc_total()
+      Else
+        Remise.SetFocus
+        Zone = "Remise"
+      Endif
+      iQte = 0
+    Else
+      Message.Warning("La saisie d'une quantité égale à zéro n'est pas autorisée !")
+      qte.SetFocus
+      Qte.Select
+      Zone = "Qte"
+    Endif
   Endif
-  
+
 End
 
 Public Sub Valid_commentaire()
-  
+
   Inc iligne
   Inc iNlg
   LigTk.Add(iligne, iligne)
@@ -1152,14 +1159,14 @@ Public Sub Valid_commentaire()
   Qte.text = "1"
   Cart.SetFocus
   'ClavFam()
-  
+
 End
 
 Public Sub Valid_Cart()
-  
+
   Dim Rarts As Result
   Dim cbarr As String
-  
+
   If Left$(Cart.Text, 1) = "*" Then
     If Len(Cart.Text) = 14 And Mid$(Cart.Text, 2, 6) = "299999" Then
       Cart.Text = Mid$(Cart.Text, 8, 6)
@@ -1204,7 +1211,7 @@ Public Sub Valid_Cart()
       Paht = Format$(Rarts!art_paht, Nbdec)
       Tva = Rarts!art_tva
       Txtva = Rarts!art_tva
-      If bretro Then 
+      If bretro Then
         If bretro Then pvht = Format$(Rarts!art_prvt * Val(Val_retro), Nbdec)
         Calc_TTC()
       Endif
@@ -1291,20 +1298,20 @@ Public Sub Valid_Cart()
   Endif
   Chkart = True
   Crt = False
-  
+
 End
 
 Public Sub Remise_GotFocus()
-  
+
   $saisie = ""
   Remise.select
-  
+
 End
 
 Public Sub Valid_Remise()
-  
+
   bt = 0
-  
+
   Remise.Text = Utils.cpoint(Remise.Text)
   If Val(Remise.Text) = Null Then
     If Start.son Then
@@ -1333,14 +1340,14 @@ Catch
   Try message.Error(Error.Text & " " & Error.where)
   Remise.SetFocus
   Remise.Select
-  
+
 End
 
 '*********************************
 '*  Validation de la remise    *
 '*********************************
 Public Sub Remise_KeyPress()
-  
+
   ChkPrx()
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
     Valid_Remise()
@@ -1363,11 +1370,11 @@ Public Sub Remise_KeyPress()
     Endif
   Endif
   If Key.code = Key.F8 Then RemqShow()
-  
+
 End
 
 Public Sub RemqShow()
-  
+
   If Tbrem.visible = True Then
     Tbrem.clear
     Tbrem.visible = False
@@ -1395,11 +1402,11 @@ Public Sub RemqShow()
     Try Tbrem[5, 1].Text = Rms[5, 1]
     Try Tbrem[5, 2].Text = Rms[5, 2]
   Endif
-  
+
 End
 
 Public Sub Init_Art()
-  
+
   Recup_dec()
   Decimal()
   If Left$(Cart.Text) = "*" Then
@@ -1408,26 +1415,26 @@ Public Sub Init_Art()
   Endif
   If Abs(Val(Utils.cpoint(Qte.Text))) <> 1 Then iQte = 1
   Art_man()
-  
+
 End
 
 Public Sub Raz()
-  
+
   Cart.clear
   Qte.Text = "1"
   Design.Clear
   Pvttc.Clear
-  
+
 End
 
 Public Sub Button40_Click()
-  
+
   AppArt()
-  
+
 End
 
 Public Sub AppArt()
-  
+
   If IsNull(RemTot.text) Then
     If Frame2.Visible = False Then
       SelectionArt()
@@ -1435,11 +1442,11 @@ Public Sub AppArt()
   Else
     Cart.SetFocus
   Endif
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   If Not IsNull(Cart.Text) And Not IsNull(Design.Text) Then
     iQte = 1
     hForm = New FCalc
@@ -1453,13 +1460,13 @@ Public Sub Button2_Click()
   Else
     Message.Warning("Veuillez saisir un article SVP !")
   Endif
-  
+
 End
 
 Public Sub Recup_dec()
-  
+
   Dim Rdec As Result
-  
+
   If Left$(Cart.Text, 1) = "*" Then
     Rdec = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabArt") & " where art_code = &1", Mid$(Cart.Text, 2, Len(Cart.Text)))
   Else
@@ -1468,14 +1475,14 @@ Public Sub Recup_dec()
   If Rdec.Available Then
     sDEC = Rdec!art_dec
   Endif
-  
+
 End
 
 '*********************************
 '* Calcul du nombre de decimal   *
 '*********************************
 Public Sub Decimal()
-  
+
   With Utils
     Qte.Text = .CPoint(Qte.Text)
     If IsNull(Val(Qte.text)) Then Qte.Text = "1"
@@ -1491,16 +1498,16 @@ Public Sub Decimal()
       Endif
     Endif
   End With
-  
+
 End
 
 '*****************************************
 '* On récupère les remises quantitatives *
 '*****************************************
 Public Sub Remises_quantitatives()
-  
+
   Dim i As Integer
-  
+
   With Utils
     For i = 0 To Rms.Bounds[0] - 1
       If IsNull(Rms[i, 2]) Then
@@ -1514,11 +1521,11 @@ Public Sub Remises_quantitatives()
       Endif
     Next
   End With
-  
+
 End
 
 Public Sub Button1_Click()
-  
+
   TextLabel1.Text = "Commentaire"
   Icomm = 1
   Cart.Clear
@@ -1526,11 +1533,11 @@ Public Sub Button1_Click()
   Zone = "Commentaire"
   If TouchFam Then Fermer2()
   Cart.SetFocus
-  
+
 End
 
 Public Sub Button3_Click()
-  
+
   $saisie = ""
   If apromo = True Then
     Message.Warning("Saisie de remise impossible, ce produit est en promotion")
@@ -1557,11 +1564,11 @@ Public Sub Button3_Click()
       Message.Warning("Veuillez saisir un produit avant d'effectuer une remise en %")
     Endif
   Endif
-  
+
 End
 
 Public Sub Button4_Click()
-  
+
   mdp_admin()
   If GestMdp = 1 Then
     org = "F3"
@@ -1574,11 +1581,11 @@ Public Sub Button4_Click()
   Else
     modif_Tk()
   Endif
-  
+
 End
 
 Public Sub modif_Tk()
-  
+
   If Not IsNull(Cart.Text) Then
     Design.ReadOnly = False
     Pvttc.ReadOnly = False
@@ -1590,30 +1597,30 @@ Public Sub modif_Tk()
     Design.select
   Endif
   admin = 0
-  
+
 End
 
 Public Sub Design_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     Pvttc.SetFocus
     Pvttc.Select
     Zone = "Pvttc"
     Stop Event
   Endif
-  
+
 End
 
 Public Sub Pvttc_GotFocus()
-  
+
   $saisie = ""
   Pvttc.select
   Zone = "Pvttc"
-  
+
 End
 
 Public Sub pvttc_LostFocus()
-  
+
   TestPvttc()
   If Settings["/admin"] Then
     Design.ReadOnly = True
@@ -1621,11 +1628,11 @@ Public Sub pvttc_LostFocus()
     Design.Background = &H00BFBFBF&
     Pvttc.Background = &H00BFBFBF&
   Endif
-  
+
 End
 
 Public Sub Pvttc_KeyPress()
-  
+
   If key.Control Then
     If Key.code = 84 Then Ouv_Tiroir()
   Endif
@@ -1635,13 +1642,13 @@ Public Sub Pvttc_KeyPress()
     bFam = False
     TestPvttc()
   Endif
-  
+
 End
 
 Public Sub TestPvttc()
-  
+
   bt = 0
-  
+
   With Utils
     Pvttc.Text = .cpoint(Pvttc.Text)
     If Val(PvTTc.Text) = Null Then
@@ -1688,7 +1695,7 @@ Public Sub TestPvttc()
       Endif
     Endif
   End With
-  
+
 Catch
   If Start.son Then
     Music.Play
@@ -1696,16 +1703,16 @@ Catch
   Try message.Error(Error.Text & " " & Error.where)
   Pvttc.SetFocus
   Pvttc.Select
-  
+
 End
 
 '****************************
 '* On calcule la tva        *
 '****************************
 Public Sub Calc_Tva()
-  
+
   Dim Rtvaav As Result
-  
+
   With utils
     Rtvaav = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabTvav") & " WHERE code_tva = &1", Tva)
     If Rtvaav.Available Then
@@ -1713,36 +1720,36 @@ Public Sub Calc_Tva()
       Tva = Rtvaav!taux_tva
     Endif
   End With
-  
+
 End
 
 Public Sub calc_HT()
-  
+
   Calc_Tva()
   tx = (1 + (Val(Utils.cpoint(Tva)) / 100))
   Pvht = Format$(Val(Utils.cpoint(Artpu)) / tx, nbdec)
   Mtva = Val(Utils.cpoint(Artpu)) - Val(Utils.cpoint(Pvht))
-  
+
 End
 
 Public Sub Calc_TTC()
-  
+
   Calc_Tva()
   Pvttc.Text = Format$(Val(Utils.cpoint(Pvht)) + (Val(Utils.cpoint(Pvht)) * Tva / 100), Nbdec)
   Artpu = Pvttc.Text
   Mtva = Val(Utils.cpoint(Artpu)) - Val(Utils.cpoint(Pvht))
-  
+
 End
 
 Public Sub Button5_Click()
-  
+
   ClavFam()
-  
+
 End
 
 '******************** Gestion des remises sur le total du ticket ***************************
 Public Sub Button33_Click()
-  
+
   With Utils
     If IsNull(RemTot.text) Then
       If Val(.cpoint(TotalTk.text)) <> 0 Then
@@ -1773,11 +1780,11 @@ Public Sub Button33_Click()
       Cart.SetFocus
     Endif
   End With
-  
+
 End
 
 Public Sub RemTot_KeyPress()
-  
+
   With utils
     ChkPrx()
     If key.code = key.Esc Then
@@ -1791,14 +1798,14 @@ Public Sub RemTot_KeyPress()
       Valid_Remtot()
     Endif
   End With
-  
+
 End
 
 Public Sub Valid_Remtot()
-  
+
   Dim sremT As String
   Dim mremT As String
-  
+
   rremt = 0
   With Utils
     If Not IsNull(RemTot.text) Then
@@ -1880,14 +1887,14 @@ Public Sub Valid_Remtot()
       Endif
     Endif
   End With
-  
+
 End
 
 Public Sub Valid_Remtot2()
-  
+
   Dim sremT As String
   Dim mremT As String
-  
+
   With Utils
     If Not IsNull(RemTot.text) Then
       If Val(.cpoint(RemTot.text)) <> 0 And If Val(.cpoint(RemTot.text)) <> 100 Then
@@ -1928,11 +1935,11 @@ Public Sub Valid_Remtot2()
       Endif
     Endif
   End With
-  
+
 End
 
 Public Sub Button6_Click()
-  
+
   Aff_viseur("Total ticket " & TotalTk.text)
   If Clicompte = 1 Then
     If LigTk.count > 0 Then
@@ -1969,11 +1976,11 @@ Public Sub Button6_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Button7_Click()
-  
+
   If IsNull(RemTot.text) Then
     If Start.son Then
       Music.Play
@@ -2011,14 +2018,14 @@ Public Sub Button7_Click()
     Endif
     Message.Warning("Mise en attente impossible ! Une remise sur total a été effectuée.")
   Endif
-  
+
 End
 
 Public Sub Button8_Click()
-  
+
   Dim Tab As String
   Dim RpTicket As Result
-  
+
   If TouchFam Then Fermer2()
   Tab = "Fiches_EntTickets" & Ncaisse
   If ColTka.Visible = True Then
@@ -2042,28 +2049,28 @@ Public Sub Button8_Click()
       ColTka.Item.Selected = True
     Endif
   Endif
-  
+
 End
 
 Public Sub ColTka_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then ColTka_Click()
   If Key.code = Key.F9 Then
     ColTka.Clear
     ColTka.visible = False
   Endif
-  
+
 End
 
 Public Sub ColTka_Click()
-  
+
   Dim Mtk As String
   Dim RTck As Result
   Dim Tab As String
   Dim heuretk As String
-  
+
   heuretk = Format$(Now, "dd-mm-yyyy  hh-nn")
-  
+
   Tab = "Fiches_EntTickets" & Ncaisse
   LigTk.Clear
   Init_LigTk()
@@ -2134,12 +2141,12 @@ Public Sub ColTka_Click()
   Cart.SetFocus
   Zone = "Article"
   'ClavFam()
-  
+
 End
 
 '******************************** SUPPRESSION DU TICKET **********************************
 Public Sub Button9_Click()
-  
+
   mdp_admin()
   If GestMdp = 1 Then
     org = "F10"
@@ -2153,13 +2160,13 @@ Public Sub Button9_Click()
     suppr_Tk()
     'ClavFam()
   Endif
-  
+
 End
 
 Public Sub suppr_Tk()
-  
+
   Dim Tab As String
-  
+
   Tab = "Fiches_EntTickets" & Ncaisse
   If LigTk.Count > 0 Then
     If Start.son Then
@@ -2192,14 +2199,14 @@ Public Sub suppr_Tk()
     Else
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*          Gestion des avoirs           *
 '*****************************************
 Public Sub Button10_Click()
-  
+
   If Frame3.Visible = True Then
     Frame3.Visible = False
     iavoir = 0
@@ -2228,14 +2235,14 @@ Public Sub Button10_Click()
       Try Message.Warning("Un avoir se détermine en début de ticket !\n Veuillez annuler votre saisie en cours SVP.")
     Endif
   Endif
-  
+
 End
 
 Public Sub button17_Click()
-  
+
   Dim i As Integer = 0
   Dim sline As String
-  
+
   If iavoir = "1" Then
     Inc iligne
     Inc iNlg
@@ -2268,11 +2275,11 @@ Public Sub button17_Click()
   Cart.SetFocus
   Zone = "Article"
   $saisie = ""
-  
+
 End
 
 Public Sub Nmc_KeyPress()
-  
+
   If Key.code = Key.F11 Or key.code = Key.esc Then
     Frame3.Visible = False
     iavoir = 0
@@ -2280,7 +2287,7 @@ Public Sub Nmc_KeyPress()
     Zone = "Article"
   Endif
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then button17_Click()
-  
+
 End
 
 '*****************************************
@@ -2288,7 +2295,7 @@ End
 '*****************************************
 
 Public Sub Button11_Click()
-  
+
   init_paiement()
   If Mvt = "E" Then
     Frame5.Visible = True
@@ -2305,11 +2312,11 @@ Public Sub Button11_Click()
     Zone = "Especes"
     Aff_viseur("Reglement especes")
   Endif
-  
+
 End
 
 Public Sub Especes_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -2335,11 +2342,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Especes()
-  
+
   If Not IsNull(Especes.text) Then
     Especes.Text = Utils.cpoint(Especes.Text)
     If Val(Especes.Text) = Null Then
@@ -2391,14 +2398,14 @@ Public Sub Valid_Especes()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*         Gestion des cartes            *
 '*****************************************
 Public Sub Button12_Click()
-  
+
   init_paiement()
   If Mvt = "E" Then
     Frame5.Visible = True
@@ -2427,11 +2434,11 @@ Public Sub Button12_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Nmc2_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     Frame4.Visible = False
     'Panel12.visible = False
@@ -2444,11 +2451,11 @@ Public Sub Nmc2_KeyPress()
     init_paiement()
     Inpm.SetFocus
   Endif
-  
+
 End
 
 Public Sub button19_Click()
-  
+
   If icarte = 1 Then
     snmcarte = Nmc2.Text
     init_paiement()
@@ -2508,11 +2515,11 @@ Public Sub button19_Click()
   'Nmc2.Clear
   Frame4.Visible = False
   $saisie = ""
-  
+
 End
 
 Public Sub carte_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -2538,11 +2545,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Carte()
-  
+
   If Not IsNull(Carte.text) Then
     Carte.Text = Utils.cpoint(Carte.Text)
     If Val(Carte.Text) = Null Then
@@ -2594,14 +2601,14 @@ Public Sub Valid_Carte()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*         Gestion des chèques           *
 '*****************************************
 Public Sub Button13_Click()
-  
+
   init_paiement()
   If Mvt = "E" Then
     Frame5.Visible = True
@@ -2630,11 +2637,11 @@ Public Sub Button13_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Cheque_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -2660,11 +2667,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Cheque()
-  
+
   If Not IsNull(Cheque.text) Then
     Cheque.Text = Utils.cpoint(Cheque.Text)
     If Val(Cheque.Text) = Null Then
@@ -2720,14 +2727,14 @@ Public Sub Valid_Cheque()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*         Gestion du crédit             *
 '*****************************************
 Public Sub Button14_Click()
-  
+
   init_paiement()
   If Frame4.Visible = True Then
     Frame4.Visible = False
@@ -2741,11 +2748,11 @@ Public Sub Button14_Click()
     Nmc2.SetFocus
     Zone = "Nmc2"
   Endif
-  
+
 End
 
 Public Sub credit_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -2771,11 +2778,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Credit()
-  
+
   If Not IsNull(Credit.text) Then
     Credit.Text = Utils.cpoint(Credit.Text)
     If Val(Credit.Text) = Null Then
@@ -2822,14 +2829,14 @@ Public Sub Valid_Credit()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*      Gestion des bons d'achat         *
 '*****************************************
 Public Sub Button16_Click()
-  
+
   init_paiement()
   If Frame4.Visible = True Then
     Frame4.Visible = False
@@ -2843,11 +2850,11 @@ Public Sub Button16_Click()
     Nmc2.SetFocus
     Zone = "Nmc2"
   Endif
-  
+
 End
 
 Public Sub Bachat_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     iachat = 0
     init_paiement()
@@ -2873,11 +2880,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Bachat()
-  
+
   If Not IsNull(Bachat.text) Then
     Bachat.Text = Utils.cpoint(Bachat.Text)
     If Val(Bachat.Text) = Null Then
@@ -2924,16 +2931,16 @@ Public Sub Valid_Bachat()
       Endif
     Endif
   Endif
-  
+
 End
 
 '***********************************
 '*      Gestion des avoirs         *
 '***********************************
 Public Sub Button18_Click()
-  
+
   Dim rlib As Result
-  
+
   init_paiement()
   If Bavoir.visible = True Then
     Bavoir.Clear
@@ -2978,11 +2985,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub cavoirs_keyPress()
-  
+
   If Key.code = Key.F8 Or If key.code = key.Esc Then
     Cavoirs.Clear
     Cavoirs.Visible = False
@@ -2999,11 +3006,11 @@ Public Sub cavoirs_keyPress()
     Bavoir.Select
     Zone = "Bavoir"
   Endif
-  
+
 End
 
 Public Sub Bavoir_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -3029,11 +3036,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Bavoir()
-  
+
   If Not IsNull(Bavoir.text) Then
     Bavoir.Text = Utils.cpoint(Bavoir.Text)
     If Val(Bavoir.Text) = Null Then
@@ -3082,11 +3089,11 @@ Public Sub Valid_Bavoir()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Cavoirs_Click()
-  
+
   Bavoir.Text = Cavoirs.Item[3]
   mavoir = Bavoir.text
   Numavoir = Cavoirs.Item[0]
@@ -3097,14 +3104,14 @@ Public Sub Cavoirs_Click()
   Bavoir.Select
   Zone = "Bavoir"
   $saisie = ""
-  
+
 End
 
 '*****************************************
 '*      Gestion des chèques cadeau       *
 '*****************************************
 Public Sub Button27_Click()
-  
+
   init_paiement()
   If Frame4.Visible = True Then
     Frame4.Visible = False
@@ -3118,11 +3125,11 @@ Public Sub Button27_Click()
     Nmc2.SetFocus
     Zone = "Nmc2"
   Endif
-  
+
 End
 
 Public Sub Chequecad_KeyPress()
-  
+
   If key.code = Key.F1 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -3137,7 +3144,7 @@ Public Sub Chequecad_KeyPress()
   If Key.code = key.F9 Then Button31_Click()
   If Key.code = key.F10 Then Button35_Click()
   If Key.code = key.F11 Then Button36_Click()
-  
+
   ChkPrx()
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
     Valid_Chequecad()
@@ -3149,11 +3156,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Chequecad()
-  
+
   If Not IsNull(Chequecad.text) Then
     Chequecad.Text = Utils.cpoint(Chequecad.Text)
     If Val(Chequecad.Text) = Null Then
@@ -3200,25 +3207,25 @@ Public Sub Valid_Chequecad()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*      Gestion des bons de réduction    *
 '*****************************************
 Public Sub Button36_Click()
-  
+
   init_paiement()
   Breduc.visible = True
   Breduc.text = "0,00"
   Breduc.SetFocus
   Breduc.Select
   Zone = "Breduc"
-  
+
 End
 
 Public Sub Breduc_KeyPress()
-  
+
   If key.code = Key.F11 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -3232,7 +3239,7 @@ Public Sub Breduc_KeyPress()
   If Key.code = key.F8 Then Button18_Click()
   If Key.code = key.F9 Then Button31_Click()
   If Key.code = key.F10 Then Button35_Click()
-  
+
   ChkPrx()
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
     Valid_Breduc()
@@ -3244,11 +3251,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Breduc()
-  
+
   If Not IsNull(Breduc.text) Then
     Breduc.Text = Utils.cpoint(Breduc.Text)
     If Val(Breduc.Text) = Null Then
@@ -3295,25 +3302,25 @@ Public Sub Valid_Breduc()
       Endif
     Endif
   Endif
-  
+
 End
 
 '******************************************
 '*      Gestion des chèques entreprise    *
 '******************************************
 Public Sub Button53_Click()
-  
+
   init_paiement()
   Tresto.visible = True
   Tresto.text = "0,00"
   Tresto.SetFocus
   Tresto.Select
   Zone = "Tresto"
-  
+
 End
 
 Public Sub Tresto_KeyPress()
-  
+
   If key.code = Key.F12 Or key.code = Key.esc Then
     init_paiement()
   Endif
@@ -3327,7 +3334,7 @@ Public Sub Tresto_KeyPress()
   If Key.code = key.F9 Then Button31_Click()
   If Key.code = key.F10 Then Button35_Click()
   If Key.code = key.F11 Then Button36_Click()
-  
+
   ChkPrx()
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
     Valid_Tresto()
@@ -3339,11 +3346,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Tresto()
-  
+
   If Not IsNull(Tresto.text) Then
     Tresto.Text = Utils.cpoint(Tresto.Text)
     If Val(Tresto.Text) = Null Then
@@ -3392,14 +3399,14 @@ Public Sub Valid_Tresto()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*         Gestion du bonus          *
 '*****************************************
 Public Sub Button31_Click()
-  
+
   If Val(Utils.cpoint(fbonusg)) = 0 Then
     Message.Info("Il n'y a pas de bonus en cours!")
   Else
@@ -3412,11 +3419,11 @@ Public Sub Button31_Click()
     Bonus.Select
     Zone = "Bonus"
   Endif
-  
+
 End
 
 Public Sub Bonus_KeyPress()
-  
+
   If key.code = Key.F9 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -3442,11 +3449,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Bonus()
-  
+
   If Val(Bonus.Text) > Val(Utils.cpoint(fbonusg)) Then
     Message.Error("Le montant saisi ne peut pas être supérieur au bonus !")
     Return
@@ -3498,12 +3505,12 @@ Public Sub Valid_Bonus()
       Endif
     Endif
   Endif
-  
+
 End
 
 '********************************************* On ajoute les points de fidélité en bas de ticket **********************
 Public Sub pointsF()
-  
+
   Dim rlib As Result
   Dim rbonus As Result
   Dim Txtbfac As String
@@ -3515,7 +3522,7 @@ Public Sub pointsF()
   Dim numl As Integer
   Dim prom As Boolean = False
   Dim abonus As Float
-  
+
   rlib = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabLibelTicket") & "")
   If rlib.Available Then Txtbfac = rlib!libeltk
   Aff_bastk()
@@ -3605,16 +3612,16 @@ Public Sub pointsF()
     Next
     LigTk.Columns[2].Width = 240
   End With
-  
+
 End
 
 '***********************************
 '*     Gestion des acomptes        *
 '***********************************
 Public Sub Button35_Click()
-  
+
   Dim rlib As Result
-  
+
   init_paiement()
   If Bacompte.visible = True Then
     Bacompte.Clear
@@ -3665,11 +3672,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub cacomptes_keyPress()
-  
+
   If Key.code = Key.F10 Or If key.code = key.Esc Then
     Cacomptes.Clear
     Cacomptes.Visible = False
@@ -3684,11 +3691,11 @@ Public Sub cacomptes_keyPress()
     Bacompte.Select
     Zone = "Bacompte"
   Endif
-  
+
 End
 
 Public Sub Bacompte_KeyPress()
-  
+
   If key.code = Key.F10 Or key.code = Key.esc Then
     init_paiement()
     inpm.SetFocus()
@@ -3714,11 +3721,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Valid_Bacompte()
-  
+
   If Not IsNull(Bacompte.text) Then
     Bacompte.Text = Utils.cpoint(Bacompte.Text)
     If Val(Bacompte.Text) = Null Then
@@ -3763,11 +3770,11 @@ Public Sub Valid_Bacompte()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Cacomptes_Click()
-  
+
   If Val(Utils.cpoint(TotalTk.text)) < Val(Utils.cpoint(Cacomptes.Item[3])) Then
     Message.Warning("Attention ! Vous ne pouvez pas saisir un\nacompte supérieur au montant du ticket !")
     Cacomptes.Clear
@@ -3783,7 +3790,7 @@ Public Sub Cacomptes_Click()
     Bacompte.Select
     Zone = "Bacompte"
   Endif
-  
+
 End
 
 '*********************************************On gère les mouvements d'espèces hors vente******************************
@@ -3791,7 +3798,7 @@ End
 '*     Gestion des entrées espèces       *
 '*****************************************
 Public Sub button23_Click()
-  
+
   mdp_admin()
   If GestMdp = 1 Then
     org = "EF3"
@@ -3817,44 +3824,44 @@ Public Sub button23_Click()
       Frame5.Raise
     Endif
   Endif
-  
+
 End
 
 Public Sub EspecesE_Click()
-  
+
   If EspecesE.value = True Then
     TypEnc = "E"
     Nmc3.SetFocus
   Endif
-  
+
 End
 
 Public Sub ChequesE_Click()
-  
+
   If ChequesE.value = True Then
     TypEnc = "H"
     Nmc3.SetFocus
   Endif
-  
+
 End
 
 Public Sub CartesE_Click()
-  
+
   If CartesE.value = True Then
     TypEnc = "C"
     Nmc3.SetFocus
   Endif
-  
+
 End
 
 Public Sub AcomptesE_Click()
-  
+
   Nmc3.SetFocus
-  
+
 End
 
 Public Sub Nmc3_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     Especes2.SetFocus
     Zone = "Especes2"
@@ -3873,18 +3880,18 @@ Public Sub Nmc3_KeyPress()
       Zone = "Article"
     Endif
   Endif
-  
+
 End
 
 Public Sub Especes2_GotFocus()
-  
+
   $saisie = ""
   Zone = "Especes2"
-  
+
 End
 
 Public Sub Especes2_KeyPress()
-  
+
   ChkPrx()
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     button28.SetFocus
@@ -3900,23 +3907,23 @@ Public Sub Especes2_KeyPress()
       Zone = "Article"
     Endif
   Endif
-  
+
 End
 
 Public Sub button28_KeyPress()
-  
+
   button28_Click()
-  
+
 End
 
 Public Sub button28_Click()
-  
+
   Valid_Especes2()
-  
+
 End
 
 Public Sub Valid_Especes2()
-  
+
   If Not IsNull(Especes2.text) Then
     Especes2.Text = Utils.cpoint(Especes2.Text)
     If Val(Especes2.Text) = Null Then
@@ -3937,14 +3944,14 @@ Public Sub Valid_Especes2()
       Imp_Especes(Mvt)
     Endif
   Endif
-  
+
 End
 
 '*****************************************
 '*     Gestion des sorties espèces       *
 '*****************************************
 Public Sub button22_Click()
-  
+
   mdp_admin()
   If GestMdp = 1 Then
     org = "F2"
@@ -3972,7 +3979,7 @@ Public Sub button22_Click()
       Frame5.Raise
     Endif
   Endif
-  
+
 End
 
 '**********************************************
@@ -3980,7 +3987,7 @@ End
 '**********************************************
 
 Public Sub Imp_Especes(tpesp As String)
-  
+
   Dim Posx As Integer
   Dim Posy As Integer
   Dim Filename As String
@@ -3988,7 +3995,7 @@ Public Sub Imp_Especes(tpesp As String)
   Dim Tpe2 As String
   Dim Tpe3 As String
   Dim sline As String
-  
+
   Filename = User.home & "/Ticket.pdf"
   If Imprimante = "DéfautA4" Then
     pdf = New Cfacture("P", "mm", "A4")
@@ -4088,26 +4095,26 @@ Public Sub Imp_Especes(tpesp As String)
   AcomptesE.Visible = True
   Cart.SetFocus
   Zone = "Article"
-  
+
 End
 
 Public Sub Maj_Mespeces(intitule As String, Reg As String, smnt As String, sqte As String)
-  
+
   Dim TabReglt As String
-  
+
   TabReglt = "Fiches_Reglts" & Ncaisse
   Utils.db.Exec("INSERT INTO " & TabReglt & " (intitule, type, montant, qte, date) VALUES (&1, &2, &3, &4, &5)", Intitule, Reg, smnt, sqte, Format$(Now, "dd-mm-yyyy"))
-  
+
 End
 
 Public Sub Maj_Acomptes(intitule As String, Reg As String, smnt As String, libelac As String)
-  
+
   Dim rJnl As Result
   Dim CptCaisse As String
   Dim Vic As String
   Dim Vichq As String
   Dim typeP As String
-  
+
   With Utils
     'On recupère les données pour la trésorerie.(journal et comptes de virement interne)
     rJnl = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabParam") & " ")
@@ -4138,30 +4145,30 @@ Public Sub Maj_Acomptes(intitule As String, Reg As String, smnt As String, libel
     ' On met à jour le numéro d'écriture
     Utils.db.Exec("UPDATE " & Cbase.Table("TabParam") & " set numecriture = &1, numecriture2 = &2", numr, numr2)
   End With
-  
+
 End
 
 ' On met à jour le collectif
 Public Sub Maj_Collectif(Cpt As String, intit As String, libelac As String, Mnt As String)
-  
+
   Dim Coll As String
   Dim cResult As Result
-  
+
   With Utils
     cResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabComptes") & " Where compte_cc = &1", Cpt)
     coll = cResult!coll_cc
     Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, collectif, intitule, dte, libelle, montantd, montantc, validee, provisoire, tresorerie, pointee, lettree, cloturee, relance, numerodef, numdoc, numlot) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19})", Jour, numr, coll, 1, Intit, Format$(Now, "yyyy-mm-dd"), Libelac, 0, Val(.cpoint(mnt)), 1, 0, 1, 0, 0, 1, 0, numr2, Ntk, Ntk)
     maj_solde(coll, Mnt)
   End With
-  
+
 End
 
 ' On met à jour le solde des comptes
 Public Sub maj_solde(Coll As String, Mnt As String)
-  
+
   Dim cResult As Result
   Dim Sld As Float
-  
+
   With utils
     cResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabComptes") & " Where compte_cc = &1", coll)
     If cResult!solde = "" Then
@@ -4171,17 +4178,17 @@ Public Sub maj_solde(Coll As String, Mnt As String)
     Endif
     Utils.db.Exec("UPDATE " & Cbase.Table("TabComptes") & " set solde = &2 Where compte_cc = &1", coll, Sld)
   End With
-  
+
 End
 
 '*****************************************************
 '*  Récuperation du dernier numéro d'écriture        *
 '*****************************************************
 Public Function Ecritures(dernumecr As String) As String
-  
+
   Dim Params As Result
   Dim nro As String
-  
+
   Params = Utils.db.Exec("SELECT " & dernumecr & " FROM " & Cbase.Table("TabParam") & " ")
   If Params.Available Then
     If IsNull(Params["" & numecr & ""]) Then
@@ -4191,7 +4198,7 @@ Public Function Ecritures(dernumecr As String) As String
     Endif
   Endif
   Return nro
-  
+
 End
 
 '****************************************Fin de la gestion des mouvements d'espèces hors vente******************************
@@ -4200,17 +4207,17 @@ End
 '*      Gestion du fond de caisse        *
 '*****************************************
 Public Sub button21_Click()
-  
+
   hForm2 = New Fondcaisse("Cai")
   hForm2.Showmodal()
-  
+
 End
 
 '*****************************************
 '*        on imprime le ticket           *
 '*****************************************
 Public Sub button15_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then Button15_Click()
   If Key.code = key.F7 Or If key.code = key.Esc Then
     If ColumnView1.count = 0 Then
@@ -4224,11 +4231,11 @@ Public Sub button15_KeyPress()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Button15_Click()
-  
+
   If iavoir = 1 Then
     If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
       Defaut_Tk()
@@ -4263,16 +4270,16 @@ Public Sub Button15_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Button37_Click()
-  
+
   If Clicompte = 1 And If LigTk.count > 0 Then
     Defaut_Tk()
   Else
     If Abs(Val(Utils.cpoint(Rticket.Text))) = 0 And LigTk.count > 0 Or If TextLabel5.text = "A rendre " Then
-      If ecole = False Then 
+      If ecole = False Then
         If IsNull($depot) Then
           Maj_Quantite()
         Else
@@ -4294,11 +4301,11 @@ Public Sub Button37_Click()
       Try Message.Error("Sortie de ticket impossible ! \n Le solde est différent de zéro.")
     Endif
   Endif
-  
+
 End
 
 Public Sub button37_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then Button37_Click()
   If Key.code = key.F7 Or If key.code = key.Esc Then
     If ColumnView1.count = 0 Then
@@ -4312,16 +4319,16 @@ Public Sub button37_KeyPress()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Entete_Tck(origine As String)
-  
+
   Dim ispc As Integer = 0 'Compteur des lignes d'entete
   Dim sline As String
   Dim i As Integer
   Dim Ent As New String[]
-  
+
   With Utils
     If Left$(Imprimante, 4) = "/dev" Then
       If TypeImp = "6000III" Then
@@ -4361,11 +4368,11 @@ Public Sub Entete_Tck(origine As String)
       Endif
     Endif
   End With
-  
+
 End
 
 Public Sub Serial_Tk()
-  
+
   With Utils
     If ColumnView1.Count > 0 Or iavoir = 1 Or If clicompte = 1 Then
       Entete_Tck("1")
@@ -4383,7 +4390,7 @@ Public Sub Serial_Tk()
         Endif
         Bcheque = False
       Endif
-      If ecole = False Then 
+      If ecole = False Then
         If IsNull($depot) Then
           Maj_Quantite()
         Else
@@ -4404,14 +4411,14 @@ Public Sub Serial_Tk()
       Zone = "Article"
     Endif
   End With
-  
+
 End
 
 Public Sub imp_ligtk()
-  
+
   Dim Lignes As Integer = 0
   Dim $Ligne As String
-  
+
   LigTk.MoveFirst()
   Print #Sport, "Ticket No " & Ntk & Space$(3) & datetk
   Print #Sport, " "
@@ -4458,15 +4465,15 @@ Public Sub imp_ligtk()
   Until LigTk.MoveNext()
   Print #Sport, Chr$(&H1B) & "a" & Chr$(0); ' On remet la justification a gauche
   Print #sport, Chr$(13); Chr$(10);
-  
+
 End
 
 Public Sub imp_ligtk2()
-  
+
   Dim i As Integer
   Dim Lignes As Integer = 0
   Dim $Ligne As String
-  
+
   With Utils
     For i = 1 To 2
       If i = 1 Then
@@ -4503,11 +4510,11 @@ Public Sub imp_ligtk2()
       Print #sport, Chr$(13); Chr$(10);
     Next
   End With
-  
+
 End
 
 Public Sub Imp_Cheque()
-  
+
   Dim sEntier As String
   Dim sDizaine As String
   Dim sline As String
@@ -4516,7 +4523,7 @@ Public Sub Imp_Cheque()
   Dim nb As Integer
   Dim $Monnaie As String = " Euros "
   Dim $Centimes As String = " centimes"
-  
+
   With Utils
     If Typeimp = "6000III" Then
       Nb = 60
@@ -4584,11 +4591,11 @@ Public Sub Imp_Cheque()
     Print #Sport, Chr$(&HC);
   End With
   Bcheque = False
-  
+
 End
 
 Public Sub Imp_Cheque1()
-  
+
   Dim sEntier As String
   Dim sDizaine As String
   Dim sline As String
@@ -4597,7 +4604,7 @@ Public Sub Imp_Cheque1()
   Dim nb As Integer
   Dim $Monnaie As String = " Euros "
   Dim $Centimes As String = " centimes"
-  
+
   With Utils
     If Typeimp = "6000III" Then
       Nb = 60
@@ -4672,17 +4679,17 @@ Public Sub Imp_Cheque1()
     Until LigTk.MoveNext()
   End With
   Bcheque = False
-  
+
 End
 
 Public Sub Defaut_Tk()
-  
+
   Dim Posy As Integer
   Dim Filename As String
   Dim sline As String
   Dim i As Integer
   Dim rcli As Result
-  
+
   If ColumnView1.Count > 0 Or iavoir = 1 Or clicompte = 1 Then
     Filename = User.home & "/Ticket.pdf"
     If Imprimante = "DéfautA4" Then
@@ -4757,7 +4764,7 @@ Public Sub Defaut_Tk()
     Else
       Impression.Ticket(Filename, "1")
     Endif
-    If ecole = False Then 
+    If ecole = False Then
       If IsNull($depot) Then
         Maj_Quantite()
       Else
@@ -4774,12 +4781,12 @@ Public Sub Defaut_Tk()
     Cart.SetFocus
     Zone = "Article"
   Endif
-  
+
 End
 
 '********************************** Initialisation des ports *********************************************
 Public Sub Init_sport()
-  
+
   If Sport.Status = Net.Active Then Close Sport
   Sport.PortName = Imprimante
   If Typeimp = "Tmu950"
@@ -4799,12 +4806,12 @@ Public Sub Init_sport()
     Message.Warning("Ouverture du port imprimante " & Sport.PortName & " impossible !\nVérifiez vos connexions SVP !")
     Quit
   Endif
-  
+
 End
 
 '************* gestion du port de la balance éléctronique **************************
 Public Sub Init_sport2()
-  
+
   If Sport2.Status = Net.Active Then Close Sport2
   If Settings["/Tbalance"] = "Tropper" Then
     Sport2.PortName = Settings["/portb"]
@@ -4830,39 +4837,39 @@ Public Sub Init_sport2()
   Endif
   Try Sport2.Open()
   If Error Then Message.Warning("Ouverture du port balance " & Sport2.PortName & " impossible !\nVérifiez vos connexions SVP !")
-  
+
 End
 
 Public Sub SPort2_Read()
-  
+
   Dim s As String
-  
+
   Read #Sport2, s, Lof(Sport2)
   Try Qte.text = Format$(Val(Utils.cpoint(Right$(s, 6))), "0.000")
-  
+
 End
 
 Public Sub Recup_Poids()
-  
+
   If Settings["/Tbalance"] = "Tropper" Then
     Print #Sport2, "P"; Chr$(13); Chr$(10)
   Else If Settings["/Tbalance"] = "Mettler Toledo" Then
     Print #Sport2, "W"; Chr$(13)
-  Else If Settings["/Tbalance"] = "Precia Molen" Then 
+  Else If Settings["/Tbalance"] = "Precia Molen" Then
     Print #Sport2, Chr$(1); Chr$(5); Chr$(48); Chr$(51); Chr$(76); Chr$(13); Chr$(10)
   Endif
-  
+
 End
 
 Public Sub Button34_Click()
-  
+
   If sBalance = True Then
     Recup_Poids()
     Wait 0.3
     SPort2_Read()
     Valid_Qte()
   Endif
-  
+
 End
 '********************************** Fin de la gestion des ports *********************************************
 
@@ -4871,13 +4878,13 @@ End
 '*******************************************************
 
 Public Sub mdp_admin()
-  
+
   If Settings["/admin"] = True Then GestMdp = 1
-  
+
 End
 
 Public Sub Mdp_KeyPress()
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     Valid_Mdp()
   Else
@@ -4889,11 +4896,11 @@ Public Sub Mdp_KeyPress()
       Zone = "Qte"
     Endif
   Endif
-  
+
 End
 
 Public Sub Valid_Mdp()
-  
+
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where admin = &1", "-1")
   If rResult.Available Then
     For Each rResult
@@ -4997,14 +5004,14 @@ Public Sub Valid_Mdp()
       Zone = "Nmc2"
     Endif
   Endif
-  
+
 End
 
 '*******************************************************
 '*          On initialise les paiements                *
 '*******************************************************
 Public Sub init_paiement()
-  
+
   Cheque.Visible = False
   Cheque.Clear
   icheque = 0
@@ -5033,14 +5040,14 @@ Public Sub init_paiement()
   Bacompte.visible = False
   Tresto.Clear
   Tresto.Visible = False
-  
+
 End
 
 '*******************************************************
 '*      On gère les boutons de l'impression            *
 '*******************************************************
 Public Sub Inpm_KeyPress()
-  
+
   If Key.code = key.F1 Then Button11_Click()
   If Key.code = key.F2 Then Button12_Click()
   If Key.code = key.F3 Then Button13_Click()
@@ -5066,36 +5073,36 @@ Public Sub Inpm_KeyPress()
       Endif
     Endif
   Endif
-  
+
 End
 
 '*******************************************************
 '*          On affiche le reste à payer                *
 '*******************************************************
 Public Sub Calc_reste(Montant As String)
-  
+
   Rticket.text = Val(Utils.cpoint(Rticket.text)) - Val(Utils.cpoint(Montant))
   Rticket.Text = Format$(Rticket.Text, "0.00")
   If Val(Utils.cpoint(Rticket.Text)) < 0 Then
     TextLabel5.Text = "A rendre "
     Aff_viseur("A rendre " & Format$(Abs(Val(Rticket.text)), "#######.00"))
   Endif
-  
+
 End
 
 '**********************************************************
 '*      Creation table temporaire pour totalisation       *
 '**********************************************************
 Public Sub TabTva()
-  
+
   Dim Tatva As String = "Tottva"
-  
+
   Utils.db.Exec("DROP TABLE IF EXISTS  Tottva")
   Utils.db.Exec("CREATE TABLE " & Tatva &
     "(code VarChar(10) NOT NULL," &
     "mtva VarChar(15)," &
     "PRIMARY KEY (code))" & "ENGINE = MYISAM")
-  
+
 End
 
 '*******************************************************
@@ -5103,14 +5110,14 @@ End
 '*******************************************************
 
 Public Sub Aff_bastk()
-  
+
   Dim rtva As Result
   Dim Tatva As String = "Tottva"
   Dim ttva, ttvam As Float = 0
   Dim mttc, mht As Float = 0
   Dim brem, btot As Boolean = False
   Dim $code As String
-  
+
   Mtrem = RemTot.text
   If IsNull(mtrem) Then mtrem = "0"
   Totaltva = 0
@@ -5132,14 +5139,14 @@ Public Sub Aff_bastk()
           If Not Error Then
             If LigTk.Item[5] = "O" And If Val(LigTk.Item[0]) = LigTk.count Then
               'Ligtk.MoveNext()
-              'Try LigTk.Item.Selected = True 
-              'If Error Then 
+              'Try LigTk.Item.Selected = True
+              'If Error Then
               Ligtk.MovePrevious()
               LigTk.Item.Selected = True
             Else
               If LigTk.Item[5] = "O" And If Val(LigTk.Item[0]) < LigTk.count Then
                 Ligtk.MoveNext()
-                LigTk.Item.Selected = True 
+                LigTk.Item.Selected = True
               Endif
             Endif
             If LigTk.Item[5] <> "S" Then
@@ -5150,7 +5157,7 @@ Public Sub Aff_bastk()
                 LigTk.Item.Selected = True
                 'If LigTk.Item[5] = "O" Then
                 'Ligtk.MovePrevious()
-                'Try LigTk.Item.Selected = True 
+                'Try LigTk.Item.Selected = True
                 'Endif
               Else
                 'LigTk.MovePrevious()
@@ -5158,12 +5165,12 @@ Public Sub Aff_bastk()
                 'If Not Error Then
                 If LigTk.Item[5] = "O" Then
                   Ligtk.MovePrevious()
-                  Try LigTk.Item.Selected = True 
+                  Try LigTk.Item.Selected = True
                 Else
                   If LigTk.Item[5] = "A" Then
                     LigTk.MovePrevious()
                     Try LigTk.Item.Selected = True
-                    mttc = Val(Utils.cpoint(LigTk.Item[11])) 
+                    mttc = Val(Utils.cpoint(LigTk.Item[11]))
                   Else
                     If LigTk.Item[5] = "MT" Then
                       LigTk.MovePrevious()
@@ -5177,7 +5184,7 @@ Public Sub Aff_bastk()
               Ligtk.MoveNext()
               Try LigTk.Item.Selected = True
               If Not Error Then
-                If LigTk.Item[5] <> "T" Then 
+                If LigTk.Item[5] <> "T" Then
                   LigTk.MovePrevious()
                   LigTk.Item.Selected = True
                   btot = False
@@ -5189,7 +5196,7 @@ Public Sub Aff_bastk()
                 Endif
               Else
                 LigTk.MoveLast()
-                LigTk.Item.Selected = True 
+                LigTk.Item.Selected = True
               Endif
             Endif
           Else
@@ -5202,7 +5209,7 @@ Public Sub Aff_bastk()
           $code = LigTk.Item[10]
         Else
           'If Not brem Then mttc = mttc * Abs(Val(Utils.cpoint(LigTk.Item[4])))
-          
+
         Endif
         Try mht = Val(Utils.cpoint(LigTk.Item[6]))
         Totalht = totalht + mht
@@ -5286,15 +5293,15 @@ Public Sub Aff_bastk()
   Inc iligne
   Inc iNlg
   RemTot.text = ""
-  
+
 End
 
 Public Sub Tvaremtot()
-  
+
   Dim rtva As Result
   Dim Tatva As String = "Tottva"
   Dim ttva As Float = 0
-  
+
   totaltva = 0
   Repeat
     rtva = Utils.db.Exec(" select * from " & Tatva & "")
@@ -5306,14 +5313,14 @@ Public Sub Tvaremtot()
     Endif
   Until LigTk.MoveNext()
   RemTot.Clear
-  
+
 End
 
 '*********************************************
 '*        On enregistre le ticket            *
 '*********************************************
 Public Sub Enrg_Tk()
-  
+
   Dim Rcai As Result
   Dim rFam As Result
   Dim Fam As String
@@ -5362,7 +5369,7 @@ Public Sub Enrg_Tk()
   Dim QteFam As String
   Dim Totpoint As Float = 0
   Dim Esp As Float = 0 'Montant des especes versées
-  
+
   Tab = "Fiches_EntTickets" & Ncaisse
   Tiketx = "Fiches_Ticketx" & Ncaisse
   Datetk = Format$(Now, "dd-mm-yyyy  hh-nn")
@@ -5503,7 +5510,7 @@ Public Sub Enrg_Tk()
       Utils.db.Exec("INSERT INTO " & Cbase.Table("TabAvoirs") & " (intitule, dte, montant, montantdu, ntk) VALUES (&1, &2, &3, &4, &5)", snavoir, datetk, Val(utils.cpoint(TotalTk.Text)), 0, Ntk)
     Endif
     Tab = "Fiches_LigTickets" & Ncaisse
-    
+
     'On enregistre toutes les lignes du ticket
     LigTk.MoveFirst()
     Repeat
@@ -5527,7 +5534,7 @@ Public Sub Enrg_Tk()
       If IsNull(smrem) Then smrem = 0
       bloc = LigTk.Item[8]
       If iRattente = 0 Then
-        If stype = "T" Then 
+        If stype = "T" Then
           Try smtva = LigTk.Item[9]
         Else
           Try smtva = Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht))
@@ -5540,8 +5547,8 @@ Public Sub Enrg_Tk()
           Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{11}, &{11}, &{12}, &{13})", Numtk, snumlig, scode, sdesign, smontant, sqte, stype, fam, smontantht, smrem, LigTk.Item[9], LigTk.Item[8], LigTk.Item[10])
         Endif
       Endif
-    Until LigTk.MoveNext() 
-    
+    Until LigTk.MoveNext()
+
     'Puis on calcule les totaux
     LigTk.MoveFirst()
     Repeat
@@ -5575,7 +5582,7 @@ Public Sub Enrg_Tk()
           If stype = "O" Then
             LigTk.MoveNext()
             Try LigTk.Item.Selected = True
-            Try stype = LigTk.Item[5] 
+            Try stype = LigTk.Item[5]
           Endif
           If stype <> "M" And If stype <> "S" And If stype <> "T" Then
             LigTk.MovePrevious()
@@ -5679,16 +5686,16 @@ Public Sub Enrg_Tk()
     Totgain = 0
     bretro = False
   End With
-  
+
 End
 
 Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
-  
+
   Dim rReglt As Result
   Dim TabReglt As String
   Dim MntReglt As String = "0"
   Dim QteReglt As String = "0"
-  
+
   TabReglt = "Fiches_Reglts" & Ncaisse
   If Reg = "Q" Then
     Reg = "N"
@@ -5714,11 +5721,11 @@ Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Init_LigTk()
-  
+
   LigTk.Columns.count = 5
   LigTk.Columns[0].Width = 0
   LigTk.Columns[1].Width = 80
@@ -5727,11 +5734,11 @@ Public Sub Init_LigTk()
   LigTk.Columns[3].Alignment = 2
   LigTk.Columns[4].Width = 30
   LigTk.Columns[4].Alignment = 2
-  
+
 End
 
 Public Sub Init_Columnview1()
-  
+
   ColumnView1.Columns.count = 3
   ColumnView1.Columns[0].Width = 0
   ColumnView1.Columns[1].Text = "Mode de réglement"
@@ -5739,11 +5746,11 @@ Public Sub Init_Columnview1()
   ColumnView1.Columns[2].Text = "Montant"
   ColumnView1.Columns[2].Width = 100
   ColumnView1.Columns[2].Alignment = 2
-  
+
 End
 
 Public Sub Init_Reg()
-  
+
   Frame2.visible = False
   Especes.Clear
   Carte.Clear
@@ -5758,13 +5765,13 @@ Public Sub Init_Reg()
   Cart.Select
   Rticket.text = "0"
   Mticket.text = "0"
-  
+
 End
 
 '******************************************************* Gestion des facturettes *************************************************
 
 Public Sub Button26_Click()
-  
+
   If Frame6.Visible = True Then
     Frame6.Visible = False
     Nticket.Clear
@@ -5797,11 +5804,11 @@ Public Sub Button26_Click()
       'Cart.setfocus
     Endif
   Endif
-  
+
 End
 
 Public Sub Nticket_KeyPress()
-  
+
   Entetcli = ""
   $iSpc.clear
   $iSpc2.Clear
@@ -5815,15 +5822,15 @@ Public Sub Nticket_KeyPress()
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     Valid_Nticket()
   Endif
-  
+
 End
 
 Public Sub Valid_Nticket()
-  
+
   Dim Tabe As String
   Dim rntck As Result
   Dim rcli As Result
-  
+
   If Not IsNull(Nticket.Text) Then
     Tabe = "Fiches_EntTickets" & Ncaisse
     rntck = Utils.db.Exec(" select * from " & Tabe & " where numero = &1 and statut = &2", Nticket.Text, "0")
@@ -5857,7 +5864,7 @@ Public Sub Valid_Nticket()
           If Left$(Imprimante, 4) = "/dev" Then
             Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2
           Else
-            Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2 & "\n" 
+            Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2 & "\n"
           Endif
           Serial_Facture()
         Endif
@@ -5886,13 +5893,13 @@ Public Sub Valid_Nticket()
       Nticket.Select
     Endif
   Endif
-  
+
 End
 
 Public Sub impressionbon(clientc As String)
-  
+
   Dim rcli As Result
-  
+
   If Not IsNull(clientc) Then
     rcli = Utils.db.Exec(" select * from " & Cbase.Table("TabCli") & " where cli_code = &1", clientc)
     Entetcli = rcli!cli_rs_soc & " " & rcli!cli_nom & " " & rcli!cli_pnm & "\n" & rcli!cli_adr1 & "\n" & rcli!cli_adr2 & "\n" & rcli!cli_cd_ptl & " " & rcli!cli_ville & "\n"
@@ -5914,7 +5921,7 @@ Public Sub impressionbon(clientc As String)
     If Left$(Imprimante, 4) = "/dev" Then
       Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2
     Else
-      Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2 & "\n" 
+      Entetet = Entetet & "Reimpression du ticket No " & Nticket.text & Space$(3) & datetk2 & "\n"
     Endif
     Serial_Facture()
   Endif
@@ -5939,21 +5946,21 @@ Public Sub impressionbon(clientc As String)
   Nticket.Clear
   Cart.SetFocus
   Zone = "Article"
-  
+
 End
 
 Public Sub ChkNtk()
-  
+
   If InStr("0123456789", Key.Text) = 0 Then
     If key.code <> key.BackSpace And Key.Code <> Key.tab And Key.Code <> Key.Delete And Key.code <> Key.enter And Key.code <> Key.return And key.code <> 37 And key.code <> 42 And key.code <> 43 And key.code <> 45 And key.code <> 47 Then
       Stop Event
     Endif
   Endif
-  
+
 End
 
 Public Sub Nmc4_KeyPress()
-  
+
   If key.code = key.Escape Or key.code = key.F12 Then
     Frame7.Visible = False
     Nmc4.Clear
@@ -5964,12 +5971,12 @@ Public Sub Nmc4_KeyPress()
   If key.code = key.F2 And Settings["/histocli"] Then
     Clients_Divers()
   Endif
-  
+
 End
 
 Public Sub button29_Click()
   ' on imprime
-  
+
   If Not IsNull(Nmc4.Text) Then
     If Settings["/histocli"] Then Enrg_Clientd()
     Ent_tk2()
@@ -5991,18 +5998,18 @@ Public Sub button29_Click()
     Endif
     Message.Warning("Vous devez saisir les coordonnées du client\n avant d'imprimer la facture !")
   Endif
-  
+
 End
 
 Public Sub Ent_tk2()
-  
+
   Entetet = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entetet = Entetet & "Caissier(e) : " & $Caissiere
   Entetet = Entetet & Pointille & Left$(pointille, 30) & "\n"
   'IF Imprimante = "DéfautA4" THEN Entetet = Entetet & "Facture No " & Nticket.text & Space$(35) & Datetk2 & "\n"
   'IF Imprimante = "/dev/ttyS0" THEN Entetet = Entetet & "Facture No " & Nticket.text & Space$(3) & datetk2
   Entetet = Entetet & "Facture No " & Nticket.text & Space$(10) & "Le " & Datetk2 & "\n"
-  
+
 Catch
   If Start.son Then
     If Start.son Then
@@ -6010,18 +6017,18 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Serial_Facture()
-  
+
   Dim Tabe As String
   Dim rntck As Result
   Dim sline As String
   Dim i As Integer = 0
   Dim intit As String
   Dim ispc As Integer = 0 'Compteur des lignes d'entete
-  
+
   Tabe = "Fiches_LigTickets" & Ncaisse
   With Utils
     i = 0
@@ -6083,11 +6090,11 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Defaut_Facture()
-  
+
   Dim Tabe As String
   Dim rntck As Result
   Dim Posx As Integer = 4
@@ -6096,7 +6103,7 @@ Public Sub Defaut_Facture()
   Dim sline As String
   Dim i As Integer = 0
   Dim ipos As Integer
-  
+
   Tabe = "Fiches_LigTickets" & Ncaisse
   Filename = User.home & "/Ticket.pdf"
   If Imprimante = "DéfautA4" Then
@@ -6211,16 +6218,16 @@ Catch
     Endif
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 '*************************************** Gestion des tickets X et Z et fermeture caisse **********************************************
 
 'On imprime les tickets X
 Public Sub Button20_Click()
-  
+
   Dim sIntitule As String
-  
+
   sIntitule = "Caisse No" & Ncaisse & " : Impression du ticket X le " & Format$(Now, "dd-mm-yyyy  hh-nn")
   If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
     Defaut_Ticketxz(sIntitule, False)
@@ -6229,12 +6236,12 @@ Public Sub Button20_Click()
     Serial_Ticketxz(sIntitule, "x")
     Defaut_Ticketxz(sIntitule, False)
   Endif
-  
+
 End
 
 ' **************************************** On imprime la bande Z *****************************************************
 Public Sub button24_Click()
-  
+
   mdp_admin()
   If GestMdp = 1 Then
     org = "B24"
@@ -6259,12 +6266,12 @@ Public Sub button24_Click()
     Endif
   Endif
 Catch
-  Message.Error("Impression Bande Z impossible ! Le chemin de l'historique n'est pas défini dans les préférences de la caisse") 
-  
+  Message.Error("Impression Bande Z impossible ! Le chemin de l'historique n'est pas défini dans les préférences de la caisse")
+
 End
 
 Public Sub Ticketz()
-  
+
   Dim rtx As Result
   Dim Tabx As String
   Dim Tabz As String
@@ -6274,7 +6281,7 @@ Public Sub Ticketz()
   Dim Tiketx As String
   Dim Tiketz As String
   Dim sintitule As String
-  
+
   Tabx = "Fiches_EntTickets" & Ncaisse
   Tabz = "Fiches_EntTicketz"
   Tiketx = "Fiches_LigTickets" & Ncaisse
@@ -6313,7 +6320,7 @@ Public Sub Ticketz()
           If rtx.Available Then
             Repeat
               Try Utils.db.Exec("delete FROM " & Tabx & " where numero = &1", rtx!numero)
-              Try Utils.db.Exec("delete FROM " & Tiketx & " where numero = &1", rtx!numero)  
+              Try Utils.db.Exec("delete FROM " & Tiketx & " where numero = &1", rtx!numero)
             Until rtx.MoveNext()
           Endif
           'on met a jour les fichiers tampons du serveur
@@ -6382,7 +6389,7 @@ Catch
   Endif
   Try message.Error(Error.Text & " " & Error.where)
   Return
-  
+
 End
 
 '****************************************************************************
@@ -6390,11 +6397,11 @@ End
 '****************************************************************************
 
 Private Function margeart(code As String, qte As String, mht As String, rem As String) As Float
-  
+
   Dim res As Result
   Dim marge As Float
   Dim fmht, fqte As Float
-  
+
   marge = 0
   res = utils.db.Exec("SELECT * FROM Fiches_Art WHERE art_code=&1", code)
   If res.Available Then
@@ -6404,11 +6411,11 @@ Private Function margeart(code As String, qte As String, mht As String, rem As S
     marge = fmht - (fqte * res!art_prvt)
   Endif
   Return marge
-  
-End 
+
+End
 
 Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
-  
+
   Dim rTkx, rttva As Result
   Dim rTkFam As Result
   Dim rTkhv, rTkl As Result
@@ -6433,7 +6440,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   Dim Totnbtck, X2, Y2, NBT As Integer = 0
   Dim Boncaisse, tcheque, tcarte, tespece As Float
   Dim ipos As Integer
-  
+
   Tabe = "Fiches_EntTickets" & Ncaisse
   Tabx = "Fiches_Ticketx" & Ncaisse
   Tabr = "Fiches_Reglts" & Ncaisse
@@ -6805,11 +6812,11 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       Cart.SetFocus
     Endif
   End With
-  
+
 End
 
 Public Sub DupliZ(Zfile As String)
-  
+
   If Not Exist(Settings["/ChmZ"]) Then Try Mkdir Settings["/ChmZ"]
   If Error Then
     Message.Error("Problème lors de la création d'un répertoire\nMerci de créer manuellement un répertoire nommé 'Impressions'")
@@ -6818,11 +6825,11 @@ Public Sub DupliZ(Zfile As String)
     Shell "cp " & Zfile & " " & Settings["/ChmZ"] & "/" & "Ticket.pdf" & Format$(Now, "ddmmyyyy-hh-nn") Wait
     Wait 0.5
   Endif
-  
+
 End
 
 Public Sub Serial_Ticketxz(sintitule As String, origine As String)
-  
+
   Dim rTkx, rttva As Result
   Dim rTkFam As Result
   Dim Tabx As String
@@ -6842,7 +6849,7 @@ Public Sub Serial_Ticketxz(sintitule As String, origine As String)
   Dim sLfam As String
   Dim Enc As Boolean = False
   Dim tcheque, tcarte, tespece As Float
-  
+
   Try sLfam = Replace$(rTkFam!libelle, "\n", " ")
   Tabe = "Fiches_EntTickets" & Ncaisse
   Tabx = "Fiches_Ticketx" & Ncaisse
@@ -7025,13 +7032,13 @@ Public Sub Serial_Ticketxz(sintitule As String, origine As String)
     Print #sport, ""
     'Entete_Tck("1")
   Endif
-  
+
 End
 
 Public Sub Dupli()
-  
+
   Dim chemin As String
-  
+
   Chemin = User.Home & "/HistoTickets-" & User.name
   If Not Exist(chemin) Then Mkdir chemin
   Chemin = Chemin & "/" & Format$(Now, "yyyy")
@@ -7040,21 +7047,21 @@ Public Sub Dupli()
   If Not Exist(chemin) Then Try Mkdir chemin
   Shell "cp " & User.home & "/" & "Ticket.pdf" & " " & chemin Wait
   Shell "mv " & chemin & "/" & "Ticket.pdf " & chemin & "/" & "Ticket" & Format(Now, "yyyymmddhhnnss") & ".pdf" Wait
-  
+
 End
 
 Public Sub Button25_Click()
-  
+
   Me.CLOSE
-  
+
 End
 
 '****************************************Gestion des articles**************************************************
 
 Public Sub SelectionArt()
-  
+
   Dim MyForm As TriArticles
-  
+
   Bsel = False
   sel = ""
   Tri = "art_code"
@@ -7068,33 +7075,33 @@ Public Sub SelectionArt()
     Cart.SetFocus
     Zone = "Article"
   Endif
-  
+
 End
 
 Public Sub ChkPrx()
-  
+
   If InStr("0123456789,.", Key.Text) = 0 Then
     If key.code <> key.BackSpace And Key.Code <> Key.tab And Key.Code <> Key.Delete And Key.code <> Key.enter And Key.code <> Key.return And key.code <> 37 And key.code <> 42 And key.code <> 43 And key.code <> 45 And key.code <> 47 And key.code <> key.F3 Then
       Stop Event
     Endif
   Endif
-  
+
 End
 
 Public Sub ChkBs()
-  
+
   If InStr("0123456789", Key.Text) = 0 Then
     If key.code <> key.BackSpace And Key.Code <> Key.tab And Key.Code <> Key.Delete And Key.code <> Key.enter And Key.code <> Key.return And key.code <> 37 And key.code <> 42 And key.code <> 43 And key.code <> 45 And key.code <> 47 And key.code <> key.F3 Then
       Stop Event
     Endif
   Endif
-  
+
 End
 
 Public Sub Aff_Art()
-  
+
   Dim rarts As Result
-  
+
   Apromo = False
   Rarts = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabArt") & " where art_code = &1", Cart.Text)
   If Rarts.Available Then
@@ -7107,7 +7114,7 @@ Public Sub Aff_Art()
     Pvttc.Text = Format$(Rarts!art_pvttc, Nbdec)
     Tva = Rarts!art_tva
     Txtva = Rarts!art_tva
-    If bretro Then 
+    If bretro Then
       If bretro Then pvht = Format$(Rarts!art_prvt * Val(Val_retro), Nbdec)
       Calc_TTC()
     Endif
@@ -7131,7 +7138,7 @@ Public Sub Aff_Art()
     Qte.Select
     Zone = "Qte"
   Endif
-  
+
 End
 
 '******************************************* Gestion des clients *************************************************
@@ -7139,9 +7146,9 @@ End
 '*      Le bouton sert a rechercher les clients           *
 '**********************************************************
 Public Sub Button30_click()
-  
+
   'Dim MyForm As Triclients
-  
+
   bsel = False
   If clicompte = 0 Then
     'MyForm = New Triclients()
@@ -7157,17 +7164,17 @@ Public Sub Button30_click()
     Endif
     Message.Warning("Il y a déjà un bon de caisse en cours de saisie !")
   Endif
-  
+
 End
 
 '******************************************
 '*      Selection du  code client         *
 '******************************************
 Public Sub Recup_Client()
-  
+
   Dim Clitab As Result
   Dim solde, encours As Float
-  
+
   Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCli") & " as c inner join  " & Cbase.Table("TabComptes") & " as a on a.compte_cc = c.cli_code where cli_code = &1", Clicode)
   If Not Error Then
     Try encours = Val(Utils.cpoint(Clitab!cli_plaf_ecrs))
@@ -7188,7 +7195,7 @@ Public Sub Recup_Client()
   Clicompte = 1
   Cart.SetFocus
   Zone = "Article"
-  
+
 End
 
 '******************************************* Gestion des clients divers (utilisé pour les facturettes) *************************************************
@@ -7196,9 +7203,9 @@ End
 '*      Le bouton sert a rechercher les clients           *
 '**********************************************************
 Public Sub Clients_Divers()
-  
+
   'Dim MyForm As TriclientsD
-  
+
   bsel = False
   'If IsNull(Nmc4.Text) Then
   'MyForm = New TriclientsD("Caisse", "")
@@ -7212,16 +7219,16 @@ Public Sub Clients_Divers()
   If Bsel = True Then
     Recup_Clientd()
   Endif
-  
+
 End
 
 '******************************************
 '*      Selection du  code client         *
 '******************************************
 Public Sub Recup_Clientd()
-  
+
   Dim Clitab As Result
-  
+
   Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabClid") & " where lind = &1", Clicoded)
   If Not Error Then
     Nmc4.Text = Clitab!adr
@@ -7230,14 +7237,14 @@ Public Sub Recup_Clientd()
   Else
     slind = ""
   Endif
-  
+
 End
 
 Public Sub Enrg_Clientd()
-  
+
   Dim Clitab As Result
   Dim nom As String[]
-  
+
   nom = Split(Nmc4.Text, "\n")
   Try Clitab = Utils.db.Exec("SELECT * FROM  " & Cbase.Table("TabClid") & " where locate(&1, adr)", nom[0])
   If Clitab.Available Then
@@ -7251,7 +7258,7 @@ Public Sub Enrg_Clientd()
     Utils.db.Exec("UPdate  " & Cbase.Table("TabClid") & "  SET  adr = &1, ddate = &2  WHERE lind = &3", Nmc4.Text, Format$(Now, "yyyymmdd"), slind)
   Endif
   slind = ""
-  
+
 End
 
 '******************************************* Gestion des cartes de fidélité *************************************************
@@ -7259,15 +7266,15 @@ End
 '*      CTRL + F8 pour appeler les cartes de fidélité     *
 '**********************************************************
 Public Sub Button32_Click()
-  
+
   CartesFidelite()
-  
+
 End
 
 Public Sub CartesFidelite()
-  
+
   Dim MyForm As Tricartes
-  
+
   Bsel = False
   sel = ""
   If clicompte = 0 Then
@@ -7285,7 +7292,7 @@ Public Sub CartesFidelite()
     Message.Warning("Il y a un bon de caisse en cours de saisie ! Appel des cartes impossible")
     Cart.setfocus
   Endif
-  
+
 End
 
 '**************************************** Gestion du stock *****************************************************************
@@ -7293,11 +7300,11 @@ End
 '* Maj de la quantite en stock en moins  *
 '*****************************************
 Public Sub Maj_Quantite()
-  
+
   Dim Qstock As Float
   Dim Qline As Float
   Dim rStk As Result
-  
+
   Utils.db.Exec("LOCK TABLES " & Cbase.Table("TabArt") & " WRITE, " & Cbase.Table("TabArtPromo") & " WRITE ")
   With utils
     If LigTk.Count <> 0 Then
@@ -7328,18 +7335,18 @@ Public Sub Maj_Quantite()
     Qstock = 0
   End With
   Utils.db.Exec("UNLOCK TABLES")
-  
+
 End
 
 '**********************************************************
 '*        Maj de la quantite en stock en plus            *
 '**********************************************************
 Public Sub Maj_Quantite2()
-  
+
   Dim Qstock As Float
   Dim Qline As Float
   Dim rStk As Result
-  
+
   Utils.db.Exec("LOCK TABLES " & Cbase.Table("TabArt") & " WRITE, " & Cbase.Table("TabArtPromo") & " WRITE ")
   With utils
     If LigTk.Count <> 0 Then
@@ -7366,15 +7373,15 @@ Public Sub Maj_Quantite2()
     Qstock = 0
   End With
   Utils.db.Exec("UNLOCK TABLES")
-  
+
 End
 
 Public Sub Maj_QteDep()
-  
+
   Dim Qstock As Float
   Dim Qline As Float
   Dim rStk As Result
-  
+
   Utils.db.Exec("LOCK TABLES Fiches_StkDepots WRITE, " & Cbase.Table("TabArtPromo") & " WRITE ")
   With utils
     If LigTk.Count <> 0 Then
@@ -7403,18 +7410,18 @@ Public Sub Maj_QteDep()
     Qstock = 0
   End With
   Utils.db.Exec("UNLOCK TABLES")
-  
+
 End
 
 '**********************************************************
 '*        Maj de la quantite en stock en plus            *
 '**********************************************************
 Public Sub Maj_QteDep2()
-  
+
   Dim Qstock As Float
   Dim Qline As Float
   Dim rStk As Result
-  
+
   Utils.db.Exec("LOCK TABLES Fiches_StkDepots WRITE, " & Cbase.Table("TabArtPromo") & " WRITE ")
   With utils
     If LigTk.Count <> 0 Then
@@ -7439,14 +7446,14 @@ Public Sub Maj_QteDep2()
     Qstock = 0
   End With
   Utils.db.Exec("UNLOCK TABLES")
-  
+
 End
 
 Public Sub Tbremq_Create()
-  
+
   Dim tb As Integer
   Dim $r As String
-  
+
   Tbrem.Width = 360
   Tbrem.Height = 170
   Tbrem.x = remise.X - 60
@@ -7470,13 +7477,13 @@ Public Sub Tbremq_Create()
     Tbrem.Rows[tb].text = $R
   Next
   Tbrem.visible = False
-  
+
 End
 
 Public Sub Tbrem_Click()
-  
+
   Dim iRow As Integer
-  
+
   irow = tbrem.row
   Tbrem.MoveTo(irow, 2)
   Try Remise.Text = Format(Val(Utils.cpoint(Tbrem.Current.Text)), "0.00")
@@ -7486,28 +7493,28 @@ Public Sub Tbrem_Click()
   Remise.Select
   Zone = "Remise"
   iRem = 1
-  
+
 End
 
 'On supprime les lignes de règlements
 Public Sub ColumnView1_KeyPress()
-  
+
   If key.code = key.Delete Then
     ColumnView1_Delete()
   Endif
-  
+
 End
 
 Public Sub ColumnView1_Activate()
-  
+
   ColumnView1_Delete()
-  
+
 End
 
 Public Sub ColumnView1_Delete()
-  
+
   Dim numl As Integer
-  
+
   If ColumnView1.count > 0 Then
     If message.Question("Voulez-vous supprimer les lignes de règlements ?", "Oui", "Non") = 1 Then
       Ligtk.MoveFirst()
@@ -7527,37 +7534,37 @@ Public Sub ColumnView1_Delete()
       inpm.SetFocus()
     Endif
   Endif
-  
+
 End
 
 Public Sub LigTk_KeyPress()
-  
+
   If key.code = key.Delete Then
     Ligtk_Delete()
   Endif
-  
+
 End
 
 Public Sub Suppr_Click()
-  
+
   Ligtk_Delete()
-  
+
 End
 
 Public Sub LigTk_Activate()
-  
+
   Ligtk_Delete()
-  
+
 End
 
 Public Sub Ligtk_Delete()
-  
+
   Dim Block, $Block, Tligne As String
   Dim numl As Integer
   Dim pu, quantite As String
   Dim tot As String
   Dim Rem, Trem As Boolean = False
-  
+
   If ColumnView1.count = 0 Then
     If message.Question("Voulez-vous supprimer cette ligne ?\nLes lignes de remise sur total seront également supprimées.", "Oui", "Non") = 1 Then
       Ligtk.MoveFirst()
@@ -7582,9 +7589,9 @@ Public Sub Ligtk_Delete()
           Break
         Endif
       Until Ligtk.MoveNext()
-      
+
       RenameLigne()
-      
+
       'On supprime les lignes de remise sur total
       LigTk.MoveFirst
       For numl = 1 To LigTk.count
@@ -7600,7 +7607,7 @@ Public Sub Ligtk_Delete()
           Endif
         Endif
       Next
-      
+
       'On recalcule le total du ticket
       LigTk.MoveFirst
       TotalTk.Text = 0
@@ -7648,7 +7655,7 @@ Public Sub Ligtk_Delete()
                   'Pu = LigTk.Current[3]
                   'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(pu)), "0.00")
                 Endif
-                
+
               Endif
             Endif
             'Tligne = LigTk.Item[5]
@@ -7667,9 +7674,9 @@ Public Sub Ligtk_Delete()
             If LigTk.Item[5] = "A" Then
               TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
               Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-              Totalht = Format$(Totalht, "0.00") 
+              Totalht = Format$(Totalht, "0.00")
             Endif
-            LigTk.MoveNext() 
+            LigTk.MoveNext()
           Endif
         Endif
       Next
@@ -7680,13 +7687,13 @@ Public Sub Ligtk_Delete()
     Message.Warning("Suppression impossible, un règlement a été saisi !")
   Endif
 Catch
-  
+
 End
 
 Public Sub RenameLigne()
-  
+
   Dim nlig As Integer = 1
-  
+
   LigTk.MoveFirst()
   Repeat
     Try LigTk.item.Selected = True
@@ -7711,85 +7718,85 @@ Public Sub RenameLigne()
   Cart.SetFocus
   Cart.Select
   Zone = "Article"
-  
+
 End
 
 Public Sub Button38_Click()
-  
+
   Select Case Zone
     Case "Design"
       Pvttc.SetFocus
       Pvttc.Select
       Zone = "Pvttc"
-      
+
     Case "Qte"
       Valid_Qte()
       Cart.SetFocus()
-      
+
     Case "Commentaire"
       Valid_commentaire()
       Cart.SetFocus()
-      
+
     Case "Article"
       Valid_Cart()
-      
+
     Case "Remise"
       Valid_Remise()
-      
+
     Case "Pvttc"
       TestPvttc()
   End Select
-  
+
 End
 
 Public Sub Button39_Click()
-  
+
   Select Case Zone
     Case "Especes"
       Valid_Especes()
-      
+
     Case "Carte"
       Valid_Carte()
-      
+
     Case "Cheque"
       Valid_Cheque()
-      
+
     Case "Chequecad"
       Valid_Chequecad()
-      
+
     Case "Credit"
       Valid_Credit()
-      
+
     Case "Bachat"
       Valid_Bachat()
-      
+
     Case "Bacompte"
       Valid_Bacompte()
-      
+
     Case "Bavoir"
       Valid_Bavoir()
-      
+
     Case "Bonus"
       Valid_Bonus()
-      
+
     Case "Breduc"
       Valid_Breduc()
-      
+
     Case "Tresto"
       Valid_Tresto()
-      
+
   End Select
-  
+
 End
 
 Public Sub Button41_Click()
-  
+
   Valid_Nticket()
-  
+
 End
 
 Public Sub Button43_Click()
-  
+
   If Not IsNull(Zone) Then
     If Zone = "Especes" Then
       Especes.Text = ""
@@ -7828,11 +7835,11 @@ Public Sub Button43_Click()
       Bacompte.Text = ""
     Endif
   Endif
-  
+
 End
 
 Public Sub Button44_click()
-  
+
   If Not IsNull(Zone) Then
     If Zone = "Nmc3" Then
       Nmc3.Text = ""
@@ -7841,36 +7848,36 @@ Public Sub Button44_click()
       Especes2.Text = ""
     Endif
   Endif
-  
+
 End
 
 Public Sub Button46_click()
-  
+
   If Not IsNull(RemTot.text) Then
     Valid_Remtot()
   Else
     Frame1.visible = False
   Endif
-  
+
 End
 
 Public Sub Button47_Click()
-  
+
   Nmc4.Text = Nmc4.text & "\n"
   $saisie = Nmc4.Text
-  
+
 End
 
 Public Sub Button50_Click()
-  
+
   Zone = "Nticket"
-  
+
 End
 
 Public Sub Entree_Click()
-  
+
   Select Case Zone
-      
+
     Case "Article"
       If iComm = 1 Then
         Valid_commentaire()
@@ -7878,286 +7885,286 @@ Public Sub Entree_Click()
         Valid_Cart()
       Endif
       Stop Event
-      
+
     Case "Design"
       Pvttc.SetFocus
       Pvttc.select
       Stop Event
-      
+
     Case "Pvttc"
       bFam = False
       TestPvttc()
       Stop Event
-      
+
     Case "Qte"
       Valid_Qte()
       Stop Event
-      
+
     Case "Remise"
       Valid_Remise()
       Stop Event
-      
+
     Case "Nticket"
       Valid_Nticket()
       Stop Event
   End Select
-  
+
   If Zone = "Mdp" Then
     Valid_Mdp()
   Endif
-  
+
   If Zone = "Nmc3" Then
     Especes2.SetFocus
   Endif
   $saisie = ""
-  
+
 End
 
 Public Sub Panel12_KeyPress()
-  
+
   If zone = "Qte" Then Qte.Text = Qte.Text & Key.code
-  
+
 End
 
 Public Sub Efface_Click()
-  
+
   If Zone = "Mdp" Then
     Mdp.text = ""
   Endif
-  
+
   If Zone = "Article" Then
     Cart.Text = ""
   Endif
-  
+
   If Zone = "Design" Then
     Design.Text = ""
   Endif
-  
+
   If Zone = "Qte" Then
     Qte.Text = "1"
   Endif
-  
+
   If Zone = "Pvttc" Then
     Pvttc.Text = "0,00"
   Endif
-  
+
   If zone = "Commentaire" Then
     Cart.Text = ""
   Endif
-  
+
   If zone = "Remise" Then
     Remise.Text = "0,00"
     irem = 0
   Endif
-  
+
   If zone = "Especes" Then
     Especes.Text = "0,00"
   Endif
-  
+
   If zone = "Carte" Then
     Carte.Text = "0,00"
   Endif
-  
+
   If zone = "Cheque" Then
     Cheque.Text = "0,00"
   Endif
-  
+
   If zone = "Tresto" Then
     Tresto.Text = "0,00"
   Endif
-  
+
   If zone = "Credit" Then
     Credit.Text = "0,00"
   Endif
-  
+
   If zone = "Bachat" Then
     Bachat.Text = "0,00"
   Endif
-  
+
   If zone = "Chequecad" Then
     Chequecad.Text = "0,00"
   Endif
-  
+
   If zone = "Bavoir" Then
     Bavoir.Text = "0,00"
   Endif
-  
+
   If zone = "Bonus" Then
     Bonus.Text = "0,00"
   Endif
-  
+
   If zone = "Bacompte" Then
     Bacompte.Text = "0,00"
   Endif
-  
+
   If zone = "Breduc" Then
     Breduc.Text = "0,00"
   Endif
-  
+
   If zone = "Nmc" Then
     Nmc.Text = ""
   Endif
-  
+
   If zone = "Nmc2" Then
     Nmc2.Text = ""
   Endif
-  
+
   If zone = "Nmc3" Then
     Nmc3.Text = ""
   Endif
-  
+
   If Zone = "Especes2" Then
     Especes2.Text = "0,00"
   Endif
-  
+
   If zone = "Remtot" Then
     RemTot.Text = "0,00"
   Endif
-  
+
   If zone = "Nticket" Then
     Nticket.Text = ""
   Endif
-  
+
   If zone = "Nmc4" Then
     Nmc4.Text = "0,00"
   Endif
-  
+
   $saisie = ""
-  
+
 End
 
 Public Sub Clav_click()
-  
+
   If Zone = "Mdp" Then
     alpha()
     Mdp.text = $saisie
   Endif
-  
+
   If Zone = "Article" Then
     Alpha()
     Cart.Text = $saisie
   Endif
-  
+
   If Zone = "Design" Then
     Alpha()
     Design.Text = $saisie
   Endif
-  
+
   If Zone = "Qte" Then
     Numerique()
     Qte.Text = $saisie
   Endif
-  
+
   If Zone = "Pvttc" Then
     Numerique()
     Pvttc.Text = $saisie
   Endif
-  
+
   If zone = "Commentaire" Then
     Alpha()
     Cart.Text = $saisie
   Endif
-  
+
   If zone = "Remise" Then
     Alpha()
     Remise.Text = $saisie
     irem = 0
   Endif
-  
+
   If zone = "Especes" Then
     Numerique()
     Especes.Text = $saisie
   Endif
-  
+
   If zone = "Carte" Then
     Numerique()
     Carte.Text = $saisie
   Endif
-  
+
   If zone = "Cheque" Then
     Numerique()
     Cheque.Text = $saisie
   Endif
-  
+
   If zone = "Tresto" Then
     Numerique()
     Tresto.Text = $saisie
   Endif
-  
+
   If zone = "Credit" Then
     Numerique()
     Credit.Text = $saisie
   Endif
-  
+
   If zone = "Bachat" Then
     Numerique()
     Bachat.Text = $saisie
   Endif
-  
+
   If zone = "Chequecad" Then
     Numerique()
     Chequecad.Text = $saisie
   Endif
-  
+
   If zone = "Bavoir" Then
     Numerique()
     Bavoir.Text = $saisie
   Endif
-  
+
   If zone = "Bonus" Then
     Numerique()
     Bonus.Text = $saisie
   Endif
-  
+
   If zone = "Bacompte" Then
     Numerique()
     Bacompte.Text = $saisie
   Endif
-  
+
   If zone = "Breduc" Then
     Alpha()
     Breduc.Text = $saisie
   Endif
-  
+
   If zone = "Nmc" Then
     Alpha()
     Nmc.Text = $saisie
   Endif
-  
+
   If zone = "Nmc2" Then
     Alpha()
     Nmc2.Text = $saisie
   Endif
-  
+
   If zone = "Nmc3" Then
     Alpha()
     Nmc3.Text = $saisie
   Endif
-  
+
   If Zone = "Especes2" Then
     Numerique()
     Especes2.Text = $saisie
   Endif
-  
+
   If zone = "Remtot" Then
     Numerique()
     RemTot.Text = $saisie
   Endif
-  
+
   If zone = "Nticket" Then
     Numerique()
     Nticket.Text = $saisie
   Endif
-  
+
   If zone = "Nmc4" Then
     Alpha()
     Nmc4.Text = $saisie
   Endif
-  
+
 End
 
 Public Sub Numerique()
-  
+
   If Len(Last.name) = 2 Then
     $saisie = $saisie & Right$(Last.name, 1)
   Else
@@ -8169,11 +8176,11 @@ Public Sub Numerique()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Alpha()
-  
+
   If Len(Last.name) = 1 Then
     $saisie = $saisie & Last.name
   Else
@@ -8201,43 +8208,43 @@ Public Sub Alpha()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Button48_Click()
-  
+
   Nticket.Clear
   Frame6.Visible = False
-  
+
 End
 
 Public Sub Button49_Click()
-  
+
   Nmc4.Clear
   Frame7.Visible = False
-  
+
 End
 
 Public Sub Button52_Click()
-  
+
   Nmc.Clear
   Frame3.Visible = False
-  
+
 End
 
 Public Sub ClavFam()
-  
+
   If Not Panel17.visible Then
     Panel17.Visible = True
     Cart.SetFocus
   Else
     Fermer2()
   Endif
-  
+
 End
 
 Public Sub Clav2_Click()
-  
+
   Touche_P = Last.name
   If ToucheS[Last.Tag] = 0 Or If IsNull(ToucheS[Last.Tag]) Then
     If Last.tag <> 40 Then
@@ -8299,7 +8306,7 @@ Public Sub Clav2_Click()
         'Panel17.Visible = False
         'Raz()
         Cart.SetFocus
-        Zone = "Article" 
+        Zone = "Article"
       Else
         Panel17.Visible = False
         'Raz()
@@ -8314,13 +8321,13 @@ Public Sub Clav2_Click()
     Cbutton(Panel17)
     Init2()
   Endif
-  
+
 End
 
 Public Sub Clav3_Click()
-  
+
   Dim DesignA As String
-  
+
   Touche_P = Last.name
   If Upper$(Last.text) = "REMISE %" Then
     If Not IsNull(Cart.text) Then
@@ -8374,34 +8381,34 @@ Public Sub Clav3_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Fermer2()
-  
+
   Panel17.Visible = False
   Cart.setfocus
-  
+
 End
 
 Public Sub Entree2_Click()
-  
+
 End
 
 Public Sub F1_Click()
-  
+
   Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  
+
 End
 
 Public Sub F2_Click()
-  
+
   Button6_Click()
-  
+
 End
 
 Public Sub Echap_Click()
-  
+
   If ColumnView1.count <> 0 Then
     If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
       Return
@@ -8410,94 +8417,94 @@ Public Sub Echap_Click()
       Button9_Click()
     Endif
   Endif
-  
+
   Select Case Zone
-      
+
     Case "Article"
       Photos_MouseDown()
       Zone = "Article"
-      
+
     Case "Remise"
       Tbrem.Clear
       Tbrem.Visible = False
       Zone = "Article"
-      
+
     Case "Remtot"
       Frame1.Visible = False
       RemTot.Clear
       iremT = 0
       Cart.SetFocus
       Zone = "Article"
-      
+
     Case "Nmc"
       Frame3.Visible = False
       iavoir = 0
       Cart.SetFocus
       Zone = "Article"
-      
+
     Case "Especes"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Carte"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Cheque"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Tresto"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Credit"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Bachat"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Chequecad"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Bavoir"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Bonus"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Bacompte"
       init_paiement()
       Cacomptes.Visible = False
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Breduc"
       init_paiement()
       inpm.SetFocus()
       Zone = "Inpm"
-      
+
     Case "Nmc2"
       Nmc2.Clear
       Frame4.Visible = False
       init_paiement()
       Inpm.SetFocus
       Zone = "Inpm"
-      
+
     Case "Nmc3"
       Frame5.Visible = False
       EspecesE.Value = True
@@ -8512,7 +8519,7 @@ Public Sub Echap_Click()
         Cart.SetFocus
         Zone = "Article"
       Endif
-      
+
     Case "Espece2"
       If Key.code = Key.Esc Or If Key.code = Key.F1 Or If Key.code = Key.F2 Or If Key.code = Key.F3 Then
         Frame5.Visible = False
@@ -8526,30 +8533,30 @@ Public Sub Echap_Click()
           Zone = "Article"
         Endif
       Endif
-      
+
     Case "Nticket"
       Frame6.Visible = False
       Nticket.Clear
       Cart.SetFocus
       Zone = "Article"
-      
+
     Case "Nmc4"
       Frame7.Visible = False
       Nmc4.Clear
       impressionbon("")
       Cart.SetFocus
       Zone = "Article"
-      
+
     Case "Mdp"
       Frame8.Visible = False
       Cart.SetFocus
       Zone = "Article"
-      
+
       'Case "Reglt"
       ' Button6_Click()
       'Cart.SetFocus
       'Zone = "Article"
-      
+
     Case Else
       If Frame2.Visible Then
         Frame2.visible = False
@@ -8557,11 +8564,11 @@ Public Sub Echap_Click()
         Zone = "Article"
       Endif
   End Select
-  
+
 End
 
 Public Sub createPanel()
-  
+
   hpan = New Panel(Panel17)
   hpan.W = Panel17.w
   hpan.H = Panel17.H - 50
@@ -8570,16 +8577,16 @@ Public Sub createPanel()
   hpan.border = Border.Etched
   hpan.Background = Color.Background
   hpan.visible = False
-  
+
 End
 
 '****************************************************
 '*      Création des boutons des sous-familles      *
 '****************************************************
 Public Sub Cbutton(oObj As Object)
-  
+
   Dim hClass As Object
-  
+
   For Each hClass In oObj.Children
     If hClass.Tag And If hClass Is ImageButton Then
       Hbutton = New (ImageButton, hpan) As "Clav3"
@@ -8592,16 +8599,16 @@ Public Sub Cbutton(oObj As Object)
     Endif
   Next
   Pan = True
-  
+
 End
 
 Public Sub Init2()
-  
+
   Dim rTch As Result
   Dim i As Integer
   Dim t As String = "B"
   Dim sf As Boolean = False
-  
+
   For i = 36 To 71
     t = "B" & i
     Try btn = Me.Controls[t]
@@ -8629,5 +8636,5 @@ Public Sub Init2()
     Pan = False
     Message.Info("Il n'existe aucune sous-famille pour ce bouton !")
   Endif
-  
+
 End
