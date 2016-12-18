@@ -2263,10 +2263,6 @@ Public Sub GetFormat() As String
   
 End
 
-Public Sub GetFormat() As String
-  Return ($form)
-End
-
 'Polygons (Andrew Meier)
 ' This script allows to draw polygons.
 '   points: array of the form (x1, y1, x2, y2, ..., xn, yn)
