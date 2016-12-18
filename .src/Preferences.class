@@ -45,6 +45,8 @@ Public Sub _new()
   Try GestAffUSB.Value = Settings["/affusbwn"]
   Try Tactile.Value = Settings["/tactile"]
   Try ChoixTouches.Value = Settings["/choixtouches"]
+  Try Chmcsv.Text = Settings["/Chmcsv"]
+  Try ChmZ.Text = Settings["/ChmZ"]
   If IsNull(Nbf.text) Then Nbf.Text = "1"
   If IsNull(fontes) Then
     FontChooser1.SelectedFont = "Serif,9"
@@ -158,7 +160,7 @@ Public Sub aff_logo()
   hImage = Image.Load(Logo2.Text)
   dwgImage.Clear()
   Draw.Begin(dwgImage)
-  Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
+    Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
   Draw.End
 Catch
   
@@ -200,6 +202,8 @@ Public Sub Form_Close()
   Settings["/tircarte"] = Tircarte.Value
   Settings["/affusbwn"] = GestAffUSB.Value
   Settings["/choixtouches"] = ChoixTouches.Value 
+  Settings["/ChmZ"] = ChmZ.Text
+  
   Settings.Save
   
 End
@@ -258,6 +262,18 @@ Public Sub chm_Click()
     Chmcsv.Text = Dialog.Path
   Else
     Chmcsv.Text = User.Home
+  Endif
+  
+End
+
+Public Sub BchmZ_Click()
+  
+  Dialog.Title = "Choisir un repertoire"
+  Dialog.Path = User.home
+  If Not Dialog.SelectDirectory() Then
+    ChmZ.Text = Dialog.Path
+  Else
+    ChmZ.Text = User.Home
   Endif
   
 End

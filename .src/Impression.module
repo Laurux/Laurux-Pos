@@ -20,7 +20,7 @@ Public Sub Ticket(Fic As String, nb As Integer) As String
       Endif
     Endif
   Endif
-
+  
 End
 
 Public Sub Ticketxz(Fic As String, nb As Integer) As String

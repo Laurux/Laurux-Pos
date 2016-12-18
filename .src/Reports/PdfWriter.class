@@ -2258,6 +2258,12 @@ Public Function GetH() As Float
 End
 
 Public Sub GetFormat() As String
+  
+  Return ($form)
+  
+End
+
+Public Sub GetFormat() As String
   Return ($form)
 End
 

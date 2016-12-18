@@ -1,10 +1,10 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,94,100)
+  MoveScaled(0,0,94,93)
   Border = False
   { TabStrip1 TabStrip
-    MoveScaled(0,1,94,93)
+    MoveScaled(0,1,94,84)
     Count = 5
     Index = 0
     Text = ("Environnement")
@@ -14,14 +14,14 @@
       Text = Shortcut(("Gestion de l'administrateur"), "G")
     }
     { Frame1 Frame
-      MoveScaled(15,76,60,13)
+      MoveScaled(15,66,60,13)
       Text = ("Chèques")
       { TextLabel1 TextLabel
         MoveScaled(2,3,8,3)
         Text = ("Ordre")
       }
       { Ordre TextBox
-        MoveScaled(12,3,46,3.4286)
+        MoveScaled(12,3,46,3.375)
         Font = Font["Serif,-1"]
       }
       { TextLabel2 TextLabel
@@ -29,7 +29,7 @@
         Text = ("Lieu")
       }
       { Lieu TextBox
-        MoveScaled(12,8,46,3.4286)
+        MoveScaled(12,8,46,3.375)
         Font = Font["Serif,-1"]
       }
     }
@@ -39,7 +39,7 @@
       Text = Shortcut(("Mot de passe pour acceder aux préfèrences"), "M")
     }
     { Frame2 Frame
-      MoveScaled(15,67,60,8)
+      MoveScaled(15,57,60,8)
       Text = ("Sélection base de travail")
       { Label6 Label
         MoveScaled(2,3,10,3)
@@ -67,7 +67,7 @@
       Text = ("Récapitulatif du bonus")
     }
     { Son CheckBox
-      MoveScaled(48,8,23.1429,3)
+      MoveScaled(48,8,23.125,3)
       ToolTip = ("A cocher si vous souhaitez un son pendant les messages d'alerte..")
       Text = Shortcut(("Gestion du son"), "s")
     }
@@ -117,21 +117,45 @@
       ToolTip = ("A cocher si vous souhaitez avoir des touches préparamétrées propres à chaque caisse")
       Text = ("Touches familles propre à chaque caisse")
     }
+    { Label55 Label
+      MoveScaled(23,40,42,3)
+      Font = Font["Serif,-1"]
+      Text = ("Copie  PDF des bandes Z")
+      Alignment = Align.Center
+    }
+    { Panchemin9 Panel
+      MoveScaled(23,43,42,10)
+      Font = Font["Serif,-1"]
+      Border = Border.Plain
+      { ChmZ TextBox
+        MoveScaled(1,5,28,3)
+        ToolTip = ("Chemin ou seront archivées les bandes Z")
+      }
+      { BchmZ Button
+        MoveScaled(29,5,10,3)
+        Text = Shortcut(("Choisir"), "C")
+      }
+      { Label56 Label
+        MoveScaled(1,1,39,3)
+        Text = ("Nom et chemin du lieu de stockage")
+        Alignment = Align.Center
+      }
+    }
     Index = 1
     Text = ("Synchronisation")
     { Panel1 Panel
       MoveScaled(22,13,50,11)
       Visible = False
       { Label2 Label
-        MoveScaled(7.4286,1,37,3)
+        MoveScaled(7.375,1,37,3)
         Text = ("Chemin des générations des csv")
         Alignment = Align.Center
       }
       { chmcsv TextBox
-        MoveScaled(8,5,28,3.4286)
+        MoveScaled(8,5,28,3.375)
       }
       { chm Button
-        MoveScaled(36,5,10,3.4286)
+        MoveScaled(36,5,10,3.375)
         Text = Shortcut(("Choisir"), "C")
       }
     }
@@ -155,7 +179,7 @@
       Text = ("Gestion de la balance électronique")
     }
     { TypeB ComboBox
-      MoveScaled(11,5.7143,36,3.1429)
+      MoveScaled(11,5.75,36,3.125)
       Visible = False
       List = [("Tropper"), ("Mettler Toledo")]
     }
@@ -164,7 +188,7 @@
       Text = ("Port balance")
     }
     { Portb ComboBox
-      MoveScaled(25,10,22,3.1429)
+      MoveScaled(25,10,22,3.125)
       Font = Font["Serif,-1"]
       List = [("/dev/ttyS0"), ("/dev/ttyS1"), ("/dev/ttyS2"), ("/dev/ttyS3"), ("/dev/ttyS4"), ("/dev/ttyS5"), ("/dev/ttyS6")]
     }
@@ -179,18 +203,18 @@
         Text = Shortcut(("Impression du logo sur les factures"), "I")
       }
       { Panlogo Panel
-        MoveScaled(1,7,40.1429,10)
+        MoveScaled(1,7,40.125,10)
         Visible = False
         Border = Border.Plain
         { Logo2 TextBox
-          MoveScaled(1,5,28,3.4286)
+          MoveScaled(1,5,28,3.375)
         }
         { Lgo2 Button
-          MoveScaled(29,5,10,3.4286)
+          MoveScaled(29,5,10,3.375)
           Text = Shortcut(("Choisir"), "C")
         }
         { Label14 Label
-          MoveScaled(0.4286,1,32,3)
+          MoveScaled(0.375,1,32,3)
           Text = ("Nom et chemin du logo")
           Alignment = Align.Center
         }
@@ -212,18 +236,18 @@
     Index = 0
   }
   { Button2 Button
-    MoveScaled(10,94,19,5)
+    MoveScaled(10,87,19,5)
     ToolTip = ("Lance la mise à jour de Laurux.Pos")
     Text = Shortcut(("Mise à jour"), "M")
     Picture = Picture["icon:/22/make"]
   }
   { Button1 Button
-    MoveScaled(61,94,19,5)
+    MoveScaled(61,87,19,5)
     Text = Shortcut(("Quitter"), "Q")
     Picture = Picture["Icones/exit.png"]
   }
   { Button3 Button
-    MoveScaled(35,94,19,5)
+    MoveScaled(35,87,19,5)
     ToolTip = ("Lance le programme de configuration de la base de données.")
     Text = Shortcut(("Config Mysql"), "C")
     Picture = Picture["icon:/22/exec"]

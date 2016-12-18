@@ -4,8 +4,6 @@ R As Integer
 G As Integer
 B As Integer
 Inherits PdfWriter
-
-' Private properties
 Private $xratio As Float 'ratio vs A4 on x
 Private $yratio As Float 'ratio vs A4 on y
 Private $fratio As Float 'ratio on font vs A4
@@ -59,28 +57,41 @@ Public Sub newPage()
 End
 
 '---------------------------- Entete ticket ----------------------------------------
-Public Sub Entete(Ent As String, PosX As String, PosY As String, Bold As String)
+Public Sub Entete(Ent As String, PosX As String, PosY As String, Bold As String, Ba4 As Boolean)
   
   Me.SetXY(PosX * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 10))
+  If Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 10))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 9))
+  Endif
   Me.cell(40 * $xratio, 8 * $yratio, ent, False, 0, "L", False)
   
 End
 
 '---------------------------- Entete facture ----------------------------------------
-Public Sub Entete2(Ent As String, PosX As String, PosY As String, Fonte As String)
+Public Sub Entete2(Ent As String, PosX As String, PosY As String, Fonte As String, Ba4 As Boolean)
   
   Me.SetXY(PosX * $xratio, Posy * $yratio)
-  Me.SetFont("Helvetica", Fonte, Round($fratio * 12))
+  If Ba4 Then
+    Me.SetFont("Helvetica", Fonte, Round($fratio * 12))
+  Else
+    Me.SetFont("Helvetica", Fonte, Round($fratio * 9))
+  Endif
   Me.cell(40 * $xratio, 8 * $yratio, ent, False, 0, "L", False)
   
 End
 
 '---------------------------- Adresse client sur bon de caisse ----------------------------------------
-Public Sub Entete3(Ent As String, PosY As String, Bold As String)
+Public Sub Entete3(Ent As String, PosY As String, Bold As String, Ba4 As Boolean)
   
-  Me.SetXY(60 * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", Bold, Round($fratio * 12))
+  If Ba4 Then
+    Me.SetXY(60 * $xratio, PosY * $yratio)
+    Me.SetFont("Helvetica", bold, Round($fratio * 12))
+  Else
+    Me.SetXY(60 * $xratio, PosY * $yratio)
+    Me.SetFont("Helvetica", bold, Round($fratio * 9))
+  Endif
   Me.cell(40 * $xratio, 8 * $yratio, ent, False, 0, "L", False)
   
 End
@@ -107,12 +118,16 @@ End
 Public Sub Level2T(PosX As Integer, PosY As Integer)
   
   Me.SetXY(PosX * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 9))
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 9))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Endif
   Me.SetFillColor(R, G, B)
-  Me.cell(20 * $xratio, 5 * $yratio, "Code", True, 0, "C", True)
-  Me.cell(60 * $xratio, 5 * $yratio, "Intitulé", True, 0, "C", True)
+  Me.cell(18 * $xratio, 5 * $yratio, "Code", True, 0, "C", True)
+  Me.cell(54 * $xratio, 5 * $yratio, "Intitulé", True, 0, "C", True)
   Me.cell(12 * $xratio, 5 * $yratio, "Prix", True, 0, "C", True)
-  Me.cell(12 * $xratio, 5 * $yratio, "Qte", True, 0, "C", True)
+  Me.cell(8 * $xratio, 5 * $yratio, "Qte", True, 0, "C", True)
   
 End
 
@@ -120,21 +135,33 @@ End
 Public Sub Level1(Code As String, Intitule As String, prix As String, qte As String, PosX As Integer, PosY As Integer, Typel As String)
   
   Me.SetXY(PosX * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 9))
-  Me.cell(20 * $xratio, 4 * $yratio, Code, False, 0, "L", False)
-  
-  If typel <> "K" Then intitule = Left$(intitule, 40)
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 9))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Endif
+  Me.cell(18 * $xratio, 4 * $yratio, Code, False, 0, "L", False)
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 9))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Endif
+  If Caisse.Ba4 Then
+    If typel <> "K" Then intitule = Left$(intitule, 40)
+  Else
+    If typel <> "K" Then intitule = Left$(intitule, 34)
+  Endif
   If typel = "K" Then
-    Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+    Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
   Else
     If typel = "TA" Then
-      Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+      Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
     Else
-      Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+      Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
     Endif
     Me.cell(12 * $xratio, 4 * $yratio, prix, False, 0, "R", False)
-    Me.cell(12 * $xratio, 4 * $yratio, qte, False, 0, "R", False)
-  Endif
+    Me.cell(8 * $xratio, 4 * $yratio, qte, False, 0, "R", False)
+  Endif 
   
 End
 
@@ -142,20 +169,24 @@ End
 Public Sub Level1T(Code As String, Intitule As String, prix As String, qte As String, PosY As Integer, Typel As String)
   
   Me.SetXY(4, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 9))
-  Me.cell(20 * $xratio, 4, Code, False, 0, "L", False)
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 9))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 7))
+  Endif
+  Me.cell(18 * $xratio, 4, Code, False, 0, "L", False)
   
   If typel <> "K" Then intitule = Left$(intitule, 40 * $xratio)
   If typel = "K" Then
-    Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+    Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
   Else
     If typel = "TA" Then
-      Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+      Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
     Else
-      Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+      Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
     Endif
     Me.cell(12 * $xratio, 4 * $yratio, prix, False, 0, "R", False)
-    Me.cell(12 * $xratio, 4 * $yratio, qte, False, 0, "R", False)
+    Me.cell(8 * $xratio, 4 * $yratio, qte, False, 0, "R", False)
   Endif
   
 End
@@ -183,10 +214,14 @@ Public Sub Level2E(PosY As Integer)
 End
 
 '---------------------------- Entete ticketX ----------------------------------------
-Public Sub Level3(Ent As String, PosY As String)
+Public Sub Level3(Ent As String, PosY As String, Ba4 As Boolean)
   
   Me.SetXY(4 * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "B", Round($fratio * 12))
+  If Ba4 Then
+    Me.SetFont("Helvetica", "B", Round($fratio * 12))
+  Else
+    Me.SetFont("Helvetica", "B", Round($fratio * 10))  
+  Endif
   Me.cell(40 * $xratio, 8 * $yratio, ent, False, 0, "L", False)
   
 End
@@ -195,21 +230,30 @@ End
 Public Sub Com(Comm As String, PosY As String)
   
   Me.SetXY(4 * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 8))
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 10))
+  Endif
+  
   Me.cell(40 * $xratio, 8 * $yratio, Comm, False, 0, "L", False)
   
 End
 
-'Entete des lignes de ticketx
+'Entete des lignes de facture
 Public Sub Level2F(PosY As Integer)
   
   Me.SetXY(4 * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 8))
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Endif
   Me.SetFillColor(R, G, B)
-  Me.cell(20 * $xratio, 5 * $yratio, "Code", True, 0, "C", True)
-  Me.cell(60 * $xratio, 5 * $yratio, "Intitulé", True, 0, "C", True)
-  Me.cell(12 * $xratio, 5 * $yratio, "PU TTC", True, 0, "C", True)
-  Me.cell(12 * $xratio, 5 * $yratio, "Qté", True, 0, "C", True)
+  Me.cell(18 * $xratio, 5 * $yratio, "Code", True, 0, "C", True)
+  Me.cell(54 * $xratio, 5 * $yratio, "Intitulé", True, 0, "C", True)
+  Me.cell(12 * $xratio, 5 * $yratio, "Prix", True, 0, "C", True)
+  Me.cell(8 * $xratio, 5 * $yratio, "Qté", True, 0, "C", True)
   
 End
 
@@ -217,15 +261,29 @@ End
 Public Sub Level4(Code As String, Intitule As String, prix As String, qte As String, PosY As Integer)
   
   Me.SetXY(4 * $xratio, PosY * $yratio)
-  Me.SetFont("Helvetica", "", Round($fratio * 8))
-  Me.cell(20 * $xratio, 4 * $yratio, Code, False, 0, "L", False)
-  Me.cell(60 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Endif
+  Me.cell(18 * $xratio, 4 * $yratio, Code, False, 0, "L", False)
+  If Caisse.Ba4 Then
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Else
+    Me.SetFont("Helvetica", "", Round($fratio * 8))
+  Endif
+  If Caisse.Ba4 Then
+    intitule = Left$(intitule, 40)
+  Else
+    intitule = Left$(intitule, 28)
+  Endif
+  Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
   Me.cell(12 * $xratio, 4 * $yratio, prix, False, 0, "R", False)
-  Me.cell(12 * $xratio, 4 * $yratio, qte, False, 0, "R", False)
+  Me.cell(8 * $xratio, 4 * $yratio, qte, False, 0, "R", False)
   
 End
 
-Public Sub Logo2(type As String)
+Public Sub Logo2(type As String, Ba4 As Boolean)
   
   Dim $logo As String
   
@@ -234,9 +292,13 @@ Public Sub Logo2(type As String)
     If Not Error Then
       If Not IsNull($Logo) Then
         If type = "fac" Then
-          Me.Image($Logo, 136, 10, 40, 40)
+          If Ba4 Then
+            Me.Image($Logo, 92, 2, 20, 18)
+          Else
+            Me.Image($Logo, 40, 2, 30, 17) 
+          Endif
         Else
-          Me.Image($Logo, 100, 10, 40, 40) 
+          Me.Image($Logo, 40, 2, 30, 17) 
         Endif
       Endif
     Endif

@@ -3,9 +3,9 @@
 'D'après une routine java par GALA OUSSE Brice
 
 Public Function Calc_unite(nombre As Integer) As String
-  
+
   Dim unite As String
-  
+
   Select Case nombre
     Case 0
       unite = "zéro"
@@ -29,13 +29,13 @@ Public Function Calc_unite(nombre As Integer) As String
       unite = "neuf"
   End Select
   Return unite
-  
+
 End
 
 Public Sub Calc_Dizaine(nombre As Integer) As String
-  
+
   Dim dizaine As String
-  
+
   Select Case nombre
     Case 10
       dizaine = "dix"
@@ -75,15 +75,15 @@ Public Sub Calc_Dizaine(nombre As Integer) As String
       dizaine = "quatre-vingt-dix"
   End Select
   Return dizaine
-  
+
 End
 
 Public Sub nbtostring(nombre As String) As String
-  
+
   Dim nb2, nbtolet As String
   Dim quotient, reste As Float
   Dim nb, ipos As Integer
-  
+
   If Len(nombre) > 9 Then Return
   If InStr("0123456789,.", nombre) = 1 Then Return
   nb2 = nombre
@@ -119,7 +119,7 @@ Public Sub nbtostring(nombre As String) As String
           Endif
         Endif
       Endif
-      
+
     Case 3
       quotient = nb2 / 100
       iPos = InStr(Str(quotient), ",")
@@ -134,7 +134,7 @@ Public Sub nbtostring(nombre As String) As String
       If quotient = 1 And reste > 0 Then nbtolet = "cent " & nbtostring(reste)
       If quotient > 1 And reste = 0 Then nbtolet = Calc_Unite(quotient) & " cents"
       If quotient > 1 And reste > 0 Then nbtolet = Calc_Unite(quotient) & " cent " & nbtostring(reste)
-      
+
     Case 4
       quotient = nb2 / 1000
       iPos = InStr(Str(quotient), ",")
@@ -149,7 +149,7 @@ Public Sub nbtostring(nombre As String) As String
       If quotient = 1 And reste > 0 Then nbtolet = "mille " & nbtostring(reste)
       If quotient > 1 And reste = 0 Then nbtolet = nbtostring(quotient) & " mille"
       If quotient > 1 And reste > 0 Then nbtolet = nbtostring(quotient) & " mille " & nbtostring(reste)
-      
+
     Case 5
       quotient = nb2 / 1000
       iPos = InStr(Str(quotient), ",")
@@ -164,7 +164,7 @@ Public Sub nbtostring(nombre As String) As String
       If quotient = 1 And reste > 0 Then nbtolet = "mille " & nbtostring(reste)
       If quotient > 1 And reste = 0 Then nbtolet = nbtostring(quotient) & " mille"
       If quotient > 1 And reste > 0 Then nbtolet = nbtostring(quotient) & " mille " & nbtostring(reste)
-      
+
     Case 6
       quotient = nb2 / 1000
       iPos = InStr(Str(quotient), ",")
@@ -179,8 +179,8 @@ Public Sub nbtostring(nombre As String) As String
       If quotient = 1 And reste > 0 Then nbtolet = "mille " & nbtostring(reste)
       If quotient > 1 And reste = 0 Then nbtolet = nbtostring(quotient) & " mille"
       If quotient > 1 And reste > 0 Then nbtolet = nbtostring(quotient) & " mille " & nbtostring(reste)
-      
+
   End Select
   Return nbtolet
-  
+
 End

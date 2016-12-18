@@ -19,7 +19,7 @@
     { !Frame1 Frame
       MoveScaled(1,0,42,65)
       #Public = True
-      Text = ("Laurux.Pos V3.20")
+      Text = ("Laurux.Pos V3.21")
       { VBox2 VBox
         MoveScaled(7,15,27,43)
         Spacing = True
@@ -38,6 +38,11 @@
           Text = Shortcut(("Saisie caisse"), "S")
           Picture = Picture["Icones/caisse.png"]
         }
+        { Button2 Button
+          MoveScaled(1,22,24,6)
+          Text = Shortcut(("Déconnexion caisse"), "D")
+          Picture = Picture["Icones/Dconnect.png"]
+        }
         { Frame8 Frame
           MoveScaled(1,21,26,11)
           Visible = False
@@ -49,11 +54,6 @@
             Password = True
             MaxLength = 7
           }
-        }
-        { Button2 Button
-          MoveScaled(1,22,24,6)
-          Text = Shortcut(("Déconnexion caisse"), "D")
-          Picture = Picture["Icones/Dconnect.png"]
         }
         { !Button3 Button
           MoveScaled(1,29,24,6)
