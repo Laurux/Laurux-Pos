@@ -40,10 +40,11 @@ Public Sub Init()
   Dim i As Integer
   Dim t As String = "A"
   
-  For i = 1 To 36
+  For i = 1 To 35
     t = "A" & i
     Try btn = Me.Controls[t]
     Try btn.Text = ""
+    CodeA[i] = ""
   Next
   rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where left(touche,1) = &1 and cai = &2 order by touche", "A", Start.$Tcai)
   If rTch.Available Then
@@ -103,7 +104,7 @@ Public Sub Clav2_Click()
   CheckBox1.Value = False
   Bouton.Text = Last.name
   Cart.Text = CodeA[Last.tag]
-  If IsNull(Cart.text) Then Cart.Text = Right$(Bouton.Text, Len(Bouton.Text) - 1)
+  'If IsNull(Cart.text) Then Cart.Text = Right$(Bouton.Text, Len(Bouton.Text) - 1)
   Try CheckBox1.value = ToucheS[Last.tag]
   Touche_P = Last.name
   fnd = Touche_P
@@ -149,7 +150,7 @@ Public Sub Bouton_KeyPress()
       Label3.text = ""
       Btn.BackGround = &HDFE7FF&
       CodeA[btn.tag] = ""
-      btn.Picture.Clear
+      Try btn.Picture.Clear
       Btn.Refresh     
       Init()
     Endif
@@ -178,6 +179,28 @@ Public Sub Button1_Click()
     Message.Error("Veuillez vérifier votre saisie SVP !")
   Endif
   
+End
+
+
+Public Sub Button5_Click()
+
+  Dim rTch As Result
+  
+  If Not IsNull(Cart.Text) And If Not IsNull(Bouton.Text) Then
+    rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where touche = &1 and cai = &2", Bouton.Text, start.$tcai)
+    If rTch.Available Then
+      Utils.db.Exec("DELETE FROM " & Cbase.Table("TabTouches") & " where touche = &1 and cai = &2", Bouton.Text, start.$tcai)
+    Endif
+    Cart.Clear
+    Label3.text = ""
+    Me.Controls[Bouton.Text].Name = Bouton.Text
+    Btn = Me.Controls[Bouton.Text]
+    CodeA[Btn.tag] = ""
+    Btn.text = ""
+    Btn.Refresh
+    Init()
+  Endif
+
 End
 
 '****************************************Gestion des articles**************************************************
@@ -293,6 +316,7 @@ Public Sub Init2()
     t = "B" & i
     Try btn = Me.Controls[t]
     Try btn.Text = ""
+    CodeA[i] = ""
   Next
   i = Len(Touche_P)
   rTch = Utils.db.Exec("SELECT * From " & Cbase.Table("TabTouches") & " where cai = &1 order by touche", start.$tcai)
@@ -347,3 +371,4 @@ Public Sub Fond_ImageButton()
   Endif
   
 End
+
