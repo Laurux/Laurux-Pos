@@ -8578,8 +8578,13 @@ Public Sub Clav3_Click()
               Qte.text = 1
               bFam = True
               iModif = 1
-              Qte.setfocus
-              Qte.select
+              If Pvttc.text <> "0,00" Then
+                Qte.setfocus
+                Qte.select
+              Else
+                Pvttc.setfocus
+                Pvttc.Select
+              Endif
               Famille = Cart.Text
               Zone = "Pvttc"
             Else
