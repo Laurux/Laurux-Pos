@@ -35,9 +35,9 @@ Public Sub Tris()
     .Columns.count = 7
     .Columns[0].Width = C1.Width
     .Columns[1].Width = N1.Width
-    .Columns[2].Width = 124
-    .Columns[3].Width = 162
-    .Columns[4].Width = 162
+    .Columns[2].Width = (P1.Width * 30) / 100
+    .Columns[3].Width = (P1.Width * 35) / 100
+    .Columns[4].Width = (P1.Width * 35) / 100
     .Columns[5].Width = Cp1.Width
     .Columns[6].Width = VILLE.Width
   End With
@@ -198,7 +198,7 @@ Public Sub C1_Click()
   
   Dim MForm As Clavier
   
-  MForm = New Clavier("Clients")
+  'MForm = New Clavier("Clients")
   sel = ""
   Dbl = ""
   'ref()
@@ -224,7 +224,7 @@ Public Sub N1_Click()
   
   Dim MForm As Clavier
   
-  MForm = New Clavier("Dclients")
+  'MForm = New Clavier("Dclients")
   sel = ""
   Dbl = ""
   'ref()
