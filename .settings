@@ -123,16 +123,7 @@ SearchComment=True
 SearchString=True
 
 [OpenFile]
-Count=8
-File[1]=".src/Caisse.class:9.7220"
-Active=8
-File[2]=".src/FClientcarte.form"
-File[3]=".src/FClientcarte.class:7.597"
-File[4]=".src/Affichages/Tricartes.form"
-File[5]=".src/Affichages/Tricartes.class:7.427"
-File[6]=".src/Tricp.class:19.133"
-File[7]=".src/Utils.module:0.33"
-File[8]=".src/Tricp.form"
+Count=0
 
 [Watches]
 Count=0
