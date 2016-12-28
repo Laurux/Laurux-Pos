@@ -94,7 +94,6 @@ Static Private $iSpc2 As New String[20]
 GestMdp As Integer = 0
 Public Bsel As Boolean = False
 Public Clicode As String
-Public Clicoded As String
 Private Clinom As String
 Private Clipnm As String
 Private Clicp As String
@@ -834,9 +833,10 @@ Public Sub Cart_KeyPress()
     If key.Control Then
       If Key.code = 78 Then 'CTRL+N
         iavoir = 0
-        Panel17.Visible = False
-        Frame3.visible = True
-        Nmc.SetFocus
+        'Panel17.Visible = False
+        'Frame3.visible = True
+        ' Nmc.SetFocus
+        Clients_Divers()
       Endif
       If Key.code = 82 Then 'CTRL+R
         If Ligtk.Count = 0 Then
@@ -5216,7 +5216,7 @@ Public Sub Aff_bastk()
         ttvam = mttc - mht
         rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", $code)
         If Not rtva.Available Then
-          Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, ttvam)
+          Try Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, ttvam)
           totaltva = totaltva + ttvam
         Else
           ttva = rtva!mtva + Val(Utils.cpoint(ttvam))
@@ -5369,6 +5369,7 @@ Public Sub Enrg_Tk()
   Dim QteFam As String
   Dim Totpoint As Float = 0
   Dim Esp As Float = 0 'Montant des especes versées
+  Dim scartef As String
 
   Tab = "Fiches_EntTickets" & Ncaisse
   Tiketx = "Fiches_Ticketx" & Ncaisse
@@ -5483,6 +5484,7 @@ Public Sub Enrg_Tk()
       Maj_Paiements("M", TotalTk.text, "1")
     Endif
     If iRattente = 0 Then
+      If IsNull(scartef) Then scartef = $Cli
       'On regarde si le ticket est déjà archivé.
       rResult = Utils.db.Exec("SELECT * FROM " & tab & " where numero = &1 and caisse = &2", Ntk, Ncaisse)
       If rResult.Available Then Utils.db.Exec("DELETE FROM  " & Tab & " WHERE caisse = &1 and numero = &2", Ncaisse, Ntk)
@@ -5662,7 +5664,6 @@ Public Sub Enrg_Tk()
     Nmc2.Clear
     Ent_tk()
     TotalTk.Text = "0,00"
-    Cart.SetFocus
     Zone = "Article"
     iQte = 0
     iRem = 0
@@ -5685,6 +5686,8 @@ Public Sub Enrg_Tk()
     Boni = 0
     Totgain = 0
     bretro = False
+    Cart.ReadOnly = False
+    Cart.SetFocus
   End With
 
 End
@@ -6440,6 +6443,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   Dim Totnbtck, X2, Y2, NBT As Integer = 0
   Dim Boncaisse, tcheque, tcarte, tespece As Float
   Dim ipos As Integer
+  Dim FndCaisse As String
 
   Tabe = "Fiches_EntTickets" & Ncaisse
   Tabx = "Fiches_Ticketx" & Ncaisse
@@ -6562,6 +6566,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Lines2(Posy)
       pdf.Level2("Fond de caisse ", Format$(Val(.cpoint(Totcaisse)), "0.00"), "", Posy)
       FndCaisse = Totcaisse
+      ' Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET fndc = &2, dteov = &3, dtefm = &3 WHERE code = &1", Ncaisse, Utils.PointBase(Fndcaisse), Utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")))
       Posy += 5
       pdf.Lines2(Posy)
       rTkx = Utils.db.Exec(" select * from " & Tabr & " where type = &1", "M")
@@ -7204,39 +7209,55 @@ End
 '**********************************************************
 Public Sub Clients_Divers()
 
+  Dim MyForm As Tricartes
+
+  Bsel = False
+  sel = ""
+  If clicompte = 0 Then
+    MyForm = New Tricartes("Caisse")
+    MyForm.Showmodal()
+    If Bsel = True Then
+      RecupClientd()
+    Endif
+  Else
+    If Start.son Then
+      If Start.son Then
+        Music.Play
+      Endif
+    Endif
+    Message.Warning("Il y a un bon de caisse en cours de saisie ! Appel des cartes impossible")
+    Cart.setfocus
+  Endif
+
+  '*********************************
   'Dim MyForm As TriclientsD
 
-  bsel = False
+  ' bsel = False
   'If IsNull(Nmc4.Text) Then
   'MyForm = New TriclientsD("Caisse", "")
   'MyForm.Showmodal()
-  TriclientsD.Showmodal()
+  ' TriclientsD.Showmodal()
   'Else
   'MyForm = New TriclientsD("Caisse", Nmc4.Text)
   'MyForm.Showmodal()
   'TriclientsD.Showmodal()
   'Endif
-  If Bsel = True Then
-    Recup_Clientd()
-  Endif
-
+  '  If Bsel = True Then
+  '   Recup_Clientd()
+  '  Endif
+  '***********************************************
 End
 
 '******************************************
-'*      Selection du  code client         *
+'*           Selection du  code client  divers           *
 '******************************************
-Public Sub Recup_Clientd()
+Public Sub RecupClientd()
 
-  Dim Clitab As Result
+  Dim Rcarte As Result
 
-  Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabClid") & " where lind = &1", Clicoded)
-  If Not Error Then
-    Nmc4.Text = Clitab!adr
-    Nmc4.SetFocus
-    slind = Clitab!lind
-  Else
-    slind = ""
-  Endif
+  $Cli = ""
+  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
+  If Rcarte.Available Then $Cli = Rcarte!code
 
 End
 

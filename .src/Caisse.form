@@ -515,26 +515,6 @@
       Visible = False
       AutoResize = False
     }
-    { Frame7 Frame
-      MoveScaled(42,36,83,24)
-      Visible = False
-      Background = Color.Background
-      Text = ("Nom du client")
-      { Button29 Button
-        MoveScaled(65,18,15,5)
-        Text = Shortcut(("Imprimer"), "I")
-        Picture = Picture["Icones/printer2.png"]
-      }
-      { Nmc4 TextArea
-        MoveScaled(2,4,78,12)
-        ToolTip = ("Vous pouvez saisir quatre lignes pour les coordonnées du client")
-        ScrollBar = Scroll.None
-      }
-      { Button49 Button
-        MoveScaled(35,18,17,5)
-        Text = Shortcut(("Fermer"), "F")
-      }
-    }
     { Frame4 Frame
       MoveScaled(43,18,83,17)
       Visible = False
@@ -593,6 +573,26 @@
       Speed = 9600
     }
     { Button51 Button
+    }
+    { Frame7 Frame
+      MoveScaled(42,36,83,24)
+      Visible = False
+      Background = Color.Background
+      Text = ("Nom du client")
+      { Button29 Button
+        MoveScaled(65,18,15,5)
+        Text = Shortcut(("Imprimer"), "I")
+        Picture = Picture["Icones/printer2.png"]
+      }
+      { Nmc4 TextArea
+        MoveScaled(2,4,78,12)
+        ToolTip = ("Vous pouvez saisir quatre lignes pour les coordonnées du client")
+        ScrollBar = Scroll.None
+      }
+      { Button49 Button
+        MoveScaled(35,18,17,5)
+        Text = Shortcut(("Fermer"), "F")
+      }
     }
     { Frame3 Frame
       MoveScaled(41,34,83,17)
