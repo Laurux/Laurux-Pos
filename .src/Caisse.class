@@ -5240,7 +5240,7 @@ Public Sub Aff_bastk()
                   Ligtk.MovePrevious()
                   Try LigTk.Item.Selected = True
                 Else
-                  If LigTk.Item[5] = "A" Then
+                  If LigTk.Item[5] = "A" Or LigTk.Item[5] = "BL" Then
                     LigTk.MovePrevious()
                     Try LigTk.Item.Selected = True
                     mttc = Val(Utils.cpoint(LigTk.Item[11]))
