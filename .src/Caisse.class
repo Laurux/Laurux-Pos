@@ -724,7 +724,7 @@ Public Sub Art_man()
           LigTk.Add(iligne, iligne)
           LigTk.Item[0] = iNlg
           LigTk.Item[1] = ""
-          LigTk.Item[2] = Space$(15) & "Prix total "
+          LigTk.Item[2] = Space$(3) & "\tPrix total"
           LigTk.Item[3] = Artpu
           LigTk.Item[5] = "T"
           LigTk.Item[6] = Pvht
@@ -4792,11 +4792,11 @@ Public Sub Defaut_Tk()
     'on imprime la ligne de bon si c'est un bon de caisse.
     If clicompte = 1 Then
       rcli = Utils.db.Exec(" select * from " & Cbase.Table("TabCli") & " where cli_code = &1", clicode)
-      Entetcli = rcli!cli_rs_soc & " " & rcli!cli_nom & " " & rcli!cli_pnm & "\n" & rcli!cli_adr1 & "\n" & rcli!cli_adr2 & "\n" & rcli!cli_cd_ptl & " " & rcli!cli_ville & "\n"
+      Entetcli = rcli!cli_rs_soc & " " & rcli!cli_nom & "\n" & rcli!cli_pnm & "\n" & rcli!cli_adr1 & "\n" & rcli!cli_adr2 & "\n" & rcli!cli_cd_ptl & "\n" & rcli!cli_ville & "\n"
       Posy = 18
       i = 1
       For Each sline In Split(Entetcli, "\n")
-        If i = 1 Then
+        If i <= 2 Then
           pdf.Entete3(sline, Posy, "B", Ba4)
         Else
           pdf.Entete3(sline, Posy, "", Ba4)

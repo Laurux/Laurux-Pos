@@ -22,7 +22,7 @@ Public Sub _new()
     Case "80mm"
       $xratio = 0.65
       $yratio = 1.0
-      $fratio = 0.8
+      $fratio = 0.72
       Me.SetMargins(100, 100)
     Case "a4"
       $xratio = 1.0
@@ -140,16 +140,16 @@ Public Sub Level1(Code As String, Intitule As String, prix As String, qte As Str
   Else
     Me.SetFont("Helvetica", "", Round($fratio * 8))
   Endif
-  Me.cell(18 * $xratio, 4 * $yratio, Code, False, 0, "L", False)
+  Me.cell(18 * $xratio, 4 * $yratio, Left$(Code, Round($fratio * 13)), False, 0, "L", False)
   If Caisse.Ba4 Then
     Me.SetFont("Helvetica", "", Round($fratio * 9))
   Else
     Me.SetFont("Helvetica", "", Round($fratio * 8))
   Endif
   If Caisse.Ba4 Then
-    If typel <> "K" Then intitule = Left$(intitule, 40)
+    If typel <> "K" Then intitule = Left$(intitule, Round($fratio * 40))
   Else
-    If typel <> "K" Then intitule = Left$(intitule, 34)
+    If typel <> "K" Then intitule = Left$(intitule, Round($fratio * 34))
   Endif
   If typel = "K" Then
     Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
@@ -174,9 +174,9 @@ Public Sub Level1T(Code As String, Intitule As String, prix As String, qte As St
   Else
     Me.SetFont("Helvetica", "", Round($fratio * 7))
   Endif
-  Me.cell(18 * $xratio, 4, Code, False, 0, "L", False)
+  Me.cell(18 * $xratio, 4, Left$(Code, Round($fratio * 13)), False, 0, "L", False)
   
-  If typel <> "K" Then intitule = Left$(intitule, 40 * $xratio)
+  If typel <> "K" Then intitule = Left$(intitule, 40 * $fratio)
   If typel = "K" Then
     Me.cell(54 * $xratio, 4 * $yratio, intitule, False, 0, "L", False)
   Else
@@ -233,7 +233,7 @@ Public Sub Com(Comm As String, PosY As String)
   If Caisse.Ba4 Then
     Me.SetFont("Helvetica", "", Round($fratio * 8))
   Else
-    Me.SetFont("Helvetica", "", Round($fratio * 10))
+    Me.SetFont("Helvetica", "", Round($fratio * 7))
   Endif
   
   Me.cell(40 * $xratio, 8 * $yratio, Comm, False, 0, "L", False)
