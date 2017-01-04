@@ -857,8 +857,18 @@ Public Sub Cart_KeyPress()
 
   With utils
     If Key.code = Key.Esc Then
+      'La fenetre de paiement est affiché
       If Frame2.visible Then
-        Frame2.visible = False
+        If ipaiement = 0 Then
+          Frame2.visible = False
+          Cart.ReadOnly = False
+          Qte.ReadOnly = False
+        Else
+          Inpm.SetFocus
+          Inpm.Select
+          Zone = "Inpm"
+          Return
+        Endif
       Else
         Photos_MouseDown()
       Endif
@@ -1255,6 +1265,11 @@ Public Sub Valid_Cart()
       Design.Text = Rarts!art_design
       Pvttc.Text = Format$(Rarts!art_pvttc, Nbdec)
       Artpu = Pvttc.Text
+      'Une fois l'article trouvé on bloque les champs
+      Design.ReadOnly = True
+      Pvttc.ReadOnly = True
+      Design.Background = &H00BFBFBF&
+      Pvttc.Background = &H00BFBFBF&
       Pvht = Format$(Rarts!art_pvht, Nbdec)
       Paht = Format$(Rarts!art_paht, Nbdec)
       Tva = Rarts!art_tva
@@ -1669,12 +1684,14 @@ End
 Public Sub pvttc_LostFocus()
 
   TestPvttc()
-  If Settings["/admin"] Then
+  'Protection benefique meme en mode sans admin
+  'Modif_tk est accessible via F3
+  'If Settings["/admin"] Then
     Design.ReadOnly = True
     Pvttc.ReadOnly = True
     Design.Background = &H00BFBFBF&
     Pvttc.Background = &H00BFBFBF&
-  Endif
+  'Endif
 
 End
 
@@ -1695,6 +1712,8 @@ End
 Public Sub TestPvttc()
 
   bt = 0
+  
+  If Pvttc.ReadOnly = True Then Return
 
   With Utils
     Pvttc.Text = .cpoint(Pvttc.Text)
@@ -2022,6 +2041,7 @@ Public Sub Button6_Click()
             Mticket.Text = TotalTk.text
             Rticket.text = TotalTk.Text
             Cart.ReadOnly = True
+            Qte.ReadOnly = True
             ipaiement = 1
             Inpm.SetFocus
             Inpm.Select
@@ -2232,13 +2252,19 @@ End
 Public Sub suppr_Tk()
 
   Dim Tab As String
+  Dim sup As Integer
 
   Tab = "Fiches_EntTickets" & Ncaisse
   If LigTk.Count > 0 Then
     If Start.son Then
       Music.Play
     Endif
-    If Message.Warning("Attention ! Etes-vous sur de vouloir supprimer ce ticket ? ", "Oui", "Non") = 1 Then
+    If ipaiement = 0 Then
+      sup = Message.Warning("Attention ! Etes-vous sur de vouloir supprimer ce ticket ? ", "Oui", "Non")
+    Else
+      sup = 1
+    Endif
+    If sup = 1 Then
       rResult = Utils.db.Exec("select * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
       If rResult.Available Then
         Try Utils.db.Exec("UPDATE " & Tab & " set suppr = &1 where caisse = &2 and numero = &3", 1, Ncaisse, Numtk)
@@ -4293,11 +4319,11 @@ Public Sub button15_KeyPress()
     If ColumnView1.count = 0 Then
       Init_Reg()
     Else
-      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
         Return
       Else
-        Init_Reg()
         Button9_Click()
+        Init_Reg()
       Endif
     Endif
   Endif
@@ -4381,11 +4407,11 @@ Public Sub button37_KeyPress()
     If ColumnView1.count = 0 Then
       Init_Reg()
     Else
-      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
         Return
       Else
-        Init_Reg()
         Button9_Click()
+        Init_Reg()
       Endif
     Endif
   Endif
@@ -5132,14 +5158,12 @@ Public Sub Inpm_KeyPress()
   If Key.code = key.F7 Or If key.code = key.Esc Then
     If ColumnView1.count = 0 Then
       Init_Reg()
-      Cart.ReadOnly = False
     Else
-      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
         Return
       Else
-        Init_Reg()
         Button9_Click()
-        Cart.ReadOnly = False
+        Init_Reg()
       Endif
     Endif
   Endif
@@ -5866,6 +5890,9 @@ Public Sub Init_Reg()
   Cart.Select
   Rticket.text = "0"
   Mticket.text = "0"
+  Cart.ReadOnly = False
+  Qte.ReadOnly = False
+  ipaiement = 0
 
 End
 
@@ -7733,8 +7760,6 @@ Public Sub ColumnView1_Delete()
       ColumnView1.Clear
       Rticket.text = Mticket.Text
       TextLabel5.Text = "Reste à payer :"
-      'Cart.ReadOnly = False
-      'Cart.SetFocus
       inpm.SetFocus()
     Endif
   Endif
@@ -8628,11 +8653,11 @@ End
 Public Sub Echap_Click()
 
   If ColumnView1.count <> 0 Then
-    If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+    If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
       Return
     Else
-      Init_Reg()
       Button9_Click()
+      Init_Reg()
     Endif
   Endif
 
