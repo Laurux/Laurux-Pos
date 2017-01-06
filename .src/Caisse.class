@@ -1683,7 +1683,7 @@ End
 
 Public Sub pvttc_LostFocus()
 
-  TestPvttc()
+  
   'Protection benefique meme en mode sans admin
   'Modif_tk est accessible via F3
   'If Settings["/admin"] Then
@@ -1692,6 +1692,7 @@ Public Sub pvttc_LostFocus()
     Design.Background = &H00BFBFBF&
     Pvttc.Background = &H00BFBFBF&
   'Endif
+  TestPvttc()
 
 End
 
@@ -1740,6 +1741,8 @@ Public Sub TestPvttc()
               Music.Play
             Endif
             Try message.warning("ATTENTION ! Le Prix de vente est inférieur au prix d'achat", "OK")
+            Pvttc.ReadOnly = False
+            Pvttc.Background = &FFFFFF&
             Pvttc.SetFocus
             Pvttc.Select
             Zone = "Pvttc"
@@ -1758,6 +1761,10 @@ Public Sub TestPvttc()
         Else
           Zone = "Pvttc"
         Endif
+      Else
+        Try message.warning("ATTENTION ! Le Prix de vente est égal à Zero", "OK")
+        Pvttc.ReadOnly = False
+        Pvttc.Background = &FFFFFF&
       Endif
     Endif
   End With
@@ -5776,7 +5783,7 @@ Public Sub Enrg_Tk()
       Loop
     Endif
     ColumnView1.Clear
-    Frame2.Visible = False
+    Init_Reg()
     LigTk.clear
     Bdc.clear
     Nmc2.Clear
