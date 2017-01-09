@@ -836,7 +836,7 @@ Public Sub Cart_KeyPress()
         'Panel17.Visible = False
         'Frame3.visible = True
         ' Nmc.SetFocus
-        Clients_Divers()
+        ClientsDivers()
       Endif
       If Key.code = 82 Then 'CTRL+R
         If Ligtk.Count = 0 Then
@@ -1009,35 +1009,6 @@ Public Sub Prix_promo()
 
 End
 
-Public Sub Recup_Carte()
-
-  Dim Rcarte As Result
-
-  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
-  If Rcarte.Available Then
-    icartef = 1
-    scartef = Codearticle
-    snmcartef = Rcarte!nom & " " & Rcarte!pnm
-    ftpoint = Rcarte!tp2
-    ftpoint2 = ftpoint
-    fbonusv = Rcarte!tp1
-    fbonus = Rcarte!tg1
-    fbonusg = Rcarte!tg2
-    frem = Rcarte!rem
-    fpromo = Rcarte!promo
-    Label1.Text = snmcartef
-    Label2.Text = "Carte " & scartef
-    Label3.Text = "Points " & Format$(ftpoint, "0.00")
-    Label4.Text = "Bonus " & Format$(fbonusg, "0.00")
-    Bdc.Text = Label2.Text & " " & Label1.Text
-    Cart.Clear
-    Chkart = False
-    Cart.SetFocus
-    Zone = "Article"
-  Endif
-
-End
-
 '*********************************
 '*  Validation de la quantité    *
 '*********************************
@@ -1186,7 +1157,7 @@ Public Sub Valid_Cart()
   Endif
   If Crt = True Then
     If Clicompte = 0 Then
-      Recup_Carte()
+      RecupCarte()
     Else
       Message.Warning("Saisie d'une carte impossible sur un client en compte !")
       Crt = False
@@ -5972,7 +5943,7 @@ Public Sub Nmc4_KeyPress()
     Zone = "Article"
   Endif
   If key.code = key.F2 And Settings["/histocli"] Then
-    Clients_Divers()
+    ClientsDivers()
   Endif
 
 End
@@ -7207,14 +7178,14 @@ End
 '**********************************************************
 '*      Le bouton sert a rechercher les clients           *
 '**********************************************************
-Public Sub Clients_Divers()
+Public Sub ClientsDivers()
 
   Dim MyForm As Tricartes
 
   Bsel = False
   sel = ""
   If clicompte = 0 Then
-    MyForm = New Tricartes("Caisse")
+    MyForm = New Tricartes(-1)
     MyForm.Showmodal()
     If Bsel = True Then
       RecupClientd()
@@ -7229,23 +7200,6 @@ Public Sub Clients_Divers()
     Cart.setfocus
   Endif
 
-  '*********************************
-  'Dim MyForm As TriclientsD
-
-  ' bsel = False
-  'If IsNull(Nmc4.Text) Then
-  'MyForm = New TriclientsD("Caisse", "")
-  'MyForm.Showmodal()
-  ' TriclientsD.Showmodal()
-  'Else
-  'MyForm = New TriclientsD("Caisse", Nmc4.Text)
-  'MyForm.Showmodal()
-  'TriclientsD.Showmodal()
-  'Endif
-  '  If Bsel = True Then
-  '   Recup_Clientd()
-  '  Endif
-  '***********************************************
 End
 
 '******************************************
@@ -7299,10 +7253,10 @@ Public Sub CartesFidelite()
   Bsel = False
   sel = ""
   If clicompte = 0 Then
-    MyForm = New Tricartes("Caisse")
+    MyForm = New Tricartes(0)
     MyForm.Showmodal()
     If Bsel = True Then
-      Recup_Carte()
+      RecupCarte()
     Endif
   Else
     If Start.son Then
@@ -7312,6 +7266,37 @@ Public Sub CartesFidelite()
     Endif
     Message.Warning("Il y a un bon de caisse en cours de saisie ! Appel des cartes impossible")
     Cart.setfocus
+  Endif
+
+End
+
+Public Sub RecupCarte()
+
+  Dim Rcarte As Result
+  Dim icartef As Integer
+
+  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
+  If Rcarte.Available Then
+    icartef = 1
+    $Cli = Rcarte!nom
+    scartef = Codearticle
+    snmcartef = Rcarte!nom & " " & Rcarte!pnm
+    ftpoint = Rcarte!tp2
+    ftpoint2 = ftpoint
+    fbonusv = Rcarte!tp1
+    fbonus = Rcarte!tg1
+    fbonusg = Rcarte!tg2
+    frem = Rcarte!rem
+    fpromo = Rcarte!promo
+    Label1.Text = snmcartef
+    Label2.Text = "Carte " & scartef
+    Label3.Text = "Points " & Format$(ftpoint, "0.00")
+    Label4.Text = "Bonus " & Format$(fbonusg, "0.00")
+    Bdc.Text = Label2.Text & " " & Label1.Text
+    Cart.Clear
+    Chkart = False
+    Cart.SetFocus
+    Zone = "Article"
   Endif
 
 End

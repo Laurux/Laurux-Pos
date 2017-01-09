@@ -252,14 +252,20 @@ End
 
 Public Sub Button1_KeyPress()
 
-  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  If Key.Control Then
+    If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  Endif
   If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button1_Click()
 
 End
 
-Public Sub FORM_KeyPress()
+Public Sub Form_KeyPress()
 
+  If Key.Control Then
+    If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  Endif
+  If Key.code = Key.F12 Then ControleCai()
   If key.Alt Then
     If key.code = 80 Then mdp_admin2()
   Endif

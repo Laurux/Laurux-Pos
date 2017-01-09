@@ -956,9 +956,9 @@ Public Sub aff_cp()
   Colcp.Columns[0].Text = "CP"
   Colcp.Columns[1].Text = "Bureau distributeur"
   If cp.text Then
-    CpResult = Utils.db.Exec("SELECT * FROM Fiches_Cpostaux where cp like '" & cp.Text & "%' order by cp, burdist")
+    CpResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCpostaux") & " where cp like '" & cp.Text & "%' order by cp, burdist")
   Else
-    CpResult = Utils.db.Exec("SELECT * FROM Fiches_Cpostaux order by cp, burdist")
+    CpResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCpostaux") & " order by cp, burdist")
   Endif
   If CpResult.Available Then
     Repeat

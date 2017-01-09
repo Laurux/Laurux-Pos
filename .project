@@ -3,7 +3,7 @@
 Title=Laurux.Pos
 Startup=Start
 Icon=Icones/caisse3.png
-Version=3.21.6
+Version=3.21.7
 Component=gb.image
 Component=gb.qt4
 Component=gb.form

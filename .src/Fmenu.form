@@ -72,16 +72,16 @@
         }
       }
       { Label1 Label
-        MoveScaled(4,59,14,3)
+        MoveScaled(4,59,19,3)
         Font = Font["-4"]
-        Text = ("F1 = Documentation")
+        Text = ("CTRL + F1 = Documentation")
       }
       { TextLabel1 TextLabel
         MoveScaled(1,3,39,7)
         Alignment = Align.BottomNormal
       }
       { !Label2 Label
-        MoveScaled(22,59,19,3)
+        MoveScaled(27,59,14,3)
         #Public = True
         Font = Font["-4"]
         Text = ("Alt + P = Préfèrences")
@@ -89,7 +89,7 @@
       { Label3 Label
         MoveScaled(4,61,24,3)
         Font = Font["-4"]
-        Text = ("F12 = Attribution des touches")
+        Text = ("CTRL + F12 = Attribution des touches")
       }
     }
     { Panel3 Panel

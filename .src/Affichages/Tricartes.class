@@ -5,11 +5,12 @@ Clitable[9] As String
 Dbl As Boolean = False
 Tri As String
 sel As String
-Origine As String
+Origine As Integer
+Private bdivers As String
 Private lg As Integer
 
 '************************************** Gestion des cartes de fidélités *****************************************************
-Public Sub _new(sOrg As String)
+Public Sub _new(sOrg As Integer)
 
   If Settings["/tactile"] Then Fermer.Visible = True
   Tri = "code"
@@ -72,13 +73,9 @@ End
 
 Public Sub colcli_Click()
 
-  Select Case Origine
+  Caisse.Bsel = True
+  Caisse.Codearticle = colcli[colcli.row, 0].Text
 
-    Case "Caisse"
-      Caisse.Bsel = True
-      Caisse.Codearticle = colcli[colcli.row, 0].Text
-
-  End Select
   Me.close
 
 End
@@ -176,7 +173,7 @@ End
 Public Sub Deb3()
 
   Tris()
-  Utils.Base2(colcli, "select * from " & Cbase.Table("TabCarte") & " where " & Tri & " like  \"%" & sel & "%\" order by " & Tri & " limit " & NbEnreg & ", " & lg & "")
+  Utils.Base2(colcli, "select * from " & Cbase.Table("TabCarte") & " where " & Tri & " like  \"%" & sel & "%\" and divers = " & Origine & " order by " & Tri & " limit " & NbEnreg & ", " & lg & " ")
   Colcli.Refresh
 
 End
@@ -184,7 +181,7 @@ End
 Public Sub Deb4()
 
   Tris()
-  Utils.Base2(colcli, "select * from " & Cbase.Table("TabCarte") & " where " & Tri & " like  \"%" & sel & "%\" order by " & Tri & " desc limit " & NbEnreg & ", " & lg & "")
+  Utils.Base2(colcli, "select * from " & Cbase.Table("TabCarte") & " where " & Tri & " like  \"%" & sel & "%\"  and divers = " & Origine & " order by " & Tri & " desc limit " & NbEnreg & ", " & lg & "")
   Colcli.Refresh
 
 End
@@ -307,7 +304,7 @@ End
 Public Sub N1_KeyPress()
 
   ChkInput()
-  If Key.code = Key.F3 Then ClientsCartes()
+  If Key.code = Key.F4 Then ClientsCartes()
   If Key.code = Key.F2 Or key.code = key.Esc Then Me.Close()
   If Key.code = key.Down Then
     Colcli.MoveTo(0, 0)
