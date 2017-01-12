@@ -124,10 +124,10 @@ SearchString=True
 
 [OpenFile]
 Count=7
-Active=5
-File[1]=".src/FClientcarte.class:16.56"
+Active=6
+File[1]=".src/FClientcarte.class:685.596"
 File[2]=".src/Affichages/Tricartes.form"
-File[3]=".src/Affichages/Tricartes.class:122.175"
+File[3]=".src/Affichages/Tricartes.class:3.175"
 File[4]=".src/Utils.module:16.33"
 File[5]=".src/Caisse.class:45.7282"
 File[6]=".src/FClientcarte.form"

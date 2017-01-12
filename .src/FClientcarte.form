@@ -380,7 +380,7 @@
       Visible = False
       MaxLength = 40
     }
-    { Divers TextArea
+    { Observation TextArea
       MoveScaled(19,11,73,21)
       Font = Font["Serif,-1"]
       Drop = True

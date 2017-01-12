@@ -304,7 +304,13 @@ End
 Public Sub N1_KeyPress()
 
   ChkInput()
-  If Key.code = Key.F4 Then ClientsCartes()
+  If Key.code = Key.F4 Then
+    ClientsCartes()
+    Deb3()
+    Colcli.MoveTo(0, 0)
+    Try colcli.Current.EnsureVisible
+    N1.setfocus
+  Endif
   If Key.code = Key.F2 Or key.code = key.Esc Then Me.Close()
   If Key.code = key.Down Then
     Colcli.MoveTo(0, 0)
