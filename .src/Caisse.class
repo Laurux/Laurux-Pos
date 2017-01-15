@@ -155,6 +155,9 @@ Private Touche_P As String
 Private BA6X As Socket
 Private bAffUSB As Boolean
 Private $depot As String
+Private $reg As String
+Private $nom As String
+Private ireg As Float
 Private bretro As Boolean = False
 Private Val_retro As String ' variable pour coeff retrocession
 
@@ -831,13 +834,16 @@ Public Sub Cart_KeyPress()
       Endif
     Endif
     If key.Control Then
+      'Modification du règlement
+      If Key.code = 77 Then 'CTRL+M
+        ModifReg()
+      Endif
+      'Appel client divers
       If Key.code = 78 Then 'CTRL+N
         iavoir = 0
-        'Panel17.Visible = False
-        'Frame3.visible = True
-        ' Nmc.SetFocus
         ClientsDivers()
       Endif
+      'Ticket rétrocession
       If Key.code = 82 Then 'CTRL+R
         If Ligtk.Count = 0 Then
           bretro = True
@@ -854,6 +860,7 @@ Public Sub Cart_KeyPress()
           Message.Warning("La rétrocession se détermine en début de ticket !")
         Endif
       Endif
+      'Saisie d'un code vendeur
       If Key.code = 88 Then
         If Ligtk.Count = 0 Then
           Svendeur.showmodal()
@@ -6520,9 +6527,11 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           'If rTkhv!type = "N" Then totcaisse = Val(.cpoint(Totcaisse)) + Val(.cpoint(rTkhv!montant))
           'If rTkhv!type = "Q" Then totcaisse = Val(.cpoint(Totcaisse)) - Val(.cpoint(rTkhv!montant))
           sqte = rTkhv!qte
-          If rTkhv!type = "A" Or If rTkhv!type = "E" Or If rTkhv!type = "B" Or If rTkhv!type = "C" Or If rTkhv!type = "N" Or If rTkhv!type = "U" Or If rTkhv!type = "V" Or If rTkhv!type = "X" Or If rTkhv!type = "Y" Or If rTkhv!type = "W" Or If rTkhv!type = "Z" Or If rTkhv!type = "M" Or If rTkhv!type = "1" Then
-            pdf.Level2(sReg, sMTreg, sqte, Posy)
-            Posy += 5
+          If Val(sqte) > 0 Then
+            If rTkhv!type = "A" Or If rTkhv!type = "E" Or If rTkhv!type = "B" Or If rTkhv!type = "C" Or If rTkhv!type = "N" Or If rTkhv!type = "U" Or If rTkhv!type = "V" Or If rTkhv!type = "X" Or If rTkhv!type = "Y" Or If rTkhv!type = "W" Or If rTkhv!type = "Z" Or If rTkhv!type = "M" Or If rTkhv!type = "1" Then
+              pdf.Level2(sReg, sMTreg, sqte, Posy)
+              Posy += 5
+            Endif
           Endif
           If posy > 260 Then
             pdf.Baspage()
@@ -6915,8 +6924,10 @@ Public Sub Serial_Ticketxz(sintitule As String, origine As String)
             Endif
             'If rTkx!type = "Q" Then totcaisse = Val(.cpoint(Totcaisse)) - Val(.cpoint(rTkx!montant))
             sqte = rTkx!qte
-            If rTkx!type = "B" Or If rTkx!type = "E" Or If rTkx!type = "N" Or If rTkx!type = "U" Or If rTkx!type = "V" Or If rTkx!type = "X" Or If rTkx!type = "Y" Or If rTkx!type = "W" Or If rTkx!type = "Z" Or If rTkx!type = "Q" Or If rTkx!type = "M" Or If rTkx!type = "1" Then
-              Print #Sport, .Replace(sreg) & Space$(23 - Len(sreg)) & sMTreg & Space$(10 - Len(sMTreg)) & sqte
+            If Val(sqte) > 0 Then
+              If rTkx!type = "B" Or If rTkx!type = "E" Or If rTkx!type = "N" Or If rTkx!type = "U" Or If rTkx!type = "V" Or If rTkx!type = "X" Or If rTkx!type = "Y" Or If rTkx!type = "W" Or If rTkx!type = "Z" Or If rTkx!type = "Q" Or If rTkx!type = "M" Or If rTkx!type = "1" Then
+                Print #Sport, .Replace(sreg) & Space$(23 - Len(sreg)) & sMTreg & Space$(10 - Len(sMTreg)) & sqte
+              Endif
             Endif
           Until rTkx.MoveNext()
         Endif
@@ -7113,6 +7124,150 @@ Public Sub Aff_Art()
     Qte.SetFocus
     Qte.Select
     Zone = "Qte"
+  Endif
+
+End
+
+'***********************************Modification du mode de règlement******************************************
+Public Sub ModifReg()
+
+  Panel5.X = 280
+  Panel5.y = 100
+  Panel5.w = 640
+  Panel5.h = 520
+  Panel5.Visible = True
+
+End
+
+Public Sub Button42_Click()
+
+  Panel5.visible = False
+  TextBox1.Clear
+  ComboBox1.text = ""
+  Cart.SetFocus
+
+End
+
+Public Sub Lister_Click()
+
+  TextBox1.Text = Lister.Current[0]
+  ComboBox1.text = Lister.Current[1]
+  $reg = Lister.Current[1]
+  ireg = Val(Lister.Current[2])
+  $nom = Lister.Current[3]
+  Lister.Visible = False
+
+End
+
+Public Sub ToggleButton5_Click()
+
+  Dim moder As Result
+  Dim Tab As String = "Fiches_EntTickets" & Ncaisse
+
+  Lister.Columns.count = 3
+  Lister.Columns[0].Width = 120
+  Lister.Columns[1].Width = 120
+  Lister.Columns[0].Text = "Numéro"
+  Lister.Columns[1].Text = "Règlement"
+  Lister.Columns[2].Text = "Montant"
+  If Lister.visible = True Then
+    Lister.visible = False
+  Else
+    Lister.Visible = True
+  Endif
+  Try Moder = Utils.db.Exec("SELECT * FROM " & Tab & " order by numero")
+  If Moder.Available Then
+    Lister.Clear
+    With Utils
+      Repeat
+        Lister.Add(Moder!numero, Moder!numero)
+        Lister.Item[0] = Moder!numero
+        If Not IsNull(Moder!scheque) Then
+          Lister.Item[1] = "Chèque"
+          Lister.Item[2] = Format$(Val(.cpoint(moder!mcheque)), "0.00")
+          Lister.Item[3] = Moder!nmcheque
+        Endif
+        If Not IsNull(Moder!scarte) Then
+          Lister.Item[1] = "Carte"
+          Lister.Item[2] = Format$(Val(.cpoint(moder!mcarte)), "0.00")
+          Lister.Item[3] = Moder!nmcarte
+        Endif
+        If Not IsNull(Moder!sespeces) Then
+          Lister.Item[1] = "Espèces"
+          Lister.Item[2] = Format$(Val(.cpoint(moder!mespeces)), "0.00")
+        Endif
+      Until Moder.MoveNext()
+    End With
+  Endif
+
+End
+
+Public Sub Button44_click()
+
+  Dim moder As Result
+  Dim Tab As String = "Fiches_Reglts" & Ncaisse
+  Dim Tab2 As String = "Fiches_EntTickets" & Ncaisse
+  Dim smode As String
+  Dim mreg As Float
+  Dim mqte As Integer
+
+  If Not IsNull($reg) And Not IsNull(ComboBox1.text) Then
+    If Message.Question("Attention ! Vous allez remplacer le mode de règlement " & $reg & " par " & ComboBox1.Text & " pour le ticket numéro " & TextBox1.text, "Oui", "Non") = 1 Then
+      Select Case $reg
+        Case "Espèces"
+          smode = "N"
+        Case "Chèque"
+          smode = "V"
+        Case "Carte"
+          smode = "U"
+      End Select
+      'On met à jour l'ancien mode de règlement dans la table des règlements
+      Try Moder = Utils.db.Exec("SELECT * FROM " & Tab & " where type = &1", smode)
+      If Moder.Available Then
+        mreg = Val(Utils.cpoint(Moder!montant)) - ireg
+        mqte = Val(Utils.cpoint(Moder!qte)) - 1
+        Utils.db.Exec("UPdate  " & Tab & "  SET  montant = &1, qte = &2  WHERE type = &3", Format$(mreg, "0.00"), mqte, smode)
+      Endif
+      'On met à jour la table des entetes de ticket
+      Select Case $reg
+        Case "Espèces"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  sespeces = &1, mespeces = &2  WHERE numero = &3", "", "0", TextBox1.Text)
+        Case "Chèque"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scheque = &1, mcheque = &2, nmcheque = &3  WHERE numero = &4", "", "0", "", TextBox1.Text)
+        Case "Carte"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scarte = &1, mcarte = &2, nmcarte = &3  WHERE numero = &4", "", "0", "", TextBox1.Text)
+      End Select
+
+      'On met à jour le nouveau mode de règlement dans la table règlements
+      Select Case ComboBox1.Text
+        Case "Espèces"
+          smode = "N"
+        Case "Chèque"
+          smode = "V"
+        Case "Carte"
+          smode = "U"
+      End Select
+      Try Moder = Utils.db.Exec("SELECT * FROM " & Tab & " where type = &1", smode)
+      If Moder.Available Then
+        mreg = Val(Utils.cpoint(Moder!montant)) + ireg
+        mqte = Val(Utils.cpoint(Moder!qte)) + 1
+        Utils.db.Exec("UPdate  " & Tab & "  SET  montant = &1, qte = &2  WHERE type = &3", Format$(mreg, "0.00"), mqte, smode)
+      Else
+        Utils.db.Exec("INSERT INTO " & Tab & " (montant, qte, type, date) VALUES (&1, &2, &3, &4)", Format$(mreg, "0.00"), "1", smode, Format$(Now, "yyyymmdd"))
+      Endif
+      'On met à jour la table des entetes de ticket
+      Select Case ComboBox1.Text
+        Case "Espèces"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  sespeces = &1, mespeces = &2  WHERE numero = &3", smode, Format$(ireg, "0.00"), TextBox1.Text)
+        Case "Chèque"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scheque = &1, mcheque = &2  WHERE numero = &4", smode, Format$(ireg, "0.00"), $nom, TextBox1.Text)
+        Case "Carte"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scarte = &1, mcarte = &2  WHERE numero = &4", smode, Format$(ireg, "0.00"), $nom, TextBox1.Text)
+      End Select
+      Button42_Click()
+    Endif
+  Else
+    Message.Error("Enregistrement impossible !")
   Endif
 
 End
@@ -7844,7 +7999,7 @@ Public Sub Button43_Click()
 
 End
 
-Public Sub Button44_click()
+Public Sub Button44b_click()
 
   If Not IsNull(Zone) Then
     If Zone = "Nmc3" Then
