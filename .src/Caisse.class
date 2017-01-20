@@ -2485,9 +2485,31 @@ Public Sub Valid_Especes()
         Endif
         If Val(Utils.cpoint(Rticket.Text)) < 0 Then
           Try ColumnView1.Add("Q", "Q")
-          ColumnView1.Item[0] = "Q"
-          ColumnView1.Item[1] = "Montant rendu : "
-          ColumnView1.Item[2] = Format$(Abs(Val(Utils.cpoint(Rticket.Text))), "0.00")
+          If Not Error Then
+            ColumnView1.Item[0] = "Q"
+            ColumnView1.Item[1] = "Montant rendu : "
+            ColumnView1.Item[2] = Format$(Abs(Val(Utils.cpoint(Rticket.Text))), "0.00")
+          Else
+            ColumnView1.MoveFirst()
+            Repeat
+              If ColumnView1.Item[0] = "Q" Then
+                If Val(Utils.cpoint(Especes.Text)) < 0 Then
+                  Especes.Text = Abs(Val(Utils.cpoint(Especes.Text)))
+                  ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) - Val(Utils.cpoint(Especes.Text)), "0.00")
+                Else
+                  ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) + Val(Utils.cpoint(Especes.Text)), "0.00")
+                Endif
+              Endif
+            Until ColumnView1.MoveNext()
+          Endif
+        Else
+          ColumnView1.MoveFirst()
+          Repeat
+            If ColumnView1.Item[0] = "Q" Then
+              ColumnView1.Item.Delete()
+              ColumnView1.MoveFirst()
+            Endif
+          Until ColumnView1.MoveNext()
         Endif
         Especes.Clear
         Especes.Visible = False
@@ -3628,6 +3650,7 @@ Public Sub pointsF()
 
   rlib = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabLibelTicket") & "")
   If rlib.Available Then Txtbfac = rlib!libeltk
+  Delete_Reglements_Tk()
   Aff_bastk()
   Inc iNlg
   With Utils
@@ -5320,8 +5343,10 @@ Public Sub Aff_bastk()
         ttvam = mttc - mht
         rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", $code)
         If Not rtva.Available Then
-          Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, Format$(ttvam, "0.00"))
-          totaltva = totaltva + ttvam
+          If $code <> "" Then
+            Utils.db.Exec("INSERT INTO " & Tatva & " (code, mtva) VALUES (&1, &2)", $code, Format$(ttvam, "0.00"))
+            totaltva = totaltva + ttvam
+          Endif
         Else
           ttva = Val(Utils.cpoint(rtva!mtva)) + ttvam
           totaltva = totaltva + ttvam
@@ -5520,13 +5545,13 @@ Public Sub Enrg_Tk()
           'If Val(utils.cpoint(smespeces)) > Val(utils.cpoint(TotalTk.text)) Then smespeces = TotalTk.Text
           Esp += Val(utils.cpoint(LigTk.Item[3]))
           smespeces = Esp
-          Maj_Paiements(sespeces, smespeces, "1")
+          Maj_Paiements(sespeces, LigTk.Item[3], "1")
           sstatut = 0
         Endif
         If Right$(LigTk.Item[5], 1) = "Q" Then
           Esp -= Val(utils.cpoint(LigTk.Item[3]))
           smespeces = Esp
-          Maj_Paiements("Q", smespeces, "1")
+          Maj_Paiements("Q", LigTk.Item[3], "1")
           sstatut = 0
         Endif
         If Right$(LigTk.Item[5], 1) = "U" Then
@@ -5830,7 +5855,7 @@ Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
     If rReglt.Available Then
       MntReglt = rReglt!montant
       MntReglt = Val(Utils.cpoint(MntReglt)) - Val(Utils.cpoint(smnt))
-      Utils.db.Exec("UPdate  " & TabReglt & "  SET montant = &1 WHERE type = &2", MntReglt, Reg)
+      Utils.db.Exec("UPdate  " & TabReglt & "  SET montant = &1 WHERE type = &2 and date = &3", MntReglt, Reg, Format$(Now, "dd-mm-yyyy"))
     Endif
   Else
     rReglt = Utils.db.Exec(" select * from " & TabReglt & " where type = &1 and date = &2", reg, Format$(Now, "dd-mm-yyyy"))
@@ -7733,6 +7758,25 @@ Public Sub Tbrem_Click()
 
 End
 
+
+Public Sub Delete_Reglements_Tk()
+
+  Dim numl As Integer
+  If ColumnView1.count > 0 Then
+    Ligtk.MoveFirst()
+    For numl = 0 To ligtk.count - 1
+      Try LigTk.item.Selected = True
+      Try Ligtk.MoveNext()
+      If Not Error Then
+        If IsNull(LigTk.Current[8]) Then
+          LigTk.Current.Delete
+        Endif
+      Endif
+    Next
+  Endif
+  RenameLigne()
+End
+
 'On supprime les lignes de règlements
 Public Sub ColumnView1_KeyPress()
 
@@ -7754,16 +7798,7 @@ Public Sub ColumnView1_Delete()
 
   If ColumnView1.count > 0 Then
     If message.Question("Voulez-vous supprimer les lignes de règlements ?", "Oui", "Non") = 1 Then
-      Ligtk.MoveFirst()
-      For numl = 0 To ligtk.count - 1
-        Try LigTk.item.Selected = True
-        Try Ligtk.MoveNext()
-        If Not Error Then
-          If IsNull(LigTk.Current[8]) Then
-            LigTk.Current.Delete
-          Endif
-        Endif
-      Next
+      Delete_Reglements_Tk()
       ColumnView1.Clear
       Rticket.text = Mticket.Text
       TextLabel5.Text = "Reste à payer :"
