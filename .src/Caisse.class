@@ -261,7 +261,7 @@ Public Sub Form_Open()
   Imprimante = rResult!imp
   Typeimp = rResult!typeimp
   $depot = rResult!depot
-  Ent_tk()
+  Ent_tk(Null)
   TotalTk.Text = "0,00"
   If Left$(Imprimante, 4) = "/dev" Then
     Init_sport()
@@ -395,7 +395,9 @@ Public Sub Form_Close()
 
 End
 
-Public Sub Ent_tk()
+Public Sub Ent_tk(numtk As String)
+
+  Dim numero_tk As String
 
   Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entete.Text &= "Caissier(e) : " & $Caissiere
@@ -419,21 +421,28 @@ Public Sub Ent_tk()
     Endif
   Endif
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
-  If IsNull(rResult!dntk) Then
-    Ntk = Ncaisse & "000001"
+  
+  If numtk == Null Then
+    If IsNull(rResult!dntk) Then
+      Ntk = Ncaisse & "000001"
+    Else
+      Ntk = Val(Right$(rResult!dntk, Len(rResult!dntk) - 1)) + 1
+      Ntk = Format$(Ntk, "000000")
+      Ntk = Ncaisse & Ntk
+    Endif
+    numero_tk = Ntk
   Else
-    Ntk = Val(Right$(rResult!dntk, Len(rResult!dntk) - 1)) + 1
-    Ntk = Format$(Ntk, "000000")
-    Ntk = Ncaisse & Ntk
+    numero_tk = numtk
   Endif
+
   Ecole = rResult!ecole
   If Imprimante = "DéfautA4" Then
-    Entete.Text = Entete.Text & "Ticket No " & Ntk & Space$(40) & datetk '& "\n"
+    Entete.Text = Entete.Text & "Ticket No " & numero_tk & Space$(40) & datetk '& "\n"
   Else
     If Imprimante = "Défaut80" Then
-      Entete.Text = Entete.Text & "Ticket No " & Ntk & Space$(10) & datetk '& "\n"
+      Entete.Text = Entete.Text & "Ticket No " & numero_tk & Space$(10) & datetk '& "\n"
     Else
-      Entete.Text = Entete.Text & "Ticket No " & Ntk & Space$(3) & datetk & "\n"
+      Entete.Text = Entete.Text & "Ticket No " & numero_tk & Space$(3) & datetk & "\n"
     Endif
   Endif
 Catch
@@ -883,7 +892,7 @@ Public Sub Cart_KeyPress()
             rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Left$(Caissiere, 1))
             Caissiere = rResult!nom
             $Caissiere = rResult!nom & "\n"
-            Ent_tk()
+            Ent_tk(Null)
           Endif
         Endif
       Endif
@@ -919,7 +928,7 @@ Public Sub Cart_KeyPress()
             rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Left$(Caissiere, 1))
             Caissiere = rResult!nom
             $Caissiere = rResult!nom & "\n"
-            Ent_tk()
+            Ent_tk(Null)
           Endif
         Endif
       Endif
@@ -2061,8 +2070,8 @@ Public Sub Button6_Click()
 
 End
 
-Public Sub Button7_Click()
-
+Public Sub Ticket_Attente() As Boolean
+  
   If IsNull(RemTot.text) Then
     If Start.son Then
       Music.Play
@@ -2073,10 +2082,10 @@ Public Sub Button7_Click()
       Endif
       If Message.Warning("Attention ! Etes-vous sur de vouloir mettre ce ticket en attente ?", "Oui", "Non") = 1 Then
         iAttente = 1
-        iRattente = 0
         Enrg_Tk()
+        iRattente = 0
         LigTk.clear
-        Ent_tk()
+        Ent_tk(Null)
         TotalTk.Text = "0,00"
         Init_LigTk()
         iQte = 0
@@ -2092,6 +2101,9 @@ Public Sub Button7_Click()
         Cart.SetFocus
         Zone = "Article"
         'ClavFam()
+        Return True
+      Else
+        Return False
       Endif
     Endif
   Else
@@ -2100,7 +2112,14 @@ Public Sub Button7_Click()
     Endif
     Message.Warning("Mise en attente impossible ! Une remise sur total a été effectuée.")
   Endif
+  
+End
 
+
+Public Sub Button7_Click()
+
+  Ticket_Attente()
+  
 End
 
 Public Sub Button8_Click()
@@ -2137,7 +2156,7 @@ End
 Public Sub ColTka_KeyPress()
 
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then ColTka_Click()
-  If Key.code = Key.F9 Then
+  If Key.code = Key.F9 Or Key.code = Key.esc Then
     ColTka.Clear
     ColTka.visible = False
   Endif
@@ -2155,6 +2174,12 @@ Public Sub ColTka_Click()
   heuretk = Format$(Now, "dd-mm-yyyy  hh-nn")
 
   Tab = "Fiches_EntTickets" & Ncaisse
+  If LigTk.Count > 0 Then
+    If Ticket_Attente() == False Then
+      Return
+    Endif
+  Endif
+  
   LigTk.Clear
   Init_LigTk()
   iNlg = 0
@@ -2167,31 +2192,8 @@ Public Sub ColTka_Click()
   RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Client2 = Rtck!client
   Utils.db.Exec("UPDATE " & Tab & " set statut = &1 where caisse = &2 and numero = &3", 0, Ncaisse, Numtk)
-  Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
-  Entete.Text &= "Caissier(e) : " & $Caissiere
-  If Imprimante = "DéfautA4" Then
-    Entete.text = Entete.text & "Bonjour" & "\n"
-    If Imprimante = "Défaut80" Then
-      Entete.text = Entete.text & "Bonjour" & "\n"
-    Else
-      Entete.text = Entete.text & "Bonjour "
-    Endif
-  Endif
-  If Imprimante = "DéfautA4" Then
-    Entete.Text = Entete.Text & Pointille & Pointille & Left$(Pointille, 26) & "\n"
-    If Imprimante = "Défaut80" Then
-      Entete.Text = Entete.Text & Pointille & Pointille & Left$(Pointille, 10) & "\n"
-    Else
-      If Typeimp = "6000III" Then Entete.Text = Entete.Text & Pointille & "\n"
-      If Typeimp = "Tmu950" Then Entete.Text = Entete.Text & Left$(Pointille, 26) & "\n"
-    Endif
-  Endif
-  'rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
-  If Imprimante = "DéfautA4" Then
-    Entete.Text &= "Ticket no " & Numtk & Space$(35) & heuretk
-  Else
-    Entete.Text &= "Ticket no " & Numtk & "  " & heuretk & "\n"
-  Endif
+  Ent_tk(numtk)
+  
   TotalTk.Text = RTck!mttc
   If (RTck!type = 1) Then
     Clicompte = 1
@@ -2226,6 +2228,10 @@ Public Sub ColTka_Click()
       If rResult!type = "A" Then
         Totalht = Val(Utils.cpoint(Totalht)) + (Val(utils.cpoint(rResult!mht)))
         Totalht = Format$(Totalht, "0.00")
+      Endif
+      'verifie si BLs règlé dans ce ticket
+      If rResult!type = "BL" Then
+        Blexists = True
       Endif
     Until rResult.MoveNext()
     'Try Utils.db.Exec("delete FROM " & Tab & " where numero = &1", Numtk)
@@ -2275,11 +2281,13 @@ Public Sub suppr_Tk()
       rResult = Utils.db.Exec("select * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
       If rResult.Available Then
         Try Utils.db.Exec("UPDATE " & Tab & " set suppr = &1 where caisse = &2 and numero = &3", 1, Ncaisse, Numtk)
+        Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, Numtk)
+      Else
+        Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, Ntk)
       Endif
-      Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, Ntk)
       LigTk.Clear
       Init_LigTk()
-      Ent_tk()
+      Ent_tk(Null)
       TotalTk.Text = "0,00"
       Cart.SetFocus
       Zone = "Article"
@@ -5641,7 +5649,7 @@ Public Sub Enrg_Tk()
       Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33})", Ncaisse, Ntk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli, bretro)
     Else
       If ipaiement = 0 And Clicompte = 0 Then
-        Utils.db.Exec("UPdate  " & Tab & "  SET mttc = &3, vendeur = &4, statut = &5 WHERE caisse = &1 and numero = &2", Ncaisse, Numtk, TotalTk.Text, Caissiere, "1")
+        Utils.db.Exec("UPdate  " & Tab & "  SET type = 0, mttc = &3, vendeur = &4, statut = &5 WHERE caisse = &1 and numero = &2", Ncaisse, Numtk, TotalTk.Text, Caissiere, "1")
       Else
         Utils.db.Exec("DELETE FROM  " & Tab & " WHERE caisse = &1 and numero = &2", Ncaisse, Numtk)
         Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33})", Ncaisse, Numtk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli, bretro)
@@ -5662,6 +5670,12 @@ Public Sub Enrg_Tk()
       Utils.db.Exec("INSERT INTO " & Cbase.Table("TabAvoirs") & " (intitule, dte, montant, montantdu, ntk) VALUES (&1, &2, &3, &4, &5)", snavoir, datetk, Val(utils.cpoint(TotalTk.Text)), 0, Ntk)
     Endif
     Tab = "Fiches_LigTickets" & Ncaisse
+    
+    'En cas de rappel suppression puis recreation de toute les lignes dans la base
+    'Simplifie la remise en attente ou la modification depuis la restauration
+    If iRattente = 1 Then
+      Utils.db.Exec("DELETE FROM " & tab & " where numero = &1", Numtk)
+    Endif
 
     'On enregistre toutes les lignes du ticket
     LigTk.MoveFirst()
@@ -5686,7 +5700,7 @@ Public Sub Enrg_Tk()
       If IsNull(smrem) Then smrem = 0
       bloc = LigTk.Item[8]
       If iRattente = 0 Then
-        If stype = "T" Then
+        If stype = "T" Or stype = "BL" Then
           Try smtva = LigTk.Item[9]
         Else
           Try smtva = Format$(Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht)), "0.00")
@@ -5696,7 +5710,7 @@ Public Sub Enrg_Tk()
       Else
         Rcai = Utils.db.Exec("SELECT * FROM " & tab & " where numero = &1 and numlig = &2", Numtk, snumlig)
         If Not Rcai.Available Then
-          Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{11}, &{11}, &{12}, &{13})", Numtk, snumlig, Left$(scode, 15), sdesign, smontant, sqte, stype, fam, smontantht, smrem, LigTk.Item[9], LigTk.Item[8], LigTk.Item[10])
+          Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", Numtk, snumlig, Left$(scode, 15), sdesign, smontant, sqte, stype, fam, smontantht, smrem, LigTk.Item[9], LigTk.Item[8], LigTk.Item[10])
         Endif
       Endif
     Until LigTk.MoveNext()
@@ -5789,9 +5803,6 @@ Public Sub Enrg_Tk()
     If iRattente = 0 Then
       Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET dntk = &2 WHERE code = &1", Ncaisse, Ntk)
     Endif
-    If iRattente = 0 Then
-      Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET dntk = &2 WHERE code = &1", Ncaisse, Ntk)
-    Endif
     Totpoint = Ftpoint
     Totgain = totgain + fbonusg
     Totgain = totgain - boni
@@ -5812,7 +5823,7 @@ Public Sub Enrg_Tk()
     LigTk.clear
     Bdc.clear
     Nmc2.Clear
-    Ent_tk()
+    Ent_tk(Null)
     TotalTk.Text = "0,00"
     Cart.SetFocus
     Zone = "Article"
@@ -7368,6 +7379,13 @@ End
 Public Sub Button30_click()
 
   Dim MyForm As Tribl
+  Dim numero_tk As String
+  
+  If iRattente = 0 Then
+    numero_tk = Ntk
+  Else
+    numero_tk = numtk
+  Endif
 
   bsel = False
   If clicompte = 0 Then
@@ -7377,8 +7395,8 @@ Public Sub Button30_click()
         If (Blexists = False) Or If ((Blexists = True) And Message.Question("Il y a déjà des règlements de Bon de caisse\nVoulez-vous les supprimer ?", "Oui", "Non") = 1) Then
           'Ceci revient a supprimer la selection des BL
           If (Blexists = True) Then
-            Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, Ntk)
-            Blexists = Ajout_Reg_Bl(Ntk)
+            Try Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numtick = &2", Null, numero_tk)
+            Blexists = Ajout_Reg_Bl(numero_tk)
           Endif
           Triclients.Showmodal()
           If Bsel = True Then
@@ -7388,9 +7406,9 @@ Public Sub Button30_click()
       Case 2
         Triclients.Showmodal()
         If Bsel = True Then
-          MyForm = New Tribl(Clicode, Ntk)
+          MyForm = New Tribl(Clicode, numero_tk)
           MyForm.Showmodal()
-          Blexists = Ajout_Reg_Bl(Ntk)
+          Blexists = Ajout_Reg_Bl(numero_tk)
         Endif
       Case 3
         'do nothing
