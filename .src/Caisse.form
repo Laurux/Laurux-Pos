@@ -263,7 +263,7 @@
       ReadOnly = True
     }
     { ColTka ColumnView
-      MoveScaled(34,1,51,59)
+      MoveScaled(25,1,60,59)
       Visible = False
     }
     { Frame5 Frame

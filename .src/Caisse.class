@@ -224,13 +224,17 @@ Public Sub Form_Open()
   Coulfc = Val(Frmt[0])
   Init_LigTk()
   Init_Columnview1()
-  ColTka.Columns.count = 3
-  ColTka.Columns[0].Width = 80
-  ColTka.Columns[0].Text = " Numéro ticket"
-  ColTka.Columns[1].Width = 160
-  ColTka.Columns[1].Text = " Date"
-  ColTka.Columns[2].Width = 80
-  ColTka.Columns[2].Text = " Montant"
+  ColTka.Columns.count = 5
+  ColTka.Columns[0].Width = 20
+  ColTka.Columns[0].Text = " Caisse"
+  ColTka.Columns[1].Width = 80
+  ColTka.Columns[1].Text = " Numéro"
+  ColTka.Columns[2].Width = 130
+  ColTka.Columns[2].Text = " Date"
+  ColTka.Columns[3].Width = 60
+  ColTka.Columns[3].Text = " Montant"
+  ColTka.Columns[4].Width = 60
+  ColTka.Columns[4].Text = " Client"
   ColumnView1.Columns[2].Alignment = 2
   'If Imprimante = "DéfautA4" Then
   'pointille = String$(38, "-")
@@ -2126,9 +2130,9 @@ Public Sub Button8_Click()
 
   Dim Tab As String
   Dim RpTicket As Result
+  Dim RCaisse As Result
 
   If TouchFam Then Fermer2()
-  Tab = "Fiches_EntTickets" & Ncaisse
   If ColTka.Visible = True Then
     ColTka.Clear
     ColTka.visible = False
@@ -2137,17 +2141,25 @@ Public Sub Button8_Click()
     Zone = "Article"
   Else
     ColTka.visible = True
-    RpTicket = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and statut = &2", Ncaisse, "1")
-    If RpTicket.Available Then
+    RCaisse = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " order by code")
+    If RCaisse.Available Then
       Repeat
-        Try ColTka.Add(RpTicket!numero, RpTicket!numero)
-        ColTka.Item[0] = RpTicket!numero
-        ColTka.Item[1] = RpTicket!date
-        ColTka.Item[2] = RpTicket!mttc
-      Until RpTicket.MoveNext()
-      ColTka.MoveFirst
-      ColTka.SetFocus
-      ColTka.Item.Selected = True
+        Tab = "Fiches_EntTickets" & RCaisse!code
+        RpTicket = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and statut = &2 order by numero", RCaisse!code, "1")
+        If RpTicket.Available Then
+          Repeat
+            Try ColTka.Add(RpTicket!numero, RpTicket!numero)
+            ColTka.Item[0] = RpTicket!caisse
+            ColTka.Item[1] = RpTicket!numero
+            ColTka.Item[2] = RpTicket!date
+            ColTka.Item[3] = RpTicket!mttc
+            ColTka.Item[4] = RpTicket!client
+          Until RpTicket.MoveNext()
+          ColTka.MoveFirst
+          ColTka.SetFocus
+          ColTka.Item.Selected = True
+        Endif
+      Until RCaisse.MoveNext()
     Endif
   Endif
 
@@ -2168,12 +2180,15 @@ Public Sub ColTka_Click()
   Dim Mtk As String
   Dim RTck As Result
   Dim Tab As String
+  Dim Tab2 As String
   Dim heuretk As String
   Dim Clitab As Result
+  Dim Caisse As String
 
   heuretk = Format$(Now, "dd-mm-yyyy  hh-nn")
 
-  Tab = "Fiches_EntTickets" & Ncaisse
+  Caisse = ColTka.Item[0]
+  Tab = "Fiches_EntTickets" & Caisse
   If LigTk.Count > 0 Then
     If Ticket_Attente() == False Then
       Return
@@ -2184,14 +2199,14 @@ Public Sub ColTka_Click()
   Init_LigTk()
   iNlg = 0
   Totalht = 0
-  Numtk = ColTka.Item[0]
-  Datetk = ColTka.Item[1]
-  Mtk = ColTka.Item[2]
+  Numtk = ColTka.Item[1]
+  Datetk = ColTka.Item[2]
+  Mtk = ColTka.Item[3]
   ColTka.visible = False
   ColTka.clear
-  RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
+  RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Caisse, Numtk)
   Client2 = Rtck!client
-  Utils.db.Exec("UPDATE " & Tab & " set statut = &1 where caisse = &2 and numero = &3", 0, Ncaisse, Numtk)
+  Utils.db.Exec("UPDATE " & Tab & " set statut = &1 where caisse = &2 and numero = &3", 0, Caisse, Numtk)
   Ent_tk(numtk)
   
   TotalTk.Text = RTck!mttc
@@ -2205,8 +2220,8 @@ Public Sub ColTka_Click()
       Bdc.Text = "Bon de caisse " & clicode
     Endif
   Endif
-  'Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
-  Tab = "Fiches_LigTickets" & Ncaisse
+  'Try Utils.db.Exec("delete FROM " & Tab & " where caisse = &1 and numero = &2", Caisse, Numtk)
+  Tab = "Fiches_LigTickets" & Caisse
   rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where numero = &1 order by cast(numlig as unsigned)", Numtk)
   If rResult.Available Then
     Repeat
@@ -2240,6 +2255,23 @@ Public Sub ColTka_Click()
   Cart.SetFocus
   Zone = "Article"
   'ClavFam()
+  
+  'Le Ticket garde son numéro mais change de caisse lors de la restauration
+  'On le supprime de la table des tickets de l'ancienne caisse
+  If Caisse <> Ncaisse
+    Tab = "Fiches_EntTickets" & Caisse
+    Tab2 = "Fiches_EntTickets" & NCaisse
+    RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where statut = &1 and caisse = &2 and numero = &3", 0, Caisse, Numtk)
+    If RTck.Available Then
+      Utils.db.Exec("INSERT INTO " & Tab2 & " Select * FROM " & Tab & " where statut = &1 and caisse = &2 and numero = &3", 0, Caisse, Numtk)
+      Utils.db.Exec("UPDATE " & Tab2 & " set caisse = &1 where statut = &2 and numero = &3", NCaisse, 0, Numtk)
+      Utils.db.Exec("DELETE FROM " & Tab & " where statut = &1 and caisse = &2 and numero = &3", 0, Caisse, Numtk)
+      Tab = "Fiches_LigTickets" & Caisse
+      Tab2 = "Fiches_LigTickets" & NCaisse
+      Utils.db.Exec("INSERT INTO " & Tab2 & " Select * FROM " & Tab & " where numero = &1", Numtk)
+      Utils.db.Exec("DELETE FROM " & Tab & " where numero = &1", Numtk)
+    Endif
+  Endif
 
 End
 
