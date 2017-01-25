@@ -40,7 +40,7 @@ Public Sub Init()
   Dim i As Integer
   Dim t As String = "A"
 
-  For i = 1 To 36
+  For i = 1 To 35
     t = "A" & i
     Try btn = Me.Controls[t]
     Try btn.Text = ""

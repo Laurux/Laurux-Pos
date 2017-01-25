@@ -29,21 +29,21 @@ Private Content As String
 Private Compb As Boolean
 
 Public Sub _New()
-  
+
   Try Sauves.Text = Settings["/Rep_Sauv"]
   Try Compb = Settings["/Compression"]
   Me.Center
-  
+
 End
 
 Public Sub Button3_Click()
-  
+
   Me.close
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   Dim Uncp As New Uncompress
   Dim txterror As String
   Dim Utilisateur As String
@@ -57,7 +57,7 @@ Public Sub Button2_Click()
   Dim Hnew As File
   Dim filename As String
   Dim cs As String = Settings["/Soc"]
-  
+
   filename = User.home & "/tmp/resultat"
   If Not Exist(User.home & "/tmp") Then Mkdir User.home & "/tmp"
   hnew = Open filename For Create
@@ -139,23 +139,23 @@ Public Sub Button2_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Process_Read()
-  
+
   Dim hFile As File
-  
+
   hFile = Open User.home & "/tmp/resultat" For Read
-  
+
   While Not Eof(hFile)
     Line Input #hFile, content
   Wend
-  
+
 End
 
 Public Sub Svs_Click()
-  
+
   Dialog.Title = "Choisir un repertoire"
   Dialog.Path = User.home
   If Not Dialog.SelectDirectory() Then
@@ -163,33 +163,33 @@ Public Sub Svs_Click()
   Else
     Sauves.Text = User.home
   Endif
-  
+
 End
 
 Public Sub Button4_Click()
-  
+
   Editeur.Prog_Editeur(User.home & "/tmp/resultat")
-  
+
 End
 
 Public Sub Button5_Click()
-  
+
   Me.mouse = mouse.Wait
   Mmysql.Init()
   Button2_Click()
   Panel1.Visible = False
   Me.mouse = mouse.DEFAULT
-  
+
 End
 
 Public Sub Button6_Click()
-  
+
   Panel1.Visible = False
-  
+
 End
 
 Public Sub Button1_Click()
-  
+
   Exec ["xdg-open", Application.Path &/ "Ecrans/Restauration.html"]
-  
+
 End

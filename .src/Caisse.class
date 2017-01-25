@@ -987,7 +987,7 @@ Public Sub aff_Photo()
   Try hImage = Image.Load(Photo)
   If Not Error Then
     Draw.Begin(Photos)
-      Draw.Image(hImage, 0, 0, Photos.Width, Photos.Height)
+    Draw.Image(hImage, 0, 0, Photos.Width, Photos.Height)
     Draw.End
   Endif
 Catch
@@ -4201,7 +4201,7 @@ Public Sub button15_KeyPress()
     If ColumnView1.count = 0 Then
       Init_Reg()
     Else
-      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie  et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
         Return
       Else
         Init_Reg()
@@ -4289,7 +4289,7 @@ Public Sub button37_KeyPress()
     If ColumnView1.count = 0 Then
       Init_Reg()
     Else
-      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie  et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
         Return
       Else
         Init_Reg()
@@ -5042,7 +5042,7 @@ Public Sub Inpm_KeyPress()
       Init_Reg()
       Cart.ReadOnly = False
     Else
-      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+      If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie  et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
         Return
       Else
         Init_Reg()
@@ -8526,8 +8526,13 @@ Public Sub Clav3_Click()
               Qte.text = 1
               bFam = True
               iModif = 1
-              Qte.setfocus
-              Qte.select
+              If Pvttc.text <> "0,00" Then
+                Qte.setfocus
+                Qte.select
+              Else
+                Pvttc.setfocus
+                Pvttc.Select
+              Endif
               Famille = Cart.Text
               Zone = "Pvttc"
             Else
@@ -8571,7 +8576,7 @@ End
 Public Sub Echap_Click()
 
   If ColumnView1.count <> 0 Then
-    If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va annuler le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie,\n 2- Sortir et annuler le ticket.", "1 ", "2 ") = 1 Then
+    If message.Question("Attention ! Un réglement a été saisi. Sortir de la saisie des réglements va supprimer le ticket.\nQue voulez-vous faire ?\n 1- Continuer la saisie  et modifier les règlements,\n 2- Sortir et supprimer le ticket.", "1 ", "2 ") = 1 Then
       Return
     Else
       Init_Reg()
