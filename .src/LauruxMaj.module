@@ -5,10 +5,10 @@ Private hpb As ProgressBar
 
 Public Sub Verif_Version()
 
-  If Val(Right$(Settings["/dbase/Version"], 2)) <= 21 Then
+  If Val(Right$(Settings["/dbase/Version"], 2)) <= 22 Then
     Maj()
-    Settings["/dbase/Version"] = "Laurux.Pos V3.21"
-    Fmenu.Frame1.text = "Laurux.Pos V3.2"
+    Settings["/dbase/Version"] = "Laurux.Pos V3.22"
+    Fmenu.Frame1.text = "Laurux.Pos V3.22"
     Settings.save
     Try Kill User.home & "/Laurux.Pos.lock"
   Else

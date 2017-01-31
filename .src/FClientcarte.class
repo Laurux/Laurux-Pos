@@ -594,7 +594,7 @@ Public Sub Button4_Click()
       Message("Vous devez d'abord remplir les zones obligatoires (nom,code)\n ou cliquez sur le bouton 'Créer' si vous n'avez pas de code carte", "OK")
     Else
       If button4.text = "Valider" Or button4.text = "V&alider" Then
-        Utils.db.Exec("INSERT INTO " & Cbase.Table("TabCarte") & " (code,rs_soc,nom,pnm,adr1,adr2,cd_ptl,ville,email,tel_bur,tel_dom,tel_poste,pble,fx1,fx2, datec, datef, rem, promo, tp1, tp2, tg1, tg2, obs, cb, divers) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26})", Cd.text, CV.text, Nm.text, Pnm.text, Adresse1.text, Adresse2.text, cp.text, Burdist.text, Email.text, Telbur.text, Teldom.text, Poste.text, Portable.text, Fax1.text, Fax2.text, Utils.Cdate_Dbase(Dte1.Text), Utils.Cdate_Dbase(Dte2.Text), Rem.value, Prom.value, Tp1.Text, Tp2.Text, Tg1.Text, Tg2.Text, Observation.text, cb.Text, Observation.value)
+        Utils.db.Exec("INSERT INTO " & Cbase.Table("TabCarte") & " (code,rs_soc,nom,pnm,adr1,adr2,cd_ptl,ville,email,tel_bur,tel_dom,tel_poste,pble,fx1,fx2, datec, datef, rem, promo, tp1, tp2, tg1, tg2, obs, cb, divers) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26})", Cd.text, CV.text, Nm.text, Pnm.text, Adresse1.text, Adresse2.text, cp.text, Burdist.text, Email.text, Telbur.text, Teldom.text, Poste.text, Portable.text, Fax1.text, Fax2.text, Utils.Cdate_Dbase(Dte1.Text), Utils.Cdate_Dbase(Dte2.Text), Rem.value, Prom.value, Tp1.Text, Tp2.Text, Tg1.Text, Tg2.Text, Observation.text, cb.Text, Observation.Text)
         Enrgcp.Ecp(Cp.Text, Burdist.Text)
         skey = cd.Text
         Refresh()
@@ -1065,11 +1065,11 @@ Public Sub Hisv_Click()
     Histo.Columns[5].Alignment = 2
     Histo.Columns[6].Text = "Remise"
     Histo.Columns[6].Alignment = 2
-    HisResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabHEntTck") & " where carte = &1 order by numero", cd.text)
+    HisResult = Utils.db.Exec("SELECT * FROM Fiches_HisEntTickets where carte = &1 order by numero", cd.text)
     If HisResult.Available Then
       If Not IsNull(HisResult!carte) Then
         Repeat
-          HligResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabHLigTck") & " where numero = &1 order by code", HisResult!numero)
+          HligResult = Utils.db.Exec("SELECT * FROM Fiches_HisLigTickets where numero = &1 order by code", HisResult!numero)
           If HligResult.Available Then
             Repeat
               Histo.Add(HligResult!lInd, HligResult!lInd)
@@ -1115,7 +1115,7 @@ Public Sub Hisp_Click()
     Histo.Columns[4].Alignment = 2
     Histo.Columns[5].Text = "Total points"
     Histo.Columns[5].Alignment = 2
-    HisResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabHEntTck") & " where carte = &1 order by numero", cd.text)
+    HisResult = Utils.db.Exec("SELECT * FROM  Fiches_HisEntTickets where carte = &1 order by numero", cd.text)
     If HisResult.Available Then
       If Not IsNull(HisResult!carte) Then
         Repeat

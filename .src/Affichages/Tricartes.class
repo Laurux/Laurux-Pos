@@ -6,7 +6,6 @@ Dbl As Boolean = False
 Tri As String
 sel As String
 Origine As Integer
-Private bdivers As String
 Private lg As Integer
 
 '************************************** Gestion des cartes de fidélités *****************************************************

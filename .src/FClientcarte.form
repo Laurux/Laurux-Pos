@@ -424,6 +424,7 @@
     { Button1 Button Btn
       Name = "Button1"
       MoveScaled(7,0,14,4)
+      Visible = False
       Font = Font["Serif,Bold,-1"]
       Tag = "2"
       Expand = True
@@ -433,6 +434,7 @@
     { Button12 Button Btn
       Name = "Button12"
       MoveScaled(23,0,15,4)
+      Visible = False
       Font = Font["Serif,Bold,-1"]
       Tag = "7"
       Expand = True
