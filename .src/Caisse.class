@@ -2061,7 +2061,6 @@ Public Sub ColTka_Click()
   ColTka.clear
   RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Ncaisse, Numtk)
   Client2 = Rtck!client
-  Utils.db.Exec("UPDATE " & Tab & " set statut = &1 where caisse = &2 and numero = &3", 0, Ncaisse, Numtk)
   Entete.text = Adr & "\n" & Siret & " \n" & Tvaintra & "\n" & Tel & "\n"
   Entete.Text &= "Caissier(e) : " & $Caissiere
   If Imprimante = "DéfautA4" Then
