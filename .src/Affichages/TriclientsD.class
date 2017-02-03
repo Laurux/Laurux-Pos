@@ -189,9 +189,9 @@ End
 
 Public Sub N1_Click()
 
-  Dim MForm As Clavier
+  'Dim MForm As Clavier
 
-  MForm = New Clavier("ClientsDiv")
+  'Form = New Clavier("ClientsDiv")
   sel = ""
   Dbl = ""
   N1.Text = ""
@@ -199,7 +199,7 @@ Public Sub N1_Click()
   NbEnreg = 0
   Dbl = ""
   Deb3()
-  If Settings["/tactile"] Then MForm.Showmodal()
+  ' If Settings["/tactile"] Then MForm.Showmodal()
 
 End
 

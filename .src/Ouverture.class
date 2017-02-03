@@ -9,9 +9,9 @@ sFiletxt As String
 Public $clav As String
 
 Public Sub _new()
-  
+
   Dim Rrslt As Result
-  
+
   Music.Load("son/warning.ogg")
   SetObservers(Me, Me)
   Try Rrslt = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs"))
@@ -37,41 +37,41 @@ Catch
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub SetObservers(hClass As Object, hCont As Container)
-  
+
   Dim hCtrl As Object
   Dim hOBS As Observer
-  
+
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
       hOBS = New Observer(hCtrl) As "OBS"
     Endif
     If hCtrl Is Container Then SetObservers(hClass, hCtrl)
   Next
-  
+
 End
 
 Public Sub Obs_Enter()
-  
+
   Last.Font = Font["" ",Bold," ""]
   Last.background = Color.Lighter(Color.Buttonbackground)
   'Last.Move(Last.x - 2, Last.y - 2, Last.w + 4, Last.h + 4)
-  
+
 End
 
 Public Sub Obs_Leave()
-  
+
   Last.Font = Font["" "," "," ""]
   Last.background = Color.ButtonBackground
   'Last.Move(Last.x + 2, Last.y + 2, Last.w - 4, Last.h - 4)
-  
+
 End
 
 Public Sub Mdp_KeyPress()
-  
+
   If Key.code = Key.enter Or If Key.code = Key.RETURN Or If Key.code = Key.Tab Then
     Mdp_Vendeurs()
     If b = 1 Then
@@ -80,11 +80,11 @@ Public Sub Mdp_KeyPress()
       Button1.SetFocus
     Endif
   Endif
-  
+
 End
 
 Public Sub Mdp_Vendeurs()
-  
+
   If Mdp.Text <> $Mdp Then
     If Start.son Then
       Music.Play
@@ -97,13 +97,13 @@ Public Sub Mdp_Vendeurs()
   Else
     b = 0
   Endif
-  
+
 End
 
 Public Sub Combobox1_Click()
-  
+
   Dim Rslt As Result
-  
+
   If Not IsNull(Combobox1.Text) Then
     Rslt = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1 ", Left$(Combobox1.Text, 1))
     If IsNull(Rslt!fndc) Then
@@ -118,13 +118,13 @@ Catch
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Caissiere_Click()
-  
+
   Dim Rrslt As Result
-  
+
   If Not IsNull(Caissiere.Text) Then
     Rrslt = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1 ", Left$(Caissiere.Text, 1))
     $mdp = hexdblKey.crypt("de", Rrslt!mdp, "Laurux")
@@ -142,18 +142,18 @@ Catch
     Music.Play
   Endif
   Try message.Error(Error.Text & " " & Error.where)
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   Me.close
-  
+
 End
 
 Public Sub Button1_Click()
-  
-  Clavier.Close()
+
+  Try Clavier.Close()
   sNcai = Left$(Combobox1.Text, 1)
   sNcaisse = "Caisse" & sNcai
   sFiletxt = User.home & "/" & sNcaisse & ".lock"
@@ -222,41 +222,41 @@ Public Sub Button1_Click()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Function Rcai(sCai As String) As String
-  
+
   scai = Combobox1.Text
   Return scai
-  
+
 End
 
 Public Sub Rvdr(svdr As String) As String
-  
+
   svdr = Caissiere.Text
   Return svdr
-  
+
 End
 
 Public Sub Org(sorg As String) As String
-  
+
   sorg = "O"
   Return sorg
-  
+
 End
 
 Public Sub button1_KeyPress()
-  
+
   Button1_Click()
-  
+
 End
 
 Public Sub Button3_Click()
-  
+
   Dim MyForm As Clavier
-  
+
   MyForm = New Clavier
   MyForm.Show()
-  
+
 End
