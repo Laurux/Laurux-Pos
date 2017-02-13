@@ -194,7 +194,7 @@ Public Sub Button1_Click()
             Else
               Start.$tcai = 0
             Endif
-            Clavier.Close
+            Try Clavier.Close
           Else
             b = TestCaisses.TestCai(sNcai, Left$(Caissiere.Text, 1))
             If B = 1 Then
