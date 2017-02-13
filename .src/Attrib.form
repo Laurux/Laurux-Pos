@@ -21,7 +21,7 @@
   }
   { Button1 Button
     MoveScaled(101,74,17,4)
-    Text = Shortcut(("Enregister"), "E")
+    Text = Shortcut(("Enregistrer"), "E")
   }
   { Button2 Button
     MoveScaled(101,79,17,4)

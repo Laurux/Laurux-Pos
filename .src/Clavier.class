@@ -2,58 +2,58 @@
 
 Private $saisie As String
 
-Public Sub _new()
-  
+Public Sub _new(Org As String)
+
   Me.center
   Me.Move(120, 280)
-  
+
 End
 
 Public Sub Clav_click()
-  
+
   alpha()
   Ouverture.Mdp.text = $saisie
-  
+
 End
 
 Public Sub Numerique()
-  
+
   If Len(Last.name) = 2 Then
     $saisie = $saisie & Right$(Last.name, 1)
   Else
-    If Last.name = "Point" Then 
+    If Last.name = "Point" Then
       $saisie = $saisie & "."
     Else
-      If Last.name = "Efface" Then 
+      If Last.name = "Efface" Then
         $saisie = Left$($saisie, Len($saisie) - 1)
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Alpha()
-  
-  If Len(Last.name) = 1 Then 
+
+  If Len(Last.name) = 1 Then
     $saisie = $saisie & Last.name
   Else
     If Len(Last.name) = 2 Then
       $saisie = $saisie & Right$(Last.name, 1)
     Else
-      If Last.name = "Point" Then 
+      If Last.name = "Point" Then
         $saisie = $saisie & "."
       Else
-        If Last.name = "Etoile" Then 
+        If Last.name = "Etoile" Then
           $saisie = $saisie & "*"
         Else
           If Last.name = "Espace" Then
             $saisie = $saisie & " "
           Else
-            If Last.name = "Efface" Then 
+            If Last.name = "Efface" Then
               $saisie = Left$($saisie, Len($saisie) - 1)
             Else
-              If Last.name = "Entree" Then 
-                $saisie = $saisie & Chr$(13) & Chr$(10) 
+              If Last.name = "Entree" Then
+                $saisie = $saisie & Chr$(13) & Chr$(10)
               Endif
             Endif
           Endif
@@ -61,22 +61,22 @@ Public Sub Alpha()
       Endif
     Endif
   Endif
-  
+
 End
 
 Public Sub Fermer_Click()
-  
-  'If $Org = "Ouverture" Then 
+
+  'If $Org = "Ouverture" Then
   'Me.visible = False
   'Ouverture.Mdp.SetFocus
   Me.close
   Ouverture.Button1_Click()
-  'Endif 
-  
+  'Endif
+
 End
 
 Public Sub Entree_Click()
-  
-  Fermer_Click() 
-  
+
+  Fermer_Click()
+
 End

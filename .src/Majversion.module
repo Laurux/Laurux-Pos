@@ -1,12 +1,12 @@
 ' Gambas module file
 
 Public Sub Verif_Maj()
-  
+
   Dim version As String
   Dim txt As String
   Dim $hform As Form
   Dim hLabel As Label
-  
+
   $hForm = New Form As "Form"
   $hForm.Border = Border.Etched
   $hform.Title = "Mise à jour de Laurux"
@@ -52,5 +52,5 @@ Public Sub Verif_Maj()
     Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
   Endif
   If Exist(User.Home & "/version.txt") Then Kill User.Home & "/version.txt"
-  
+
 End

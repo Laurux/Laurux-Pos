@@ -1,198 +1,198 @@
 ' Gambas module file
 
 Public Function Table(Tab As String) As String
-  
+
   Select Case tab
     Case "TabParam"
       Tab = "Fiches_Parametres"
-      
+
     Case "TabFam"
       Tab = "Fiches_Fam"
-      
+
     Case "TabArt"
       Tab = "Fiches_Art"
-      
+
     Case "TabCdBarre"
       Tab = "Fiches_CdBarre"
-      
+
     Case "TabMo"
       Tab = "Fiches_Mo"
-      
+
     Case "TabComptes"
       Tab = "Fiches_Comptes"
-      
+
     Case "TabTvav"
       Tab = "Fiches_Tvaav"
-      
+
     Case "TabTvac"
       Tab = "Fiches_Tvaac"
-      
+
     Case "TabParam"
       Tab = "Fiches_Parametres"
-      
+
     Case "TabCom"
       Tab = "Fiches_Commentaires"
-      
+
     Case "TabHisFac"
       Tab = "Fiches_HistoFac"
-      
+
     Case "TabHisFacm"
       Tab = "Fiches_HistoFacM"
-      
+
     Case "TabHisLigFac"
       Tab = "Fiches_HistoLigfac"
-      
+
     Case "TabHisLigFacm"
       Tab = "Fiches_HistoLigfacM"
-      
+
     Case "TabHisEntm"
       Tab = "Fiches_HisentMat"
-      
+
     Case "TabSoc"
       Tab = "Fiches_Societes"
-      
+
     Case "TabLibelFac"
       Tab = "Fiches_LibelFac"
-      
+
     Case "Totalisation"
       Tab = "Totalisation"
-      
+
     Case "TabMvt"
       Tab = "Fiches_Mvt"
-      
+
     Case "TabMvt1"
       Tab = "Fiches_Mvt1"
-      
+
     Case "TabMvt2"
       Tab = "Fiches_Mvt2"
-      
+
     Case "TabMvt3"
       Tab = "Fiches_Mvt3"
-      
+
     Case "TabMvt4"
       Tab = "Fiches_Mvt4"
-      
+
     Case "TabMvt5"
       Tab = "Fiches_Mvt5"
-      
+
     Case "TabArtSaisis"
       Tab = "Art_Saisis"
-      
+
     Case "TabJour"
       Tab = "Fiches_Journaux"
-      
+
     Case "TabCli"
       Tab = "Fiches_Cli"
-      
+
     Case "TabClid"
       Tab = "Fiches_Clid"
-      
+
     Case "TabCarte"
       Tab = "Fiches_Carte"
-      
+
     Case "TabCliVtl"
       Tab = "Fiches_Cli_Vtl"
-      
+
     Case "TabFour"
       Tab = "Fiches_Four"
-      
+
     Case "TabFourVtl"
       Tab = "Fiches_Four_Vtl"
-      
+
     Case "TabLibel"
       Tab = "Fiches_Libelles"
-      
+
     Case "TabEntcom"
       Tab = "Fiches_Entcom"
-      
+
     Case "TabLigcom"
       Tab = "Fiches_Ligcom"
-      
+
     Case "TabMat"
       Tab = "Fiches_Materiels"
-      
+
     Case "TabMarq"
       Tab = "Fiches_Marques"
-      
+
     Case "TabBl"
       Tab = "Fiches_Bl"
-      
+
     Case "TabLigbl"
       Tab = "Fiches_Ligbl"
-      
+
     Case "TabEntrecpt"
       Tab = "Fiches_Entrecpt"
-      
+
     Case "TabLigrecpt"
       Tab = "Fiches_Ligrecpt"
-      
+
     Case "TabMvtexp"
       Tab = "Fiches_Mvtexp"
-      
+
     Case "TabInv"
       Tab = "Fiches_Inv"
-      
+
     Case "TabStat"
       Tab = "Fiches_Stat"
-      
+
     Case "Ecrs"
       Tab = "Ecrs"
-      
+
     Case "TabNumabon"
       Tab = "Fiches_Numabon"
-      
+
     Case "TabLigabon"
       Tab = "Fiches_Ligabon"
-      
+
     Case "TabTleg"
       Tab = "Fiches_Tleg"
-      
+
     Case "TabAgenda"
       Tab = "Fiches_Agenda"
-      
+
     Case "TabVendeurs"
       Tab = "Fiches_Vendeurs"
-      
+
     Case "TabCaisses"
       Tab = "Fiches_Caisses"
-      
+
     Case "TabCliCaisse"
       Tab = "Fiches_ClientCaisse"
-      
+
     Case "TabLibelTicket"
       Tab = "Fiches_LibelTicket"
-      
+
     Case "TabReglt"
       Tab = "Fiches_Regltz"
-      
+
     Case "TabLibelAvoirs"
       Tab = "Fiches_LibelAvoirs"
-      
+
     Case "TabAvoirs"
       Tab = "Fiches_Avoirs"
-      
+
     Case "TabEntTck"
       Tab = "Fiches_EntTicketz"
-      
+
     Case "TabLigTck"
       Tab = "Fiches_LigTicketz"
-      
+
     Case "TabRemTypec"
       Tab = "Fiches_RemTypec"
-      
+
     Case "TabPromo"
       Tab = "Fiches_Promo"
-      
+
     Case "TabArtPromo"
       Tab = "Fiches_ArtPromo"
-      
+
     Case "TabAcomptes"
       Tab = "Fiches_Acomptes"
-      
+
     Case "TabTouches"
       Tab = "Fiches_Touches"
-      
+
   End Select
   Return Tab
-  
+
 End

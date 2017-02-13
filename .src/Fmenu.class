@@ -14,10 +14,10 @@ Private Ncaisse As String
 Private Efface As Integer = 1
 
 Public Sub _new()
-  
+
   Dim titre As String
   Dim $con_ok As Boolean = True ' flag d'autorisation de connexion
-  
+
   Me.Center
   Me.Width = Screens[0].width
   Me.Height = Screens[0].Height
@@ -37,11 +37,11 @@ Public Sub _new()
   SetObservers(Me, Me)
   Try Soc = Settings["/Soc"]
   TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
-  
+
   '# -- initialisation des informations SQL
   '* MG - 07 janvier 2010
   Utils.glb()
-  
+
   '# -- montage éventuel du tunnel ssh
   '* MG - 07 janvier 2010
   If Settings["/dbase/Con-ssh"] Then
@@ -49,7 +49,7 @@ Public Sub _new()
       $con_ok = False
     Endif
   Endif
-  
+
   If $con_ok Then
     Utils.db.Open
     Utils.db.exec("SET NAMES 'latin1'")
@@ -81,45 +81,45 @@ Catch
     Endif
   Endif
   Config()
-  
+
 End
 
 Public Sub SetObservers(hClass As Object, hCont As Container)
-  
+
   Dim hCtrl As Object
   Dim hOBS As Observer
-  
+
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
       hOBS = New Observer(hCtrl) As "OBS"
     Endif
     If hCtrl Is Container Then SetObservers(hClass, hCtrl)
   Next
-  
+
 End
 
 Public Sub Obs_Enter()
-  
+
   Last.Font = Font["" ",Bold," ""]
   Last.background = Color.Lighter(Color.Buttonbackground)
   'Last.Move(Last.x - 2, Last.y - 2, Last.w + 4, Last.h + 4)
-  
+
 End
 
 Public Sub Obs_Leave()
-  
+
   Last.Font = Font["" "," "," ""]
   Last.background = Color.ButtonBackground
   'Last.Move(Last.x + 2, Last.y + 2, Last.w - 4, Last.h - 4)
-  
+
 End
 
 Public Sub Button1_Click()
-  
+
   Dim rResult As Result
   Dim tab As String = "Fiches_ClientCaisse"
   Dim b As Integer = 1
-  
+
   Try rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where poste = &1", System.host)
   If Not Error Then
     If Not rResult.Available Then
@@ -140,37 +140,37 @@ Public Sub Button1_Click()
     message.Warning("Il faut d'abord créer vos caisses par la table des caisses sous Laurux !")
     b = 0
   Endif
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   Me.close
-  
+
 End
 
 Public Sub Button2_KeyPress()
-  
+
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then ControleCai() 
+  If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button2_Click()
-  
+
 End
 
 Public Sub ControleCai()
-  
+
   If Not IsNull(Start.$tcai) Then
     Attrib.ShowModal()
   Else
-    Message.Warning("Veuillez connecter la caisse avant de paramétrer les touches") 
+    Message.Warning("Veuillez connecter la caisse avant de paramétrer les touches")
   Endif
-  
+
 End
 
 Public Sub form_close()
-  
+
   Dim Cai As Result
-  
+
   Ncaisse = Left$(Settings["/Cai" & "/Ncai"], 1)
   If Not IsNull(Ncaisse) Then
     Cai = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
@@ -198,11 +198,11 @@ Public Sub form_close()
   Endif
 Catch
   Try Kill User.home & "/Laurux.Pos.lock"
-  
+
 End
 
 Public Sub Button10_Click()
-  
+
   If IsNull(Settings["/Cai" & "/Ncai"]) Then
     If Start.son Then
       Music.Play
@@ -212,19 +212,19 @@ Public Sub Button10_Click()
     hForm = New Fondcaisse("")
     hForm.Showmodal()
   Endif
-  
+
 End
 
 Public Sub Button10_KeyPress()
-  
+
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
   If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button10_Click()
-  
+
 End
 
 Public Sub Button11_Click()
-  
+
   If IsNull(Settings["/Cai" & "/Ncai"]) Then
     If Start.son Then
       Music.Play
@@ -233,41 +233,47 @@ Public Sub Button11_Click()
   Else
     Caisse.ShowModal()
   Endif
-  
+
 End
 
 Public Sub Button11_KeyPress()
-  
+
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then ControleCai() 
+  If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button11_Click()
-  
+
 End
 
 Public Sub Config()
-  
+
   LauruxConf.ShowModal()
-  
+
 End
 
 Public Sub Button1_KeyPress()
-  
-  If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then ControleCai() 
+
+  If Key.Control Then
+    If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  Endif
+  If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button1_Click()
-  
+
 End
 
-Public Sub FORM_KeyPress()
-  
+Public Sub Form_KeyPress()
+
+  If Key.Control Then
+    If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+  Endif
+  If Key.code = Key.F12 Then ControleCai()
   If key.Alt Then
     If key.code = 80 Then mdp_admin2()
   Endif
-  
+
 End
 
 Public Sub mdp_admin2()
-  
+
   If Settings["/admin2"] = True Then
     Mdp.Clear
     Frame8.visible = True
@@ -279,7 +285,7 @@ Public Sub mdp_admin2()
     Try Soc = Settings["/Soc"]
     TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
   Endif
-  
+
 End
 
 '*******************************************************
@@ -287,11 +293,11 @@ End
 '*******************************************************
 
 Public Sub Mdp_KeyPress()
-  
+
   Dim rResult As Result
   Dim mdpadmin As String
   Dim admin As Integer
-  
+
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where admin = &1", "-1")
     If rResult.Available Then
@@ -329,11 +335,11 @@ Public Sub Mdp_KeyPress()
       Button1.SetFocus
     Endif
   Endif
-  
+
 End
 
 Public Sub init_ecole()
-  
+
   Dim Tabx As String
   Dim Tabz As String
   Dim Tabtx As String
@@ -341,7 +347,7 @@ Public Sub init_ecole()
   Dim Tabrgz As String
   Dim Tiketx As String
   Dim Tiketz As String
-  
+
   Tabx = "Fiches_EntTickets" & Ncaisse
   Tabz = "Fiches_EntTicketz"
   Tiketx = "Fiches_LigTickets" & Ncaisse
@@ -358,7 +364,7 @@ Public Sub init_ecole()
     Utils.db.Exec("Truncate Table " & Tabx & "")
     Utils.db.Exec("Truncate Table " & Tiketx & "")
     Utils.db.Exec("Truncate Table " & Tabrgx & "")
-    Utils.db.Exec("Truncate Table " & Tabtx & "")  
+    Utils.db.Exec("Truncate Table " & Tabtx & "")
     'on met à jour le flag de la bande z ainsi que le fond de caisse
     Utils.db.Exec("UPDATE  " & Cbase.Table("TabCaisses") & "  SET tkz = &2, fndc = &3, dtefm = &4, connecte = &5 WHERE code = &1", Ncaisse, 1, 0, "", 0)
     Try Kill User.home & "/" & "Caisse" & Ncaisse & ".lock"
@@ -370,49 +376,49 @@ Public Sub init_ecole()
     Efface = 0
     Stop Event
   Endif
-  
+
 End
 
 Public Sub Label1_MouseDown()
-  
+
   Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  
+
 End
 
 Public Sub Label2_MouseDown()
-  
+
   mdp_admin2()
-  
+
 End
 
 Public Sub Button3_Click()
-  
+
   If Settings["/Cnomade"] Then
     Export.ShowModal()
   Else
     mdp_admin2()
   Endif
-  
+
 End
 
 Public Sub Button3_KeyPress()
-  
+
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then ControleCai() 
+  If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button3_Click()
-  
+
 End
 
 Public Sub Button4_Click()
-  
+
   Frestore.ShowModal()
-  
+
 End
 
 Public Sub Button4_KeyPress()
-  
+
   If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-  If Key.code = Key.F12 Then ControleCai() 
+  If Key.code = Key.F12 Then ControleCai()
   If key.code = key.Enter Or key.code = key.Return Then Button4_Click()
-  
+
 End

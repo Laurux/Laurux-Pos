@@ -5,7 +5,7 @@
   Border = False
   { TabStrip1 TabStrip
     MoveScaled(0,1,94,84)
-    Count = 5
+    Count = 6
     Index = 0
     Text = ("Environnement")
     { Admin CheckBox
@@ -232,6 +232,15 @@
         MoveScaled(1,5,41,31)
         ShowStyle = False
       }
+    }
+    Index = 5
+    Text = ("Imprimantes")
+    { Cimp ComboBox
+      MoveScaled(41,8,29,3)
+    }
+    { Label3 Label
+      MoveScaled(4,8,36,3)
+      Text = ("Imprimante utilisée par la caisse")
     }
     Index = 0
   }

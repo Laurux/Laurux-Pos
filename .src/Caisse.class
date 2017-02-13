@@ -95,12 +95,12 @@ Static Private $iSpc2 As New String[20]
 GestMdp As Integer = 0
 Public Bsel As Boolean = False
 Public Clicode As String
-Public Clicoded As String
 Private Clinom As String
 Private Clipnm As String
 Private Clicp As String
 Private Cliburdist As String
 Private $Cli As String ' variable pour nom des clients divers en recherche tickets
+Private $Nomd As String ' nom client divers
 sDon As Integer = 1 'flag pour savoir s'il y a des données a imprimer sur bande z. 0 pas de donnée, 1 on imprime.
 Tkz As Integer = 0
 Ecole As Boolean
@@ -157,6 +157,9 @@ Private Touche_P As String
 Private BA6X As Socket
 Private bAffUSB As Boolean
 Private $depot As String
+Private $reg As String
+Private $nom As String
+Private ireg As Float
 Private bretro As Boolean = False
 Private Val_retro As String ' variable pour coeff retrocession
 Private Blexists As Boolean = False
@@ -902,12 +905,16 @@ Public Sub Cart_KeyPress()
       Endif
     Endif
     If key.Control Then
+      'Modification du règlement
+      If Key.code = 77 Then 'CTRL+M
+        ModifReg()
+      Endif
+      'Appel client divers
       If Key.code = 78 Then 'CTRL+N
         iavoir = 0
-        Panel17.Visible = False
-        Frame3.visible = True
-        Nmc.SetFocus
+        ClientsDivers()
       Endif
+      'Ticket rétrocession
       If Key.code = 82 Then 'CTRL+R
         If Ligtk.Count = 0 Then
           bretro = True
@@ -924,6 +931,7 @@ Public Sub Cart_KeyPress()
           Message.Warning("La rétrocession se détermine en début de ticket !")
         Endif
       Endif
+      'Saisie d'un code vendeur
       If Key.code = 88 Then
         If Ligtk.Count = 0 Then
           Svendeur.showmodal()
@@ -1050,7 +1058,7 @@ Public Sub aff_Photo()
   Try hImage = Image.Load(Photo)
   If Not Error Then
     Draw.Begin(Photos)
-      Draw.Image(hImage, 0, 0, Photos.Width, Photos.Height)
+    Draw.Image(hImage, 0, 0, Photos.Width, Photos.Height)
     Draw.End
   Endif
 Catch
@@ -1075,35 +1083,6 @@ Public Sub Prix_promo()
     Pvttc.Text = Format$(ArtPromo.Prix_Promottc(Cart.text, Cpromo), Nbdec)
     Pvttc.Text = Format$(Val(Pvttc.Text), "0.00")
     Artpu = Pvttc.Text
-  Endif
-
-End
-
-Public Sub Recup_Carte()
-
-  Dim Rcarte As Result
-
-  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
-  If Rcarte.Available Then
-    icartef = 1
-    scartef = Codearticle
-    snmcartef = Rcarte!nom & " " & Rcarte!pnm
-    ftpoint = Rcarte!tp2
-    ftpoint2 = ftpoint
-    fbonusv = Rcarte!tp1
-    fbonus = Rcarte!tg1
-    fbonusg = Rcarte!tg2
-    frem = Rcarte!rem
-    fpromo = Rcarte!promo
-    Label1.Text = snmcartef
-    Label2.Text = "Carte " & scartef
-    Label3.Text = "Points " & Format$(ftpoint, "0.00")
-    Label4.Text = "Bonus " & Format$(fbonusg, "0.00")
-    Bdc.Text = Label2.Text & " " & Label1.Text
-    Cart.Clear
-    Chkart = False
-    Cart.SetFocus
-    Zone = "Article"
   Endif
 
 End
@@ -1257,7 +1236,7 @@ Public Sub Valid_Cart()
   Endif
   If Crt = True Then
     If Clicompte = 0 Then
-      Recup_Carte()
+      RecupCarte()
     Else
       Message.Warning("Saisie d'une carte impossible sur un client en compte !")
       Crt = False
@@ -1909,10 +1888,10 @@ Public Sub Valid_Remtot()
             rremT = Val(utils.CPoint(rremT)) + (Abs(Val(utils.CPoint(mremT))) * Val(utils.CPoint(LigTk.Item[4])))
             tva = LigTk.Item[12]
             Calc_Tva()
-            tx = (1 + (Val(.cpoint(Tva)) / 100))
-            Pvht = Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx
-            Pvht = Format$(Pvht * Val(utils.CPoint(LigTk.Item[4])), "0.00")
-            Mtva = Format$(Val(Utils.cpoint(LigTk.Item[11])) * Val(utils.CPoint(LigTk.Item[4])) - Val(Utils.cpoint(Pvht)), "0.00")
+            Try tx = (1 + (Val(.cpoint(Tva)) / 100))
+            Try Pvht = Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx
+            Try Pvht = Format$(Pvht * Val(utils.CPoint(LigTk.Item[4])), "0.00")
+            Try Mtva = Format$(Val(Utils.cpoint(LigTk.Item[11])) * Val(utils.CPoint(LigTk.Item[4])) - Val(Utils.cpoint(Pvht)), "0.00")
             LigTk.Item[6] = Pvht
             LigTk.Item[7] = "0"
             LigTk.Item[9] = Mtva
@@ -2168,7 +2147,7 @@ End
 Public Sub ColTka_KeyPress()
 
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then ColTka_Click()
-  If Key.code = Key.F9 Or Key.code = Key.esc Then
+  If Key.code = Key.F9 Or If Key.code = Key.Esc Then
     ColTka.Clear
     ColTka.visible = False
   Endif
@@ -2282,8 +2261,11 @@ Public Sub Button9_Click()
     Mdp.SetFocus
     Zone = "Mdp"
   Else
-    suppr_Tk()
-    'ClavFam()
+    If IsNull(RemTot.Text) Then
+      suppr_Tk()
+    Else
+      Message.Warning("Suppression impossible ! Une remise sur total a été effectuée.")
+    Endif
   Endif
 
 End
@@ -5562,6 +5544,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Dim Totpoint As Float = 0
   Dim Esp As Float = 0 'Montant des especes versées
   Dim numero_tk As String
+  Dim scartef As String
 
   Tab = "Fiches_EntTickets" & Ncaisse
   Tiketx = "Fiches_Ticketx" & Ncaisse
@@ -5684,6 +5667,9 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       Codeclient = clicode
       Maj_Paiements("M", TotalTk.text, "1")
     Endif
+
+    If IsNull(scartef) Then scartef = $Cli
+    If Not IsNull($Nomd) Then $Cli = $Nomd
 
     'On enregistre dans la table Ent_Ticket
     Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli, ssuppr, bretro)
@@ -5850,7 +5836,6 @@ Public Sub Enrg_Tk(Supprime As Boolean)
     Nmc2.Clear
     Ent_tk(Null)
     TotalTk.Text = "0,00"
-    Cart.SetFocus
     Zone = "Article"
     iQte = 0
     iRem = 0
@@ -5867,12 +5852,15 @@ Public Sub Enrg_Tk(Supprime As Boolean)
     Label4.Text = ""
     scartef = ""
     $Cli = ""
+    $Nomd = ""
     ftpointg = 0
     ftpoint = 0
     icartef = 0
     Boni = 0
     Totgain = 0
     bretro = False
+    Cart.ReadOnly = False
+    Cart.SetFocus
   End With
 
 End
@@ -6165,7 +6153,7 @@ Public Sub Nmc4_KeyPress()
     Zone = "Article"
   Endif
   If key.code = key.F2 And Settings["/histocli"] Then
-    Clients_Divers()
+    ClientsDivers()
   Endif
 
 End
@@ -6512,18 +6500,18 @@ Public Sub Ticketz()
         If sDon = 1 Then
           Me.mouse = Mouse.Wait
           'On supprime les tickets supprimés
-          rtx = Utils.db.Exec("SELECT * FROM " & Tabx & " where suppr = &1", True)
-          If rtx.Available Then
-            Repeat
-              Try Utils.db.Exec("delete FROM " & Tabx & " where numero = &1", rtx!numero)
-              Try Utils.db.Exec("delete FROM " & Tiketx & " where numero = &1", rtx!numero)
-            Until rtx.MoveNext()
-          Endif
+          '  rtx = Utils.db.Exec("SELECT * FROM " & Tabx & " where suppr = &1", True)
+          ' If rtx.Available Then
+          '  Repeat
+          '    Try Utils.db.Exec("delete FROM " & Tabx & " where numero = &1", rtx!numero)
+          '    Try Utils.db.Exec("delete FROM " & Tiketx & " where numero = &1", rtx!numero)
+          '  Until rtx.MoveNext()
+          '  Endif
           'on met a jour les fichiers tampons du serveur
           rtx = Utils.db.Exec(" select * from " & Tabx & " order by numero asc")
           If rtx.Available Then
             Repeat
-              Utils.db.Exec("INSERT INTO " & Tabz & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sresto, mresto, sbachat, mbachat, nom, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9,&{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31})", rtx!caisse, rtx!numero, rtx!date, rtx!client, rtx!scheque, rtx!mcheque, rtx!nmcheque, rtx!scarte, rtx!mcarte, rtx!nmcarte, rtx!sespeces, rtx!mespeces, rtx!scredit, rtx!mcredit, rtx!mht, rtx!mtva, rtx!mttc, rtx!statut, rtx!savoir, rtx!scavoir, rtx!mavoir, rtx!type, rtx!vendeur, rtx!carte, rtx!points, rtx!sresto, rtx!mresto, rtx!sbachat, rtx!mbachat, rtx!nom, rtx!retro)
+              Utils.db.Exec("INSERT INTO " & Tabz & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sresto, mresto, sbachat, mbachat, nom, retro, suppr) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9,&{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32})", rtx!caisse, rtx!numero, rtx!date, rtx!client, rtx!scheque, rtx!mcheque, rtx!nmcheque, rtx!scarte, rtx!mcarte, rtx!nmcarte, rtx!sespeces, rtx!mespeces, rtx!scredit, rtx!mcredit, rtx!mht, rtx!mtva, rtx!mttc, rtx!statut, rtx!savoir, rtx!scavoir, rtx!mavoir, rtx!type, rtx!vendeur, rtx!carte, rtx!points, rtx!sresto, rtx!mresto, rtx!sbachat, rtx!mbachat, rtx!nom, rtx!retro, rtx!suppr)
             Until rtx.MoveNext()
           Endif
           rtx = Utils.db.Exec(" select * from " & Tiketx & " order by numero asc , lpad(numlig,2, ' ') asc")
@@ -6614,7 +6602,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
 
   Dim rTkx, rttva As Result
   Dim rTkFam As Result
-  Dim rTkhv, rTkl As Result
+  Dim rTkhv, rTkl, rTkd As Result
   Dim Tabx As String
   Dim Tabe, Tabl As String
   Dim Tabr As String
@@ -6634,8 +6622,9 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
   Dim Pnm, itva As Float = 0
   Dim Enc As Boolean = False
   Dim Totnbtck, X2, Y2, NBT As Integer = 0
-  Dim Boncaisse, tcheque, tcarte, tespece As Float
+  Dim Boncaisse, tcheque, tcarte, tespece, tmttc As Float
   Dim ipos As Integer
+  Dim FndCaisse As String
 
   Tabe = "Fiches_EntTickets" & Ncaisse
   Tabx = "Fiches_Ticketx" & Ncaisse
@@ -6661,7 +6650,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
     totcaisse = Val(.cpoint(Totcaisse)) + Val(.cpoint(Fdc))
     rTkx = Utils.db.Exec(" select * from " & Tabr & " order by type")
     If rTkx.Available Then Enc = True
-    rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1", 0)
+    rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr is null", 0)
     If rTkx.Available Or If Enc = True Then
       Totnbtck = rTkx.count
       If rTkx.Available Then
@@ -6713,6 +6702,18 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         Posy += 3
         pdf.Lines2(Posy)
       Endif
+      rTkd = Utils.db.Exec(" select  sum(replace(mttc, ',', '.')) as tmttc from " & Tabe & " where suppr = &1", 1)
+      If rTkd.Available Then Try tmttc = rTkd!tmttc
+      rTkx = Utils.db.Exec(" select * from " & Tabe & " where suppr = &1", True)
+      If rTkx.Available Then
+        pdf.Level2("Tickets  annulés :  ", Format$(tmttc, "0.00"), rTkx.Count, Posy)
+        Posy += 5
+        Repeat
+          pdf.Level2(rTkx!numero, Format$(Val(.cpoint(rTkx!mttc)), "0.00"), "", Posy)
+          Posy += 5
+        Until rTkx.MoveNext()
+        pdf.Lines2(Posy)
+      Endif
       rTkhv = Utils.db.Exec(" select * from " & Tabr & " order by type")
       If rTkhv.Available Then
         pdf.Level2("Mouvements ventes ", "", "", Posy)
@@ -6741,9 +6742,11 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           'If rTkhv!type = "N" Then totcaisse = Val(.cpoint(Totcaisse)) + Val(.cpoint(rTkhv!montant))
           'If rTkhv!type = "Q" Then totcaisse = Val(.cpoint(Totcaisse)) - Val(.cpoint(rTkhv!montant))
           sqte = rTkhv!qte
-          If rTkhv!type = "A" Or If rTkhv!type = "E" Or If rTkhv!type = "B" Or If rTkhv!type = "C" Or If rTkhv!type = "N" Or If rTkhv!type = "U" Or If rTkhv!type = "V" Or If rTkhv!type = "X" Or If rTkhv!type = "Y" Or If rTkhv!type = "W" Or If rTkhv!type = "Z" Or If rTkhv!type = "M" Or If rTkhv!type = "1" Then
-            pdf.Level2(sReg, sMTreg, sqte, Posy)
-            Posy += 5
+          If Val(sqte) > 0 Then
+            If rTkhv!type = "A" Or If rTkhv!type = "E" Or If rTkhv!type = "B" Or If rTkhv!type = "C" Or If rTkhv!type = "N" Or If rTkhv!type = "U" Or If rTkhv!type = "V" Or If rTkhv!type = "X" Or If rTkhv!type = "Y" Or If rTkhv!type = "W" Or If rTkhv!type = "Z" Or If rTkhv!type = "M" Or If rTkhv!type = "1" Then
+              pdf.Level2(sReg, sMTreg, sqte, Posy)
+              Posy += 5
+            Endif
           Endif
           If posy > 260 Then
             pdf.Baspage()
@@ -6758,6 +6761,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Lines2(Posy)
       pdf.Level2("Fond de caisse ", Format$(Val(.cpoint(Totcaisse)), "0.00"), "", Posy)
       FndCaisse = Totcaisse
+      ' Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET fndc = &2, dteov = &3, dtefm = &3 WHERE code = &1", Ncaisse, Utils.PointBase(Fndcaisse), Utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")))
       Posy += 5
       pdf.Lines2(Posy)
       rTkx = Utils.db.Exec(" select * from " & Tabr & " where type = &1", "M")
@@ -6875,9 +6879,9 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
             Endif
           Endif
           If Nbt < 2 Then
-            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1, "")
+            pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & " " & rTkx!nom, X2, Posy, 1, "")
           Else
-            pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1, "")
+            pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & " " & rTkx!nom, X2, Y2, 1, "")
           Endif
           If Nbt = 1 Then Posy += 8
           If Nbt = 2 Then Y2 += 8
@@ -6942,12 +6946,12 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           Endif
           If Ba4 Then
             If Nbt < 2 Then
-              pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1, "")
+              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & " " & rTkx!nom, X2, Posy, 1, "")
             Else
-              pdf.Entete("Ticket numéro " & rTkx!numero & " " & rTkx!date & " client " & rTkx!nom, X2, Y2, 1, "")
+              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & rTkx!nom, X2, Y2, 1, "")
             Endif
           Else
-            pdf.Entete("Ticket numéro " & rTkx!numero & " à" & Right$(rTkx!date, Len(rTkx!date) - 11) & " " & rTkx!nom, X2, Posy, 1, "")
+            pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & " " & rTkx!nom, X2, Posy, 1, "")
           Endif
           If Ba4 Then
             If Nbt = 1 Then Posy += 8
@@ -6994,7 +6998,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Baspage()
       Dec Application.Busy
       pdf.Output(Filename, False)
-      DupliZ(Filename)
+      If Org Then DupliZ(Filename)
       If Org Then
         'Impression.Ticketxz(Filename, "1")
         Visualiseur.Prog_Editeur(Filename)
@@ -7013,12 +7017,24 @@ End
 
 Public Sub DupliZ(Zfile As String)
 
-  If Not Exist(Settings["/ChmZ"]) Then Try Mkdir Settings["/ChmZ"]
-  If Error Then
-    Message.Error("Problème lors de la création d'un répertoire\nMerci de créer manuellement un répertoire nommé 'Impressions'")
+  Dim chemin As String
+
+  If Not Exist(Settings["/ChmZ"]) Then
+    Try Mkdir Settings["/ChmZ"]
+    If Error Then
+      Message.Error("Problème lors de la création d'un répertoire\nMerci de créer manuellement un répertoire nommé  : & Chemin'")
+    Endif
   Else
+    Chemin = Settings["/ChmZ"]
+    Chemin = chemin & "/" & Format$(Now, "yyyy")
+    If Not Exist(chemin) Then Try Mkdir chemin
+    Chemin = Chemin & "/" & Format$(Now, "mm")
+    If Not Exist(chemin) Then Try Mkdir chemin
+    If Error Then
+      Message.Error("Problème lors de la création d'un répertoire\nMerci de créer manuellement un répertoire nommé :  " & Chemin)
+    Endif
     Shell "cd " & User.Home & "" Wait
-    Shell "cp " & Zfile & " " & Settings["/ChmZ"] & "/" & "Ticket.pdf" & Format$(Now, "ddmmyyyy-hh-nn") Wait
+    Shell "cp " & Zfile & " " & chemin & "/" & "Ticket.pdf" & Format$(Now, "ddmmyyyy-hh-nn") Wait
     Wait 0.5
   Endif
 
@@ -7135,8 +7151,10 @@ Public Sub Serial_Ticketxz(sintitule As String, origine As String)
             Endif
             'If rTkx!type = "Q" Then totcaisse = Val(.cpoint(Totcaisse)) - Val(.cpoint(rTkx!montant))
             sqte = rTkx!qte
-            If rTkx!type = "B" Or If rTkx!type = "E" Or If rTkx!type = "N" Or If rTkx!type = "U" Or If rTkx!type = "V" Or If rTkx!type = "X" Or If rTkx!type = "Y" Or If rTkx!type = "W" Or If rTkx!type = "Z" Or If rTkx!type = "Q" Or If rTkx!type = "M" Or If rTkx!type = "1" Then
-              Print #Sport, .Replace(sreg) & Space$(23 - Len(sreg)) & sMTreg & Space$(10 - Len(sMTreg)) & sqte
+            If Val(sqte) > 0 Then
+              If rTkx!type = "B" Or If rTkx!type = "E" Or If rTkx!type = "N" Or If rTkx!type = "U" Or If rTkx!type = "V" Or If rTkx!type = "X" Or If rTkx!type = "Y" Or If rTkx!type = "W" Or If rTkx!type = "Z" Or If rTkx!type = "Q" Or If rTkx!type = "M" Or If rTkx!type = "1" Then
+                Print #Sport, .Replace(sreg) & Space$(23 - Len(sreg)) & sMTreg & Space$(10 - Len(sMTreg)) & sqte
+              Endif
             Endif
           Until rTkx.MoveNext()
         Endif
@@ -7337,6 +7355,150 @@ Public Sub Aff_Art()
 
 End
 
+'***********************************Modification du mode de règlement******************************************
+Public Sub ModifReg()
+
+  Panel5.X = 280
+  Panel5.y = 100
+  Panel5.w = 640
+  Panel5.h = 520
+  Panel5.Visible = True
+
+End
+
+Public Sub Button42_Click()
+
+  Panel5.visible = False
+  TextBox1.Clear
+  ComboBox1.text = ""
+  Cart.SetFocus
+
+End
+
+Public Sub Lister_Click()
+
+  TextBox1.Text = Lister.Current[0]
+  ComboBox1.text = Lister.Current[1]
+  $reg = Lister.Current[1]
+  ireg = Val(Lister.Current[2])
+  $nom = Lister.Current[3]
+  Lister.Visible = False
+
+End
+
+Public Sub ToggleButton5_Click()
+
+  Dim moder As Result
+  Dim Tab As String = "Fiches_EntTickets" & Ncaisse
+
+  Lister.Columns.count = 3
+  Lister.Columns[0].Width = 120
+  Lister.Columns[1].Width = 120
+  Lister.Columns[0].Text = "Numéro"
+  Lister.Columns[1].Text = "Règlement"
+  Lister.Columns[2].Text = "Montant"
+  If Lister.visible = True Then
+    Lister.visible = False
+  Else
+    Lister.Visible = True
+  Endif
+  Try Moder = Utils.db.Exec("SELECT * FROM " & Tab & " order by numero")
+  If Moder.Available Then
+    Lister.Clear
+    With Utils
+      Repeat
+        Lister.Add(Moder!numero, Moder!numero)
+        Lister.Item[0] = Moder!numero
+        If Not IsNull(Moder!scheque) Then
+          Lister.Item[1] = "Chèque"
+          Lister.Item[2] = Format$(Val(.cpoint(moder!mcheque)), "0.00")
+          Lister.Item[3] = Moder!nmcheque
+        Endif
+        If Not IsNull(Moder!scarte) Then
+          Lister.Item[1] = "Carte"
+          Lister.Item[2] = Format$(Val(.cpoint(moder!mcarte)), "0.00")
+          Lister.Item[3] = Moder!nmcarte
+        Endif
+        If Not IsNull(Moder!sespeces) Then
+          Lister.Item[1] = "Espèces"
+          Lister.Item[2] = Format$(Val(.cpoint(moder!mespeces)), "0.00")
+        Endif
+      Until Moder.MoveNext()
+    End With
+  Endif
+
+End
+
+Public Sub Button44_click()
+
+  Dim moder As Result
+  Dim Tab As String = "Fiches_Reglts" & Ncaisse
+  Dim Tab2 As String = "Fiches_EntTickets" & Ncaisse
+  Dim smode As String
+  Dim mreg As Float
+  Dim mqte As Integer
+
+  If Not IsNull($reg) And Not IsNull(ComboBox1.text) Then
+    If Message.Question("Attention ! Vous allez remplacer le mode de règlement " & $reg & " par " & ComboBox1.Text & " pour le ticket numéro " & TextBox1.text, "Oui", "Non") = 1 Then
+      Select Case $reg
+        Case "Espèces"
+          smode = "N"
+        Case "Chèque"
+          smode = "V"
+        Case "Carte"
+          smode = "U"
+      End Select
+      'On met à jour l'ancien mode de règlement dans la table des règlements
+      Try Moder = Utils.db.Exec("SELECT * FROM " & Tab & " where type = &1", smode)
+      If Moder.Available Then
+        mreg = Val(Utils.cpoint(Moder!montant)) - ireg
+        mqte = Val(Utils.cpoint(Moder!qte)) - 1
+        Utils.db.Exec("UPdate  " & Tab & "  SET  montant = &1, qte = &2  WHERE type = &3", Format$(mreg, "0.00"), mqte, smode)
+      Endif
+      'On met à jour la table des entetes de ticket
+      Select Case $reg
+        Case "Espèces"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  sespeces = &1, mespeces = &2  WHERE numero = &3", "", "0", TextBox1.Text)
+        Case "Chèque"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scheque = &1, mcheque = &2, nmcheque = &3  WHERE numero = &4", "", "0", "", TextBox1.Text)
+        Case "Carte"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scarte = &1, mcarte = &2, nmcarte = &3  WHERE numero = &4", "", "0", "", TextBox1.Text)
+      End Select
+
+      'On met à jour le nouveau mode de règlement dans la table règlements
+      Select Case ComboBox1.Text
+        Case "Espèces"
+          smode = "N"
+        Case "Chèque"
+          smode = "V"
+        Case "Carte"
+          smode = "U"
+      End Select
+      Try Moder = Utils.db.Exec("SELECT * FROM " & Tab & " where type = &1", smode)
+      If Moder.Available Then
+        mreg = Val(Utils.cpoint(Moder!montant)) + ireg
+        mqte = Val(Utils.cpoint(Moder!qte)) + 1
+        Utils.db.Exec("UPdate  " & Tab & "  SET  montant = &1, qte = &2  WHERE type = &3", Format$(mreg, "0.00"), mqte, smode)
+      Else
+        Utils.db.Exec("INSERT INTO " & Tab & " (montant, qte, type, date) VALUES (&1, &2, &3, &4)", Format$(mreg, "0.00"), "1", smode, Format$(Now, "yyyymmdd"))
+      Endif
+      'On met à jour la table des entetes de ticket
+      Select Case ComboBox1.Text
+        Case "Espèces"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  sespeces = &1, mespeces = &2  WHERE numero = &3", smode, Format$(ireg, "0.00"), TextBox1.Text)
+        Case "Chèque"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scheque = &1, mcheque = &2  WHERE numero = &4", smode, Format$(ireg, "0.00"), $nom, TextBox1.Text)
+        Case "Carte"
+          Utils.db.Exec("UPdate  " & Tab2 & "  SET  scarte = &1, mcarte = &2  WHERE numero = &4", smode, Format$(ireg, "0.00"), $nom, TextBox1.Text)
+      End Select
+      Button42_Click()
+    Endif
+  Else
+    Message.Error("Enregistrement impossible !")
+  Endif
+
+End
+
 '******************************************* Gestion des clients *************************************************
 Public Sub Ajout_Reg_Bl(numtick As String) As Boolean
   
@@ -7507,40 +7669,44 @@ End
 '**********************************************************
 '*      Le bouton sert a rechercher les clients           *
 '**********************************************************
-Public Sub Clients_Divers()
+Public Sub ClientsDivers()
 
-  'Dim MyForm As TriclientsD
+  Dim MyForm As Tricartes
 
-  bsel = False
-  'If IsNull(Nmc4.Text) Then
-  'MyForm = New TriclientsD("Caisse", "")
-  'MyForm.Showmodal()
-  TriclientsD.Showmodal()
-  'Else
-  'MyForm = New TriclientsD("Caisse", Nmc4.Text)
-  'MyForm.Showmodal()
-  'TriclientsD.Showmodal()
-  'Endif
-  If Bsel = True Then
-    Recup_Clientd()
+  Bsel = False
+  sel = ""
+  If clicompte = 0 Then
+    MyForm = New Tricartes(-1)
+    MyForm.Showmodal()
+    If Bsel = True Then
+      RecupClientd()
+    Endif
+  Else
+    If Start.son Then
+      If Start.son Then
+        Music.Play
+      Endif
+    Endif
+    Message.Warning("Il y a un bon de caisse en cours de saisie ! Appel des cartes impossible")
+    Cart.setfocus
   Endif
 
 End
 
 '******************************************
-'*      Selection du  code client         *
+'*           Selection du  code client  divers           *
 '******************************************
-Public Sub Recup_Clientd()
+Public Sub RecupClientd()
 
-  Dim Clitab As Result
+  Dim Rcarte As Result
+  Dim scartef As Variant
 
-  Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabClid") & " where lind = &1", Clicoded)
-  If Not Error Then
-    Nmc4.Text = Clitab!adr
-    Nmc4.SetFocus
-    slind = Clitab!lind
-  Else
-    slind = ""
+  $Cli = ""
+  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
+  If Rcarte.Available Then
+    scartef = Rcarte!code
+    $Cli = scartef
+    $Nomd = Rcarte!nom
   Endif
 
 End
@@ -7583,10 +7749,10 @@ Public Sub CartesFidelite()
   Bsel = False
   sel = ""
   If clicompte = 0 Then
-    MyForm = New Tricartes("Caisse")
+    MyForm = New Tricartes(0)
     MyForm.Showmodal()
     If Bsel = True Then
-      Recup_Carte()
+      RecupCarte()
     Endif
   Else
     If Start.son Then
@@ -7596,6 +7762,37 @@ Public Sub CartesFidelite()
     Endif
     Message.Warning("Il y a un bon de caisse en cours de saisie ! Appel des cartes impossible")
     Cart.setfocus
+  Endif
+
+End
+
+Public Sub RecupCarte()
+
+  Dim Rcarte As Result
+  Dim icartef As Integer
+
+  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
+  If Rcarte.Available Then
+    icartef = 1
+    $Cli = Rcarte!nom
+    scartef = Codearticle
+    snmcartef = Rcarte!nom & " " & Rcarte!pnm
+    ftpoint = Rcarte!tp2
+    ftpoint2 = ftpoint
+    fbonusv = Rcarte!tp1
+    fbonus = Rcarte!tg1
+    fbonusg = Rcarte!tg2
+    frem = Rcarte!rem
+    fpromo = Rcarte!promo
+    Label1.Text = snmcartef
+    Label2.Text = "Carte " & scartef
+    Label3.Text = "Points " & Format$(ftpoint, "0.00")
+    Label4.Text = "Bonus " & Format$(fbonusg, "0.00")
+    Bdc.Text = Label2.Text & " " & Label1.Text
+    Cart.Clear
+    Chkart = False
+    Cart.SetFocus
+    Zone = "Article"
   Endif
 
 End
@@ -8161,7 +8358,7 @@ Public Sub Button43_Click()
 
 End
 
-Public Sub Button44_click()
+Public Sub Button44b_click()
 
   If Not IsNull(Zone) Then
     If Zone = "Nmc3" Then

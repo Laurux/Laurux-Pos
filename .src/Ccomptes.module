@@ -3,11 +3,11 @@
 Cotable[7] As String
 
 Public Sub Colco_Data(Colco As Gridview, Row As Integer, Column As Integer)
-  
+
   Dim CoulB As Integer
   Dim CoulF As Integer
   Dim Fnt As String
-  
+
   With Utils
     CoTable[0] = "compte_cc"
     CoTable[1] = "intitule_cc"
@@ -32,13 +32,13 @@ Public Sub Colco_Data(Colco As Gridview, Row As Integer, Column As Integer)
     Colco.Data.Background = CoulB
     Colco.Data.Foreground = CoulF
     Colco.Data.Font = Font[Fnt]
-    
+
   End With
-  
+
 End
 
 Public Sub Tris(Colco As Gridview, CO As TextBox, Intit As Textbox, Ty As Textbox, Sol As Textbox, Co2 As Textbox)
-  
+
   With Colco
     .Columns.count = 5
     .Columns[0].Width = CO.Width
@@ -47,41 +47,41 @@ Public Sub Tris(Colco As Gridview, CO As TextBox, Intit As Textbox, Ty As Textbo
     .Columns[3].Width = Sol.Width
     .Columns[4].Width = Co2.Width
   End With
-  
+
 End
 
 Public Sub Deb2(Colco As Gridview, Tab As String, Tri As String, Sel As String)
-  
+
   Utils.Base2(Colco, "select * from " & Tab & " where " & Tri & " like  \"" & sel & "%\" order by " & Tri & "")
-  
+
 End
 
 Public Sub Deb3(Colco As Gridview, Tab As String, Tri As String, Sel As String)
-  
+
   Utils.Base2(Colco, "select * from " & Tab & " where " & Tri & " like  \"" & sel & "%\" order by " & Tri & " Desc")
-  
+
 End
 
 Public Sub Deb4(Colco As Gridview, Tab As String, Tri As String, Sel As String, Type As String)
-  
+
   Utils.Base2(Colco, "SELECT * FROM " & Tab & " WHERE " & Tri & " like  \"" & sel & "%\" and type_cc like  \"" & Type & "%\"  and coll <> " & 1 & " order by " & Tri & "")
-  
+
 End
 
 Public Sub Deb5(Colco As Gridview, Tab As String, Tri As String, Sel As String, Type As String)
-  
+
   Utils.Base2(Colco, "SELECT * FROM " & Tab & " WHERE " & Tri & " like  \"" & sel & "%\" and type_cc like  \"" & Type & "%\" and coll <> " & 1 & " order by " & Tri & " Desc")
-  
+
 End
 
 Public Sub Deb6(Colco As Gridview, Tab As String, Tri As String, Sel As String, Type As String, Type2 As String)
-  
+
   Utils.Base2(Colco, "SELECT * FROM " & Tab & " WHERE " & Tri & " like  \"" & sel & "%\" and type_cc like  \"" & Type & "%\" and coll <> " & 1 & " or " & Tri & " like  \"" & sel & "%\" and type_cc like  \"" & Type2 & "%\" and coll <> " & 1 & " order by " & Tri & "")
-  
+
 End
 
 Public Sub Deb7(Colco As Gridview, Tab As String, Tri As String, Sel As String, Type As String, Type2 As String)
-  
+
   Utils.Base2(Colco, "SELECT * FROM " & Tab & " WHERE " & Tri & " like  \"" & sel & "%\" and type_cc like  \"" & Type & "%\" and coll <> " & 1 & " or " & Tri & " like  \"" & sel & "%\" and type_cc like  \"" & Type2 & "%\" and coll <> " & 1 & " order by " & Tri & " Desc")
-  
+
 End

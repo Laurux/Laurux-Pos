@@ -515,26 +515,6 @@
       Visible = False
       AutoResize = False
     }
-    { Frame7 Frame
-      MoveScaled(42,36,83,24)
-      Visible = False
-      Background = Color.Background
-      Text = ("Nom du client")
-      { Button29 Button
-        MoveScaled(65,18,15,5)
-        Text = Shortcut(("Imprimer"), "I")
-        Picture = Picture["Icones/printer2.png"]
-      }
-      { Nmc4 TextArea
-        MoveScaled(2,4,78,12)
-        ToolTip = ("Vous pouvez saisir quatre lignes pour les coordonnées du client")
-        ScrollBar = Scroll.None
-      }
-      { Button49 Button
-        MoveScaled(35,18,17,5)
-        Text = Shortcut(("Fermer"), "F")
-      }
-    }
     { Frame4 Frame
       MoveScaled(43,18,83,17)
       Visible = False
@@ -593,6 +573,26 @@
       Speed = 9600
     }
     { Button51 Button
+    }
+    { Frame7 Frame
+      MoveScaled(42,36,83,24)
+      Visible = False
+      Background = Color.Background
+      Text = ("Nom du client")
+      { Button29 Button
+        MoveScaled(65,18,15,5)
+        Text = Shortcut(("Imprimer"), "I")
+        Picture = Picture["Icones/printer2.png"]
+      }
+      { Nmc4 TextArea
+        MoveScaled(2,4,78,12)
+        ToolTip = ("Vous pouvez saisir quatre lignes pour les coordonnées du client")
+        ScrollBar = Scroll.None
+      }
+      { Button49 Button
+        MoveScaled(35,18,17,5)
+        Text = Shortcut(("Fermer"), "F")
+      }
     }
     { Frame3 Frame
       MoveScaled(41,34,83,17)
@@ -1206,6 +1206,58 @@
         Tag = "8"
         ToolTip = ("Imprime une facturette")
         Text = ("Facturette")
+      }
+    }
+    { Panel5 Panel
+      MoveScaled(6,1,9,5)
+      Visible = False
+      Background = Color.Background
+      Border = Border.Raised
+      { TextBox1 TextBox
+        MoveScaled(5,11,23,3)
+        Font = Font["-1"]
+      }
+      { ComboBox1 ComboBox
+        MoveScaled(37,11,25,3)
+        Font = Font["-1"]
+        List = [("Espèces"), ("Chèque"), ("Carte")]
+      }
+      { Label5 Label
+        MoveScaled(4,8,24,2)
+        Font = Font["-1"]
+        Text = ("Numéro ticket")
+        Alignment = Align.Center
+      }
+      { Label6 Label
+        MoveScaled(37,8,25,2)
+        Font = Font["-1"]
+        Text = ("Mode de règlement")
+        Alignment = Align.Center
+      }
+      { Button42 Button
+        MoveScaled(48,20,14,4)
+        Font = Font["Bold,-1"]
+        Text = ("Quitter")
+        Picture = Picture["Icones/exit.png"]
+      }
+      { Button44 Button
+        MoveScaled(30,20,17,4)
+        Font = Font["Bold,-1"]
+        Text = ("Enregistrer")
+        Picture = Picture["Icones/filesave.png"]
+      }
+      { ToggleButton5 ToggleButton
+        MoveScaled(28,10.625,3.625,3.625)
+        Picture = Picture["Icones/next_frame.png"]
+      }
+      { Label7 Label
+        MoveScaled(1,1,64,4)
+        Text = ("Modification du mode de règlement.")
+        Alignment = Align.Center
+      }
+      { Lister ColumnView
+        MoveScaled(6,15,56,29)
+        Visible = False
       }
     }
   }

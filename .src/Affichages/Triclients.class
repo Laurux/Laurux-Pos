@@ -6,6 +6,7 @@ Dbl As Boolean = False
 Tri As String
 sel As String
 Private lg As Integer
+Private MForm As Clavier
 
 '************************************** Gestion des clients *****************************************************
 Public Sub _new()
@@ -26,11 +27,11 @@ Public Sub _new()
   Colcli.MoveTo(0, 0)
   colcli.Current.EnsureVisible
   'N1.setfocus
-  
+
 End
 
 Public Sub Tris()
-  
+
   With colcli
     .Columns.count = 7
     .Columns[0].Width = C1.Width
@@ -41,17 +42,17 @@ Public Sub Tris()
     .Columns[5].Width = Cp1.Width
     .Columns[6].Width = VILLE.Width
   End With
-  
+
 End
 
 '**********************************************************
 '*               recherche des clients                    *
 '**********************************************************
 Public Sub Colcli_Data(Row As Integer, Column As Integer)
-  
+
   Dim Frmt As New String[]
   Dim Frmt2 As String[]
-  
+
   Frmt = Utils.FColr(Settings["/Coul/Fnets"])
   Frmt2 = Utils.FColr(Settings["/Coul/Znaff"])
   With Utils
@@ -65,19 +66,19 @@ Public Sub Colcli_Data(Row As Integer, Column As Integer)
     .rs2.MoveTo(Row)
     Try Colcli.data.Text = Str(.rs2[CliTable[Column]])
   End With
-  
+
 End
 
 Public Sub colcli_Click()
-  
+
   Caisse.Bsel = True
   Caisse.Clicode = colcli[colcli.row, 0].Text
   Me.close
-  
+
 End
 
 Public Sub ColCli_KeyPress()
-  
+
   If Key.code = Key.Enter Or Key.code = Key.Return Then
     ColCli_Click()
   Endif
@@ -94,27 +95,27 @@ Public Sub ColCli_KeyPress()
   If Key.code = Key.PageDown Then
     Descendre_Click()
   Endif
-  
+
   If Key.code = Key.PageUp Then
     Remonter_Click()
   Endif
   If Key.code = Key.Escape Or Key.code = Key.F2 Then Me.Close()
-  
+
 End
 
 Public Sub ColCli_MouseWheel()
-  
+
   If mouse.Delta = -1 Then
     If Colcli.Rows.Count = lg Then NbEnreg = NbEnreg + lg
   Else
     If Colcli.Rows.Count <= lg Then NbEnreg = NbEnreg - lg
   Endif
   Deplacement()
-  
+
 End
 
 Public Sub Descendre_Click()
-  
+
   If ColCli.Rows.Count = lg Then
     NbEnreg = NbEnreg + lg
     Deplacement()
@@ -122,68 +123,68 @@ Public Sub Descendre_Click()
   Try ColCli.MoveTo(0, 0)
   Try ColCli.Current.EnsureVisible
   Try ColCli.SetFocus
-  
+
 End
 
 Public Sub Remonter_Click()
-  
+
   NbEnreg = NbEnreg - lg
   Deplacement()
   Try ColCli.MoveTo(0, 0)
   Try ColCli.Current.EnsureVisible
   Try ColCli.SetFocus
-  
+
 End
 
 Public Sub Descendre_KeyPress()
-  
+
   If Key.code = Key.Escape Or Key.code = Key.F2 Then
     Me.Close
   Endif
   If key.code = key.PageDown Then Descendre_Click()
   If key.code = key.PageUp Then Remonter_Click()
-  
+
 End
 
 Public Sub Remonter_KeyPress()
-  
+
   If Key.code = Key.Escape Or Key.code = Key.F2 Then
     Me.Close
   Endif
   If key.code = key.PageDown Then Descendre_Click()
   If key.code = key.PageUp Then Remonter_Click()
-  
+
 End
 
 Public Sub Deplacement()
-  
+
   If NbEnreg < 0 Then NbEnreg = 0
   If Dbl = True Then
     Deb4()
   Else
     Deb3()
   Endif
-  
+
 End
 
 Public Sub Deb3()
-  
+
   Tris()
   Utils.Base2(colcli, "select * from " & Cbase.Table("TabCli") & " where " & Tri & " like  \"%" & sel & "%\"  and cli_actif = " & "0" & " order by " & Tri & " limit " & NbEnreg & ", " & lg & "")
   Colcli.Refresh
-  
+
 End
 
 Public Sub Deb4()
-  
+
   Tris()
   Utils.Base2(colcli, "select * from " & Cbase.Table("TabCli") & " where " & Tri & " like  \"%" & sel & "%\"  and cli_actif = " & "0" & " order by " & Tri & " desc limit " & NbEnreg & ", " & lg & "")
   Colcli.Refresh
-  
+
 End
 
 Public Sub Dbclk()
-  
+
   If Not Dbl Then
     Deb4()
     Dbl = "1"
@@ -191,14 +192,12 @@ Public Sub Dbclk()
     Deb3()
     Dbl = ""
   Endif
-  
+
 End
 
 Public Sub C1_Click()
-  
-  Dim MForm As Clavier
-  
-  'MForm = New Clavier("Clients")
+
+  ' MForm = New Clavier("Clients")
   sel = ""
   Dbl = ""
   'ref()
@@ -210,20 +209,18 @@ Public Sub C1_Click()
   NbEnreg = 0
   Dbl = ""
   Deb3()
-  If Settings["/tactile"] Then MForm.Showmodal()
-  
+  ' If Settings["/tactile"] Then MForm.Showmodal()
+
 End
 
 Public Sub C1_Dblclick()
-  
+
   Dbclk()
-  
+
 End
 
 Public Sub N1_Click()
-  
-  Dim MForm As Clavier
-  
+
   'MForm = New Clavier("Dclients")
   sel = ""
   Dbl = ""
@@ -236,18 +233,18 @@ Public Sub N1_Click()
   NbEnreg = 0
   Dbl = ""
   Deb3()
-  If Settings["/tactile"] Then MForm.Showmodal()
-  
+  ' If Settings["/tactile"] Then MForm.Showmodal()
+
 End
 
 Public Sub N1_Dblclick()
-  
+
   Dbclk()
-  
+
 End
 
 Public Sub Cp1_Click()
-  
+
   sel = ""
   Dbl = ""
   'ref()
@@ -259,17 +256,17 @@ Public Sub Cp1_Click()
   NbEnreg = 0
   Dbl = ""
   Deb3()
-  
+
 End
 
 Public Sub Cp1_Dblclick()
-  
+
   Dbclk()
-  
+
 End
 
 Public Sub VILLE_Click()
-  
+
   sel = ""
   Dbl = ""
   'ref()
@@ -281,17 +278,17 @@ Public Sub VILLE_Click()
   NbEnreg = 0
   Dbl = ""
   Deb3()
-  
+
 End
 
 Public Sub VILLE_Dblclick()
-  
+
   Dbclk()
-  
+
 End
 
 Public Sub C1_KeyPress()
-  
+
   Chkinput()
   If Key.code = Key.F2 Or key.code = key.Esc Then Me.Close()
   If Key.code = key.Down Then
@@ -302,11 +299,11 @@ Public Sub C1_KeyPress()
     N1.SetFocus
     N1_Click()
   Endif
-  
+
 End
 
 Public Sub N1_KeyPress()
-  
+
   ChkInput()
   If Key.code = Key.F2 Or key.code = key.Esc Then Me.Close()
   If Key.code = key.Down Then
@@ -321,11 +318,11 @@ Public Sub N1_KeyPress()
     C1_Click()
     C1.SetFocus
   Endif
-  
+
 End
 
 Public Sub Cp1_KeyPress()
-  
+
   ChkInput()
   If Key.code = Key.F2 Or key.code = key.Esc Then Me.Close()
   If Key.code = key.Down Then
@@ -340,11 +337,11 @@ Public Sub Cp1_KeyPress()
     N1_Click()
     N1.SetFocus
   Endif
-  
+
 End
 
 Public Sub VILLE_KeyPress()
-  
+
   ChkInput()
   If Key.code = Key.F2 Or key.code = key.Esc Then Me.Close()
   If Key.code = key.Down Then
@@ -355,88 +352,88 @@ Public Sub VILLE_KeyPress()
     Cp1_Click()
     Cp1.SetFocus
   Endif
-  
+
 End
 
 Public Sub C1_GotFocus()
-  
+
   Try Utils.ObsGotf(C1)
   C1_Click()
-  
+
 End
 
 Public Sub C1_LostFocus()
-  
+
   Try Utils.ObsLstf(C1)
-  
+
 End
 
 Public Sub N1_GotFocus()
-  
+
   Try Utils.ObsGotf(n1)
   N1_Click()
-  
+
 End
 
 Public Sub N1_LostFocus()
-  
+
   Try Utils.ObsLstf(N1)
-  
+
 End
 
 Public Sub cp1_GotFocus()
-  
+
   Try Utils.ObsGotf(Cp1)
   cp1_Click()
-  
+
 End
 
 Public Sub cp1_LostFocus()
-  
+
   Try Utils.ObsLstf(Cp1)
-  
+
 End
 
 Public Sub VILLE_GotFocus()
-  
+
   Try Utils.ObsGotf(ville)
   VILLE_Click()
-  
+
 End
 
 Public Sub VILLE_LostFocus()
-  
+
   Try Utils.ObsLstf(VILLE)
-  
+
 End
 
 Public Sub ChkInput()
-  
+
   If InStr("\"&", Key.Text) = 0 Then
     sel = utils.Obstch(sel)
     Deb3()
   Else
     Stop Event
   Endif
-  
+
 End
 
 Public Sub ClavInput()
-  
+
   sel = C1.text
   Deb3()
-  
+
 End
 
 Public Sub ClavInput2()
-  
+
   sel = N1.text
   Deb3()
-  
+
 End
 
 Public Sub Fermer_Click()
-  
+
   Me.close
-  
+
 End

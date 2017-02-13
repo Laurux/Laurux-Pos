@@ -9,7 +9,9 @@ Private cv As String
 Private hImage As Image
 
 Public Sub _new()
-  
+
+  Dim $imp, $lp As String
+
   SetObservers(Me, Me)
   Try Logo.value = Settings["/logo"]
   If Logo.Value Then
@@ -29,7 +31,7 @@ Public Sub _new()
   Try Intitule = Settings["/intitule"]
   Try son.Value = Settings["/son"]
   Try Balance.Value = Settings["/balance"]
-  If Balance.value Then 
+  If Balance.value Then
     TypeB.Visible = True
     TypeB.text = Settings["/Tbalance"]
   Endif
@@ -54,7 +56,7 @@ Public Sub _new()
     FontChooser1.SelectedFont = Fontes
   Endif
   Try Cnomade.Value = Settings["/Cnomade"]
-  If Cnomade.value = True Then 
+  If Cnomade.value = True Then
     Panel1.visible = True
     Fmenu.Button3.Text = "&Export vers csv"
     Fmenu.Button4.Visible = True
@@ -63,75 +65,79 @@ Public Sub _new()
     Panel1.visible = False
     Fmenu.Button3.Text = "&Préférences"
     Fmenu.Button4.visible = False
-    
   Endif
   Init_Nbase()
   Nbase.text = "Laurux" & Settings["/Soc"]
-  
+  Shell "lpc status 2>&1" To $imp
+  For Each $lp In Split($imp, "\n")
+    If Right($lp) = ":" Then Cimp.add(Left($lp, -1))
+  Next
+  Try Cimp.Text = Settings["/Cimp"]
+
 End
 
 Public Sub SetObservers(hClass As Object, hCont As Container)
-  
+
   Dim hCtrl As Object
   Dim hOBS As Observer
-  
+
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
       hOBS = New Observer(hCtrl) As "OBS"
     Endif
     If hCtrl Is Container Then SetObservers(hClass, hCtrl)
   Next
-  
+
 End
 
 Public Sub Obs_Enter()
-  
+
   Last.Font = Font["" ",Bold," ""]
   Last.background = Color.Lighter(Color.Buttonbackground)
   'Last.Move(Last.x - 2, Last.y - 2, Last.w + 4, Last.h + 4)
-  
+
 End
 
 Public Sub Obs_Leave()
-  
+
   Last.Font = Font["" "," "," ""]
   Last.background = Color.ButtonBackground
   'Last.Move(Last.x + 2, Last.y + 2, Last.w - 4, Last.h - 4)
-  
+
 End
 
 Public Sub Init_Nbase()
-  
+
   Dim elements As Variant
-  
+
   Nbase.Clear
   For Each elements In Utils.db.Databases
     Lig = elements.name
-    If Left$(Lig, 6) = "Laurux" Then 
+    If Left$(Lig, 6) = "Laurux" Then
       If Len(lig) > 6 Then Nbase.Add(Lig)
     Endif
   Next
-  
+
 End
 
 Public Sub Button1_Click()
-  
+
   Me.close
-  
+
 End
 
 Public Sub Logo_Click()
-  
+
   If Logo.Value Then
     Panlogo.Visible = True
   Else
     Panlogo.Visible = False
   Endif
-  
+
 End
 
 Public Sub Lgo2_Click()
-  
+
   Dialog.Filter = FileFilter(True)
   Dialog.Path = User.home
   Dialog.Title = "Sélection du logo"
@@ -140,40 +146,40 @@ Public Sub Lgo2_Click()
   aff_logo()
 Catch
   Message.Warning(ERROR.Text)
-  
+
 End
 
 Private Function FileFilter(Optional All As Boolean = False) As String[]
-  
+
   Dim filter As New String[]
-  
+
   filter.Add("*.png")
   filter.Add("Portable Network Graphics")
   filter.Add("*.jpeg *.jpg")
   filter.Add("Joint Photographic Experts Group")
   Return filter
-  
+
 End
 
 Public Sub aff_logo()
-  
+
   hImage = Image.Load(Logo2.Text)
   dwgImage.Clear()
   Draw.Begin(dwgImage)
-    Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
+  Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
   Draw.End
 Catch
-  
+
 End
 
 Public Sub dwgImage_Draw()
-  
+
   Try Draw.Image(hImage, 0, 0, dwgImage.Width, dwgImage.Height)
-  
+
 End
 
 Public Sub Form_Close()
-  
+
   Settings["/logo"] = logo.Value
   Settings["/admin"] = admin.Value
   Settings["/admin2"] = admin2.Value
@@ -192,7 +198,7 @@ Public Sub Form_Close()
   Settings["/portb"] = Portb.Text
   Settings["/choiximp"] = ChoixImp.Value
   Settings["/choiximp2"] = ChoixImp2.Value
-  Settings["/choiximpn"] = ChoixImpn.Value 
+  Settings["/choiximpn"] = ChoixImpn.Value
   Settings["/choiximpc"] = ChoixImpc.Value
   Settings["/histocli"] = HistoCli.Value
   Settings["/nbf"] = Nbf.Text
@@ -201,24 +207,24 @@ Public Sub Form_Close()
   Settings["/Chmcsv"] = Chmcsv.Text
   Settings["/tircarte"] = Tircarte.Value
   Settings["/affusbwn"] = GestAffUSB.Value
-  Settings["/choixtouches"] = ChoixTouches.Value 
+  Settings["/choixtouches"] = ChoixTouches.Value
   Settings["/ChmZ"] = ChmZ.Text
-  
+  Settings["/Cimp"] = Cimp.Text
   Settings.Save
-  
+
 End
 
 Public Sub Nbase_MouseDown()
-  
+
   ChkNbase = True
-  
+
 End
 
 Public Sub Nbase_Change()
-  
+
   Dim Tab As String
   Dim rResult As Result
-  
+
   If chkNbase = True Then
     Utils.db.Close
     Utils.db.name = Nbase.Text
@@ -231,7 +237,7 @@ Public Sub Nbase_Change()
     Settings.Save
     Settings.Reload
     Start.Soc = cs
-    
+
     Tab = "Fiches_Societes"
     If Not IsNull(cs) Then
       rResult = Utils.db.Exec("SELECT * FROM " & Tab & " where cd_sc = &1", Cs)
@@ -241,21 +247,21 @@ Public Sub Nbase_Change()
       Endif
       message.Warning(" Vous venez de sélectionner la société " & cs & " " & cv & " " & intitule & " ! \n Celle-ci sera donc votre société de travail par défaut..")
     Endif
-    
+
     chkNbase = False
     Fmenu.text = "Laurux : " & "Société " & cs & " " & cv & " " & intitule
   Endif
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   LauruxMaj.Verif_Version()
-  
+
 End
 
 Public Sub chm_Click()
-  
+
   Dialog.Title = "Choisir un repertoire"
   Dialog.Path = User.home
   If Not Dialog.SelectDirectory() Then
@@ -263,11 +269,11 @@ Public Sub chm_Click()
   Else
     Chmcsv.Text = User.Home
   Endif
-  
+
 End
 
 Public Sub BchmZ_Click()
-  
+
   Dialog.Title = "Choisir un repertoire"
   Dialog.Path = User.home
   If Not Dialog.SelectDirectory() Then
@@ -275,12 +281,12 @@ Public Sub BchmZ_Click()
   Else
     ChmZ.Text = User.Home
   Endif
-  
+
 End
 
 Public Sub Cnomade_Click()
-  
-  If Cnomade.Value = True Then 
+
+  If Cnomade.Value = True Then
     Panel1.visible = True
     Fmenu.Button3.Text = "&Export vers csv"
     Fmenu.Button4.visible = True
@@ -291,21 +297,21 @@ Public Sub Cnomade_Click()
     Fmenu.Button4.visible = False
     Fmenu.Label2.visible = False
   Endif
-  
+
 End
 
 Public Sub Balance_Click()
-  
+
   If Balance.value Then
     TypeB.visible = True
   Else
     TypeB.Visible = False
   Endif
-  
+
 End
 
 Public Sub Button3_Click()
-  
+
   LauruxConf.ShowModal()
-  
+
 End

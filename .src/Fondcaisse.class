@@ -10,10 +10,10 @@ Private Origine As String
 Private Devises As String
 
 Public Sub _new(org As String)
-  
+
   Dim rResult As Result
   Dim Tab As String
-  
+
   SetObservers(Me, Me)
   $cai = Settings["/Cai" & "/Ncai"]
   Ncaisse = Left$($cai, 1)
@@ -33,11 +33,11 @@ Public Sub _new(org As String)
       Label1.Text = devises
     Endif
   Endif
-  
+
 End
 
 Public Sub Form_Open()
-  
+
   PictureBox1.Picture = Picture[Application.path & "/Images/monnaie/p01.png"]
   PictureBox2.Picture = Picture[Application.path & "/Images/monnaie/p02.png"]
   PictureBox3.Picture = Picture[Application.path & "/Images/monnaie/p05.png"]
@@ -53,41 +53,41 @@ Public Sub Form_Open()
   PictureBox13.Picture = Picture[Application.path & "/Images/monnaie/b100.png"]
   PictureBox14.Picture = Picture[Application.path & "/Images/monnaie/b200.png"]
   PictureBox15.Picture = Picture[Application.path & "/Images/monnaie/b500.png"]
-  
+
 End
 
 Public Sub SetObservers(hClass As Object, hCont As Container)
-  
+
   Dim hCtrl As Object
   Dim hOBS As Observer
-  
+
   For Each hCtrl In hCont.Children
     If hCtrl Is Button Then
       hOBS = New Observer(hCtrl) As "OBS"
     Endif
     If hCtrl Is Container Then SetObservers(hClass, hCtrl)
   Next
-  
+
 End
 
 Public Sub Obs_Enter()
-  
+
   Last.Font = Font["" ",Bold," ""]
   Last.background = Color.Lighter(Color.Buttonbackground)
   'Last.Move(Last.x - 2, Last.y - 2, Last.w + 4, Last.h + 4)
-  
+
 End
 
 Public Sub Obs_Leave()
-  
+
   Last.Font = Font["" "," "," ""]
   Last.background = Color.ButtonBackground
   'Last.Move(Last.x + 2, Last.y + 2, Last.w - 4, Last.h - 4)
-  
+
 End
 
 Public Sub zero_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 0
@@ -96,11 +96,11 @@ Public Sub zero_Click()
     Teuros()
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub un_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 1
@@ -109,11 +109,11 @@ Public Sub un_Click()
     Teuros()
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub deux_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 2
@@ -122,11 +122,11 @@ Public Sub deux_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub trois_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 3
@@ -135,11 +135,11 @@ Public Sub trois_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub quatre_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 4
@@ -148,11 +148,11 @@ Public Sub quatre_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub cinq_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 5
@@ -161,11 +161,11 @@ Public Sub cinq_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub six_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 6
@@ -174,11 +174,11 @@ Public Sub six_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub sept_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 7
@@ -187,11 +187,11 @@ Public Sub sept_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub huit_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 8
@@ -200,11 +200,11 @@ Public Sub huit_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub neuf_Click()
-  
+
   If Box1.text = "0,00" Then Box1.Clear
   If Panel2.Visible = False Then
     Box1.text = Box1.text & 9
@@ -213,19 +213,19 @@ Public Sub neuf_Click()
     Teuros
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub Virgule_Click()
-  
+
   If Panel2.Visible = False Then
     Box1.text = Box1.text & ","
   Endif
-  
+
 End
 
 Public Sub Raz_Click()
-  
+
   If Panel2.Visible = False Then
     Box1.clear
   Else
@@ -233,11 +233,11 @@ Public Sub Raz_Click()
     Bbox2.clear
     TotalCaisse(Panel3)
   Endif
-  
+
 End
 
 Public Sub Button3_Click()
-  
+
   If Button3.text = "&Détail caisse" Then
     Button3.Text = "&Fond de caisse"
     Panel2.Visible = True
@@ -255,113 +255,113 @@ Public Sub Button3_Click()
     Label18.Visible = False
     Box1.SetFocus
   Endif
-  
+
 End
 
 Public Sub Box1_KeyPress()
-  
+
   If key.code = Key.enter Or Key.code = Key.return Or If Key.Code = Key.Tab Then
     Stop Event
     Button2_Click()
   Else
     ChkPrx()
   Endif
-  
+
 End
 
 Public Sub ChkPrx()
-  
+
   If InStr("0123456789,.", Key.Text) = 0 Then
     If key.code <> key.BackSpace And Key.Code <> Key.tab And Key.Code <> Key.Delete And key.code <> 37 And key.code <> 42 And key.code <> 43 And key.code <> 45 And key.code <> 47 Then
       Stop Event
     Endif
   Endif
-  
+
 End
 
 Public Sub Box_mousedown()
-  
+
   Select Case Last.tag
     Case 16
       Bbox = Box16
       Bbox2 = Box2
       Euro = 200
-      
+
     Case 17
       Bbox = Box17
       Bbox2 = Box3
       Euro = 100
-      
+
     Case 18
       Bbox = Box18
       Bbox2 = Box4
       Euro = 50
-      
+
     Case 19
       Bbox = Box19
       Bbox2 = Box5
       Euro = 20
-      
+
     Case 20
       Bbox = Box20
       Bbox2 = Box6
       Euro = 10
-      
+
     Case 21
       Bbox = Box21
       Bbox2 = Box7
       Euro = 5
-      
+
     Case 22
       Bbox = Box22
       Bbox2 = Box8
       Euro = 2
-      
+
     Case 23
       Bbox = Box23
       Bbox2 = Box9
       Euro = 1
-      
+
     Case 24
       Bbox = Box24
       Bbox2 = Box10
       Euro = 0.50
-      
+
     Case 25
       Bbox = Box25
       Bbox2 = Box11
       Euro = 0.20
-      
+
     Case 26
       Bbox = Box26
       Bbox2 = Box12
       Euro = 0.10
-      
+
     Case 27
       Bbox = Box27
       Bbox2 = Box13
       Euro = 0.05
-      
+
     Case 28
       Bbox = Box28
       Bbox2 = Box14
       Euro = 0.02
-      
+
     Case 29
       Bbox = Box29
       Bbox2 = Box15
       Euro = 0.01
-      
+
     Case 30
       Bbox = Box30
       Bbox2 = Box31
       Euro = 500
   End Select
-  
+
 End
 
 Public Sub Box_keypress()
-  
+
   ChkPrx()
   If key.code = key.BackSpace Then
     Try Bbox2.Text = Format$(Euro * Val(Left$(Bbox.text, Len(Bbox.Text) - 1)), "0.00")
@@ -452,11 +452,11 @@ Public Sub Box_keypress()
     Endif
   Endif
   TotalCaisse(panel3)
-  
+
 End
 
 Public Sub Box_GotFocus()
-  
+
   Select Case Last.tag
     Case 16
       Box16.select
@@ -488,55 +488,55 @@ Public Sub Box_GotFocus()
       Box29.select
     Case 30
       Box30.select
-      
+
   End Select
-  
+
 End
 
 Public Sub Teuros()
-  
+
   Bbox2.clear
   Bbox2.Text = Format$(Euro * Val(Utils.cpoint(Bbox.Text)), "0.00")
-  
+
 End
 
 Public Sub TotalCaisse(hcont As Container)
-  
+
   Dim hctrl As Object
-  
+
   Box1.Text = "0"
   For Each hctrl In hcont.Children
     If hctrl Is TextBox Then Try Box1.text = Format$(Val(Box1.text) + Val(hctrl.Text), "0.00")
   Next
-  
+
 End
 
 Public Sub Box1_LostFocus()
-  
+
   Try Box1.text = Format$(Val(Utils.cpoint(Box1.text)), "0.00")
-  
+
 End
 
 Public Sub Button1_Click()
-  
+
   Try Kill User.home & "/" & "Caisse.lock"
   Me.Close
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   If Origine <> "Cai" Then Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET fndc = &2, dteov = &3, dtefm = &3 WHERE code = &1", Ncaisse, Utils.PointBase(Box1.Text), Utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")))
   Me.Close
-  
+
 End
 
 Public Sub PictureBox6_MouseDown()
-  
+
 End
 
 Public Sub btn_Enter()
-  
+
   If Len(Last.name) = 11 And Right(Last.name) >= "9" Or If Len(Last.name) = 12 Then
     P13.width = 64
     P13.height = 34
@@ -549,14 +549,14 @@ Public Sub btn_Enter()
   P13.x = Last.x
   P13.y = Last.y - 12
   If Right(Last.name, 2) = "15" Then P13.y = Last.y
-  If Len(Last.name) = 11 And Right(Last.name) = "1" Then 
+  If Len(Last.name) = 11 And Right(Last.name) = "1" Then
     P13.y = Last.y - 20
   Endif
-  
+
 End
 
 Public Sub P13_Leave()
-  
+
   P13.visible = False
-  
+
 End

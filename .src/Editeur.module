@@ -6,12 +6,12 @@
 '*********************************************
 
 Public Sub Prog_Editeur(Fic As String) As String
-  
+
   Dim $Exec As String
-  
+
   $Exec = "gedit"
   If Not CheckProg.Chk($Exec) Then $Exec = "kate"
   If Not CheckProg.Chk($Exec) Then $Exec = "kwrite"
   Shell $Exec & " " & Fic
-  
+
 End

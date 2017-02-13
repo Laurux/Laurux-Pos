@@ -1,6 +1,8 @@
 #---- Gambas files to ignore (v1)
 *.gambas
 .lock
+.startup
+.settings
 *~
 core
 core.*

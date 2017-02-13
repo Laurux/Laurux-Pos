@@ -12,15 +12,15 @@ Private sFiletxt As String
 Private hfile As File
 
 Public Sub Main()
-  
-  Dim $ok As Boolean = True  
-  
+
+  Dim $ok As Boolean = True
+
   sFiletxt = User.home & "/Laurux.Pos.lock"
   If Exist(sFiletxt) Then
     If Start.son Then
       Music.Play
     Endif
-    If Message.Warning("Cette caisse est déjà connectée ou s'est fermée anormalement!\nVoulez-vous continuer ?", "Oui", "Non") = 1 Then 
+    If Message.Warning("Cette caisse est déjà connectée ou s'est fermée anormalement!\nVoulez-vous continuer ?", "Oui", "Non") = 1 Then
       Try Kill User.home & "/Laurux.Pos.lock"
       $ok = True
     Else
@@ -40,7 +40,7 @@ Public Sub Main()
     Else
       Application.Font = Font[Fontes]
     Endif
-    If Not IsNull(Settings["/Cai" & "/Ncai"]) Then 
+    If Not IsNull(Settings["/Cai" & "/Ncai"]) Then
       If Settings["/choixtouches"] Then
         $tcai = Left$(Settings["/Cai" & "/Ncai"], 1)
       Else
@@ -52,5 +52,5 @@ Public Sub Main()
   'Else"
   'Fmenu.show"
   'Endif"
-  
+
 End
