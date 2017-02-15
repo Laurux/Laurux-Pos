@@ -6650,7 +6650,7 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
     totcaisse = Val(.cpoint(Totcaisse)) + Val(.cpoint(Fdc))
     rTkx = Utils.db.Exec(" select * from " & Tabr & " order by type")
     If rTkx.Available Then Enc = True
-    rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr is null", 0)
+    rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr != 1", 0)
     If rTkx.Available Or If Enc = True Then
       Totnbtck = rTkx.count
       If rTkx.Available Then
