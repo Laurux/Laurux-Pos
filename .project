@@ -1,9 +1,9 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.9.1
+# Compiled with Gambas 3.9.2
 Title=Laurux.Pos
 Startup=Start
 Icon=Icones/caisse3.png
-Version=3.21.9
+Version=3.23.0
 Component=gb.image
 Component=gb.qt4
 Component=gb.form
@@ -22,7 +22,7 @@ Description="Caisse tactile pour Laurux"
 Authors="Jacky TRIPOTEAU"
 TabSize=2
 Language=fr
-SourcePath=/media/Lexar
+SourcePath=/home/jack/Sauve_Laurux
 Maintainer=Jacky Tripoteau
 Vendor=GIT
 Address=jscops@wanadoo.fr

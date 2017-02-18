@@ -6,7 +6,6 @@ Dbl As Boolean = False
 Tri As String
 sel As String
 Private lg As Integer
-Private MForm As Clavier
 
 '************************************** Gestion des clients *****************************************************
 Public Sub _new()

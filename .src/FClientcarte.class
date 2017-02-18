@@ -39,25 +39,10 @@ Private Der As String 'Derniere carte créée
 Private Org As Integer 'flag pour origine ouverture datechooser
 Private Chkfocus As Boolean = False
 Private b As Integer = 0
-Private i2 As Integer
-Private txtPosX As Integer
-Private txtPosY As Integer
-Private Filename As String = "EtiqCarte.ps"
-Private Nblargeur As String
-Private Nbhauteur As String
-Private Largeur As Integer
-Private Hauteur As Integer
-Private Mrghaut As Integer
-Private Mrgauche As Integer
-Private Esplargeur As Integer
-Private Esphauteur As Integer
-Private Nbetq As Integer = 1
-Private Nb As Boolean = False
 
 Public Sub _New()
 
   Dim Frmt As New String[]
-  Dim rResult As Result
 
   Me.center
   Balloon.Delay = 1500
