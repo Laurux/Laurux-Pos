@@ -105,26 +105,26 @@
       Text = ("Choix saisie nom des chèques")
     }
     { Tircarte CheckBox
-      MoveScaled(1,31,59,3)
+      MoveScaled(1,32,59,3)
       Text = ("Le tiroir ne s'ouvre pas pour les paiements  cartes")
     }
     { GestAffUSB CheckBox
-      MoveScaled(1,35,59,3)
+      MoveScaled(1,36,59,3)
       Text = ("Gestion de l'afficheur USB Wincor Nixdorf")
     }
     { ChoixTouches CheckBox
-      MoveScaled(1,27,44,3)
+      MoveScaled(1,28,44,3)
       ToolTip = ("A cocher si vous souhaitez avoir des touches préparamétrées propres à chaque caisse")
       Text = ("Touches familles propre à chaque caisse")
     }
     { Label55 Label
-      MoveScaled(23,40,42,3)
+      MoveScaled(23,42,42,3)
       Font = Font["Serif,-1"]
       Text = ("Copie  PDF des bandes Z")
       Alignment = Align.Center
     }
     { Panchemin9 Panel
-      MoveScaled(23,43,42,10)
+      MoveScaled(23,45,42,10)
       Font = Font["Serif,-1"]
       Border = Border.Plain
       { ChmZ TextBox
@@ -140,6 +140,11 @@
         Text = ("Nom et chemin du lieu de stockage")
         Alignment = Align.Center
       }
+    }
+    { Tfamille CheckBox
+      MoveScaled(48,28,44,3)
+      ToolTip = ("A cocher si vous souhaitez que la fenêtre des familles soit ouverte à l'ouverture de Laurux.pos")
+      Text = ("Fenêtre famille par défaut")
     }
     Index = 1
     Text = ("Synchronisation")

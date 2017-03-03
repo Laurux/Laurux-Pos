@@ -953,6 +953,7 @@
     }
     { Panel17 Panel
       MoveScaled(65,14,65.125,57.125)
+      Visible = False
       Background = &HE7FFDF&
       Border = Border.Plain
       { A1 ImageButton Clav2

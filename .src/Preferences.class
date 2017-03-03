@@ -47,6 +47,7 @@ Public Sub _new()
   Try GestAffUSB.Value = Settings["/affusbwn"]
   Try Tactile.Value = Settings["/tactile"]
   Try ChoixTouches.Value = Settings["/choixtouches"]
+  Try Tfamille.Value = Settings["/Tfamilles"]
   Try Chmcsv.Text = Settings["/Chmcsv"]
   Try ChmZ.Text = Settings["/ChmZ"]
   If IsNull(Nbf.text) Then Nbf.Text = "1"
@@ -208,6 +209,7 @@ Public Sub Form_Close()
   Settings["/tircarte"] = Tircarte.Value
   Settings["/affusbwn"] = GestAffUSB.Value
   Settings["/choixtouches"] = ChoixTouches.Value
+  Settings["/Tfamilles"] = Tfamille.Value
   Settings["/ChmZ"] = ChmZ.Text
   Settings["/Cimp"] = Cimp.Text
   Settings.Save
