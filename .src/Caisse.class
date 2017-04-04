@@ -5721,7 +5721,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       bloc = LigTk.Item[8]
 
       If stype = "T" Or stype = "BL" Then
-        Try smtva = LigTk.Item[9]
+        Try smtva = Format$(Val(utils.cpoint(LigTk.Item[9])), "0.00")
       Else
         Try smtva = Format$(Val(utils.cpoint(smontantFam)) - Val(Utils.cpoint(smontantht)), "0.00")
       Endif
