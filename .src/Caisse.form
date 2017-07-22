@@ -614,11 +614,12 @@
     }
     { Panel12 Panel
       MoveScaled(0,72,130.125,28.75)
-      Background = &HE7FFDF&
+      Background = &HE8FFDF&
       Foreground = Color.Foreground
       Border = Border.Raised
       { HBox1 HBox
         MoveScaled(1,0.75,129,6)
+        Background = Color.Background
         Spacing = True
         { A Button Clav
           Name = "A"
@@ -719,6 +720,7 @@
       }
       { HBox2 HBox
         MoveScaled(1,7.75,129,6)
+        Background = Color.Background
         Spacing = True
         { Q Button Clav
           Name = "Q"
@@ -805,6 +807,7 @@
       }
       { HBox3 HBox
         MoveScaled(1,14.75,129,6)
+        Background = Color.Background
         Spacing = True
         { W Button Clav
           Name = "W"
@@ -885,6 +888,7 @@
       }
       { HBox4 HBox
         MoveScaled(1,21.75,129,6)
+        Background = Color.Background
         Spacing = True
         { Espace Button Clav
           Name = "Espace"
@@ -1210,27 +1214,27 @@
       }
     }
     { Panel5 Panel
-      MoveScaled(6,1,9,5)
+      MoveScaled(6,1,9,8)
       Visible = False
       Background = Color.Background
       Border = Border.Raised
       { TextBox1 TextBox
-        MoveScaled(5,11,23,3)
+        MoveScaled(5,12,23,3)
         Font = Font["-1"]
       }
       { ComboBox1 ComboBox
-        MoveScaled(37,11,25,3)
+        MoveScaled(37,12,25,3)
         Font = Font["-1"]
         List = [("Espèces"), ("Chèque"), ("Carte")]
       }
       { Label5 Label
-        MoveScaled(4,8,24,2)
+        MoveScaled(4,9,24,2)
         Font = Font["-1"]
         Text = ("Numéro ticket")
         Alignment = Align.Center
       }
       { Label6 Label
-        MoveScaled(37,8,25,2)
+        MoveScaled(37,9,25,2)
         Font = Font["-1"]
         Text = ("Mode de règlement")
         Alignment = Align.Center
@@ -1248,16 +1252,16 @@
         Picture = Picture["Icones/filesave.png"]
       }
       { ToggleButton5 ToggleButton
-        MoveScaled(28,10.625,3.625,3.625)
+        MoveScaled(28,11.625,3.625,3.625)
         Picture = Picture["Icones/next_frame.png"]
       }
       { Label7 Label
-        MoveScaled(1,1,64,4)
-        Text = ("Modification du mode de règlement.")
+        MoveScaled(1,1,64,7)
+        Text = ("Modification du mode de règlement.\nAttention ! Ne pas utiliser si plusieurs \nréglements identiques (ex : 2 chèques).")
         Alignment = Align.Center
       }
       { Lister ColumnView
-        MoveScaled(6,15,56,29)
+        MoveScaled(6,16,56,29)
         Visible = False
       }
     }

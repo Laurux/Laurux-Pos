@@ -515,7 +515,7 @@ Public Sub Art_man()
   Dim Artht As String
   Dim sRem As String
   Dim pmp As String
-  Dim Materiel As Boolean ' si le produit est un materiel
+  Dim Materiel, bstocke As Boolean ' si le produit est un materiel
   Dim arr As String
   Dim ecotaxe As String
   Dim Valeur_Ecotaxe As String
@@ -536,7 +536,8 @@ Public Sub Art_man()
     If Rarts.Available Then
       sk = .cpoint(Rarts!art_qte)
       If IsNull(sk) Then sk = "0"
-      If Rarts!art_stocke And Ctrlstk And Val(sk) <= 0 Then
+      bstocke = Rarts!art_stocke
+      If bstocke And Ctrlstk And Val(sk) <= 0 Then
         If Start.son Then
           Music.Play
         Endif
@@ -5513,10 +5514,10 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Dim sreduc As String
   Dim smreduc As String
   Dim scarte As String
-  Dim smcarte As String
+  Dim smcarte, smcarte2 As String = "0"
   Dim nmcarte As String
   Dim scheque As String
-  Dim smcheque, tcheque As String = "0"
+  Dim smcheque, smcheque2, tcheque As String = "0"
   Dim nmcheque As String
   Dim scredit As String
   Dim smcredit As String
@@ -5542,7 +5543,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Dim mntAv As String
   Dim MntFam As String
   Dim QteFam As String
-  Dim Totpoint As Float = 0
+  Dim Totpoint, Totp, Totg As Float = 0
   Dim Esp As Float = 0 'Montant des especes versées
   Dim numero_tk As String
   Dim scartef As String
@@ -5591,6 +5592,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
           smcarte = LigTk.Item[3]
           Maj_Paiements(scarte, smcarte, "1")
           sstatut = 0
+          smcarte2 = Val(.cpoint(smcarte2)) + Val(.cpoint(smcarte))
         Endif
         If Right$(LigTk.Item[5], 1) = "V" Then
           scheque = "V"
@@ -5673,8 +5675,13 @@ Public Sub Enrg_Tk(Supprime As Boolean)
     If Not IsNull($Nomd) Then $Cli = $Nomd
 
     'On enregistre dans la table Ent_Ticket
-    Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli, ssuppr, bretro)
-
+    Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte2, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli, ssuppr, bretro)
+    Sha1Calc.CalcSha1(Ncaisse, numero_tk)
+    'On enregistre le total
+    rResult = Utils.db.Exec(" select * from Fiches_Caisses where code = &1", Ncaisse)
+    Totp = rResult!fndtotp + Val(.cpoint(smttc))
+    Totg = rResult!fndtotg + Val(.cpoint(smttc))
+    Utils.db.Exec("UPdate Fiches_Caisses  SET fndtotp = &1, fndtotg = &2 WHERE code = &3", Totp, Totg, Ncaisse)
     If scavoir = "Z" Then
       rResult = Utils.db.Exec(" select * from " & Cbase.Table("TabAvoirs") & " where ntk = &1", Numavoir)
       If rResult.Available Then mntAv = rResult!montant
@@ -7465,7 +7472,7 @@ Public Sub Button44_click()
         Case "Carte"
           Utils.db.Exec("UPdate  " & Tab2 & "  SET  scarte = &1, mcarte = &2, nmcarte = &3  WHERE numero = &4", "", "0", "", TextBox1.Text)
       End Select
-
+      Sha1Calc.CalcSha1(Ncaisse, TextBox1.text)
       'On met à jour le nouveau mode de règlement dans la table règlements
       Select Case ComboBox1.Text
         Case "Espèces"
@@ -7492,6 +7499,7 @@ Public Sub Button44_click()
         Case "Carte"
           Utils.db.Exec("UPdate  " & Tab2 & "  SET  scarte = &1, mcarte = &2  WHERE numero = &4", smode, Format$(ireg, "0.00"), $nom, TextBox1.Text)
       End Select
+      Sha1Calc.CalcSha1(Ncaisse, TextBox1.text)
       Button42_Click()
     Endif
   Else

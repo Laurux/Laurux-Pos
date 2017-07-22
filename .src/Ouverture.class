@@ -93,7 +93,7 @@ Public Sub Mdp_Vendeurs()
     Mdp.SetFocus
     Mdp.Select
     b = 1
-    If Settings["/tactile"] Then Button3_Click()
+    ' If Settings["/tactile"] Then Button3_Click()
   Else
     b = 0
   Endif
@@ -134,7 +134,7 @@ Public Sub Caissiere_Click()
     Else
       Mdp.SetFocus
       Mdp.Select
-      If Settings["/tactile"] Then Button3_Click()
+      'If Settings["/tactile"] Then Button3_Click()
     Endif
   Endif
 Catch

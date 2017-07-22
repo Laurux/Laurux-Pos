@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' 
+'
 '
 Private Ncaisse As String
 Private Caissiere As String
@@ -12,30 +12,30 @@ Private Tab2 As String = "Fiches_LigTicketz"
 Private Tab3 As String = "Fiches_Regltz"
 
 Public Sub Form_Show()
-  
+
   Me.Center
   Ncaisse = Left$(Settings["/Cai" & "/Ncai"], 1)
   Caissiere = Right$(Settings["/Cai" & "/Ncai"], 1)
-  
-End 
+
+End
 
 '**************************************************
 '* On exporte les données dans un fichier texte   *
 '**************************************************
 Public Sub Button2_Click()
-  
+
   Dim filetxt As String = Settings["/Chmcsv"] & "/EntTicketz"
   Dim filetxt2 As String = Settings["/Chmcsv"] & "/LigTicketz"
   Dim filetxt3 As String = Settings["/Chmcsv"] & "/Regltz"
   Dim rResult As Result
   Dim imp As Boolean = False
   Dim p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, p32, p33, p34 As String
-  
+
   If Not IsNull(Ncaisse) Then
     If start.son Then
       Music.Play
     Endif
-    If Message.Question("Vous allez exporter les données de la caisse n° " & Ncaisse & "\nLe ticket Z doit impérativement être imprimé. OK ?", "Oui", "Non") = 1 Then 
+    If Message.Question("Vous allez exporter les données de la caisse n° " & Ncaisse & "\nLe ticket Z doit impérativement être imprimé. OK ?", "Oui", "Non") = 1 Then
       If Exist(filetxt) Then Kill filetxt
       If Exist(filetxt2) Then Kill filetxt2
       If Exist(filetxt3) Then Kill filetxt3
@@ -83,11 +83,11 @@ Public Sub Button2_Click()
           p34 = rResult!mresto
           donnees1(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30, p31, p32, p33, p34)
         Until rResult.MoveNext()
-        
+
         rResult = Utils.db.Exec("SELECT * FROM " & Tab2 & "")
         If rResult.Available Then
           Repeat
-            p1 = rResult!lInd 
+            p1 = rResult!lInd
             p2 = rResult!numero
             p3 = rResult!numlig
             p4 = rResult!code
@@ -103,12 +103,12 @@ Public Sub Button2_Click()
             p14 = rResult!tva
             donnees2(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14)
           Until rResult.MoveNext()
-        Endif  
-        
+        Endif
+
         rResult = Utils.db.Exec("SELECT * FROM " & Tab3 & "")
         If rResult.Available Then
           Repeat
-            p1 = rResult!lInd 
+            p1 = rResult!lInd
             p2 = rResult!intitule
             p3 = rResult!montant
             p4 = rResult!qte
@@ -117,7 +117,7 @@ Public Sub Button2_Click()
             p7 = rResult!date
             donnees3(p1, p2, p3, p4, p5, p6, p7)
           Until rResult.MoveNext()
-        Endif  
+        Endif
         Me.mouse = Mouse.Default
         If start.son Then
           Music.Play
@@ -169,48 +169,48 @@ Catch
   Endif
   message.Error(Error.Text & " " & Error.where)
   Me.Mouse = Mouse.Default
-  
+
 End
 
 Public Sub Form_Close()
-  
+
   Try Close #hFile
   Try Close #hFile2
   Try Close #hFile3
-  
+
 End
 
 Public Sub donnees1(p1 As String, p2 As String, p3 As String, p4 As String, p5 As String, p6 As String, p7 As String, p8 As String, p9 As String, p10 As String, p11 As String, p12 As String, p13 As String, p14 As String, p15 As String, p16 As String, p17 As String, p18 As String, p19 As String, p20 As String, p21 As String, p22 As String, p23 As String, p24 As String, p25 As String, p26 As String, p27 As String, p28 As String, p29 As String, p30 As String, p31 As String, p32 As String, p33 As String, p34 As String)
-  
+
   Dim donnees As String = p1 & ";" & p2 & ";" & p3 & ";" & p4 & ";" & p5 & ";" & p6 & ";" & p7 & ";" & p8 & ";" & p9 & ";" & p10 & ";" & p11 & ";" & p12 & ";" & p13 & ";" & p14 & ";" & p15 & ";" & p16 & ";" & p17 & ";" & p18 & ";" & p19 & ";" & p20 & ";" & p21 & ";" & p22 & ";" & p23 & ";" & p24 & ";" & p25 & ";" & p26 & ";" & p27 & ";" & p28 & ";" & p29
-  
+
   donnees &= ";" & p30 & ";" & p31 & ";" & p32 & ";" & p33 & ";" & p34
   Print #hFile, donnees
-  
+
 End
 
 Public Sub donnees2(p1 As String, p2 As String, p3 As String, p4 As String, p5 As String, p6 As String, p7 As String, p8 As String, p9 As String, p10 As String, p11 As String, p12 As String, p13 As String, p14 As String)
-  
+
   Print #hFile2, p1 & ";" & p2 & ";" & p3 & ";" & p4 & ";" & p5 & ";" & p6 & ";" & p7 & ";" & p8 & ";" & p9 & ";" & p10 & ";" & p11 & ";" & p12 & ";" & p13 & ";" & p14
-  
+
 End
 
 Public Sub donnees3(p1 As String, p2 As String, p3 As String, p4 As String, p5 As String, p6 As String, p7 As String)
-  
+
   Print #hFile3, p1 & ";" & p2 & ";" & p3 & ";" & p4 & ";" & p5 & ";" & p6 & ";" & p7
-  
+
 End
 
 Public Sub Raz()
-  
+
   Utils.db.Exec("Truncate " & tab & "")
   Utils.db.Exec("Truncate  " & tab2 & "")
   Utils.db.Exec("Truncate  " & tab3 & "")
-  
+
 End
 
 Public Sub Button1_Click()
-  
+
   Me.Close
-  
+
 End
