@@ -45,10 +45,10 @@ Public iPos As Integer
 Public rResult As Result
 
 Public Sub _new()
-  
+
   Dim Frmt As String[]
   Dim ssh As String
-  
+
   Frmt = Utils.FColr(Settings["/Coul/Fnets"])
   If Settings["/Soc" & Start.Soc & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
   Utils.Observers(LauruxConf)
@@ -67,7 +67,7 @@ Public Sub _new()
   Else
     Host.Text = Settings["/dbase/Host"]
   Endif
-  
+
 End
 
 '***********************************************************
@@ -77,9 +77,9 @@ End
 '* MG - 07 janvier 2010
 '***********************************************************
 Public Sub Button1_Click()
-  
+
   Dim $ready_connect As Boolean
-  
+
   $ready_connect = True
   Soc = "01"
   intitule = "  "
@@ -94,7 +94,7 @@ Public Sub Button1_Click()
   If Cnl.value Then
     Settings["/dbase/Host2"] = Host.Text
   Else
-    Settings["/dbase/Host"] = Host.Text  
+    Settings["/dbase/Host"] = Host.Text
   Endif
   '# -- Partie variant suivant que l'on utilise un tunnel ssh ou pas
   Settings["/dbase/ssh/Con-ssh"] = Bssh.Value
@@ -134,7 +134,7 @@ Public Sub Button1_Click()
   Settings["/Soc" & Soc & "/Prxdec"] = 0
   Settings["/Soc" & Soc & "/Taxe"] = "TVA"
   Settings.Save
-  
+
   '# -- valeurs de connexion communes avec ou sans tunnel
   ' Le type reste bien entendu mysql
   hcon.type = Settings["/dbase/type"]
@@ -144,7 +144,7 @@ Public Sub Button1_Click()
   hcon.Login = Settings["/dbase/Login"]
   ' le mot de passe est celui de la base
   hcon.Password = hexdblKey.crypt("de", Settings["/dbase/Password"], "Laurux")
-  
+
   '*************************************
   '* On initialise les variables
   '* ainsi les routines de connexion
@@ -176,7 +176,7 @@ Public Sub Button1_Click()
     Endif
   Endif
   Soc = Settings["/Soc"]
-  
+
   '# -- lancement si nécessaire du tunnel ssh
   If Bssh.Value Then
     If Utils.monteTunnel() Then
@@ -185,10 +185,10 @@ Public Sub Button1_Click()
       $ready_connect = False
     Endif
   Endif
-  
+
   If $ready_connect Then
     Try hcon.Close
-    
+
     hcon.Open
     If Message.Info("Le fichier de configuration a été crée ou modifié. Veuillez relancer Laurux.pos SVP.", "OK!") = 1 Then
       Button2_Click()
@@ -211,14 +211,14 @@ Public Sub Button1_Click()
   Else
     Message.Warning("Le tunnel SSH demandé ne peut être monté")
   Endif
-  
+
 End
 
 Public Sub Button2_Click()
-  
+
   Try Kill User.home & "/Laurux.Pos.lock"
   Me.close
-  
+
 End
 
 '********************************************************************
@@ -226,10 +226,10 @@ End
 '* MG - 07 janvier 2010
 '********************************************************************
 Public Sub Form_Close()
-  
+
   Utils.fermeTunnel()
   Print Now & " - " & "Fermeture de la fenêtre\n"
-  
+
 End
 
 '******************************************
@@ -237,11 +237,11 @@ End
 '* MG - 07 janvier 2010
 '******************************************
 Public Sub Bssh_Click()
-  
+
   If Bssh.value Then
     Frame1.Enabled = True
   Else
     Frame1.Enabled = False
   Endif
-  
+
 End
