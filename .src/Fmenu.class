@@ -21,6 +21,7 @@ Public Sub _new()
   Me.Center
   Me.Width = Screens[0].width
   Me.Height = Screens[0].Height
+  Frame1.Text = "Laurux3-Pos " & Application.Version
   titre = fmenu.text
   Try intitule = Settings["/intitule"]
   'Fmenu.text = titre & " ( Société  " " " & Right$(Soc, 2) & " - " & intitule & ") "

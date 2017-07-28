@@ -12,6 +12,7 @@ Public Sub _new()
 
   Dim $imp, $lp As String
 
+  If Exist("/usr/share/Laurux3/Laurux3.gambas") Then Button2.Visible = False
   SetObservers(Me, Me)
   Try Logo.value = Settings["/logo"]
   If Logo.Value Then
