@@ -110,7 +110,7 @@ Public Sub Lines2(PosY As String)
 
   Me.SetXY(7 * $xratio, PosY * $yratio)
   Me.SetLineWidth(0.1)
-  Me.Line(0, PosY * $yratio, 130 * $xratio, PosY * $yratio)
+  Me.Line(0, PosY * $yratio, 110 * $xratio, PosY * $yratio)
 
 End
 

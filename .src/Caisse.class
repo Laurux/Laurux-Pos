@@ -6823,6 +6823,13 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         pdf.Lines2(Posy)
         Tkz = 0
       Endif
+      rTkx = Utils.db.Exec(" select * from Fiches_Caisses where code = &1", Ncaisse)
+      'pdf.Level2("Total période ", Format$(Val(.cpoint(rTkx!fndtotp)), "0.00"), "", Posy)
+      ' Posy += 5
+      ' pdf.Lines2(Posy)
+      pdf.Level2("Total général ", Format$(Val(.cpoint(rTkx!fndtotg)), "0.00"), "", Posy)
+      Posy += 5
+      pdf.Lines2(Posy)
       rTkx = Utils.db.Exec(" select * from " & Tabx & " order by fam")
       sqte = "0,00"
       If rTkx.Available Then
