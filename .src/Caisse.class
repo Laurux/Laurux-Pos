@@ -2186,6 +2186,7 @@ Public Sub ColTka_Click()
   ColTka.clear
   RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Caisse, Numtk)
   Client2 = Rtck!client
+  $Cli = Rtck!nom
 
   Ent_tk(numtk)
 
@@ -5675,13 +5676,15 @@ Public Sub Enrg_Tk(Supprime As Boolean)
     If Not IsNull($Nomd) Then $Cli = $Nomd
 
     'On enregistre dans la table Ent_Ticket
-    Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte2, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, scartef, ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, $Cli, ssuppr, bretro)
+    Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte2, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, Left(scartef, 13), ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, Left$($Cli, 35), ssuppr, bretro)
     Sha1Calc.CalcSha1(Ncaisse, numero_tk)
-    'On enregistre le total
-    rResult = Utils.db.Exec(" select * from Fiches_Caisses where code = &1", Ncaisse)
-    Totp = rResult!fndtotp + Val(.cpoint(smttc))
-    Totg = rResult!fndtotg + Val(.cpoint(smttc))
-    Utils.db.Exec("UPdate Fiches_Caisses  SET fndtotp = &1, fndtotg = &2 WHERE code = &3", Totp, Totg, Ncaisse)
+    'On enregistre le total si ticket non supprimé, ni en attente, ni en client compte (BL n'est pas un encaissement)
+    If iAttente = 0 And Supprime = False And clicompte = 0 Then
+      rResult = Utils.db.Exec(" select * from Fiches_Caisses where code = &1", Ncaisse)
+      Totp = rResult!fndtotp + Val(.cpoint(smttc))
+      Totg = rResult!fndtotg + Val(.cpoint(smttc))
+      Utils.db.Exec("UPdate Fiches_Caisses  SET fndtotp = &1, fndtotg = &2 WHERE code = &3", Totp, Totg, Ncaisse)
+    Endif
     If scavoir = "Z" Then
       rResult = Utils.db.Exec(" select * from " & Cbase.Table("TabAvoirs") & " where ntk = &1", Numavoir)
       If rResult.Available Then mntAv = rResult!montant
@@ -6799,9 +6802,10 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         pdf.Lines2(Posy)
         Tkz = 0
       Endif
-      rttva = Utils.db.Exec("select * from  " & Tabl & " WHERE left(intitule,3) = &1 order by intitule", "TVA")
+      'Recapitulatif TVA sur les ticket avec un encaissement
+      rttva = Utils.db.Exec("select * from  " & Tabl & " as l inner join " & Tabe & " as e on e.numero = l.numero WHERE left(intitule,3) = &1 and e.type = &2 and e.suppr = &3 order by intitule", "TVA", 0, 0)
       If rttva.Available Then
-        pdf.Level2("Recapitulatif TVA", "", "", Posy)
+        pdf.Level2("Recapitulatif TVA (sur encaissement)", "", "", Posy)
         Posy += 5
         tintitule = rttva!intitule
         Repeat
@@ -6824,10 +6828,10 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         Tkz = 0
       Endif
       rTkx = Utils.db.Exec(" select * from Fiches_Caisses where code = &1", Ncaisse)
-      'pdf.Level2("Total période ", Format$(Val(.cpoint(rTkx!fndtotp)), "0.00"), "", Posy)
+      'pdf.Level2("Total période (sur encaissement)", Format$(Val(.cpoint(rTkx!fndtotp)), "0.00"), "", Posy)
       ' Posy += 5
       ' pdf.Lines2(Posy)
-      pdf.Level2("Total général ", Format$(Val(.cpoint(rTkx!fndtotg)), "0.00"), "", Posy)
+      pdf.Level2("Total général (sur encaissement)", Format$(Val(.cpoint(rTkx!fndtotg)), "0.00"), "", Posy)
       Posy += 5
       pdf.Lines2(Posy)
       rTkx = Utils.db.Exec(" select * from " & Tabx & " order by fam")
@@ -6935,10 +6939,10 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.newPage
       Posy = 5
       Y2 = 5
-      pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+      pdf.Entete("Récapitulatif des tickets encaissés du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
       Posy += 10
       Y2 += 10
-      rTkx = Utils.db.Exec(" select * from " & Tabe & " where statut = &1 and suppr = &2 or statut = &1 and isnull(suppr) order by numero", 0, False, 1)
+      rTkx = Utils.db.Exec(" select * from " & Tabe & " where type = 0 and ( statut = &1 and suppr = &2 or statut = &1 and isnull(suppr) ) order by numero", 0, False, 1)
       If rTkx.Available Then
         Repeat
           Inc NBT
@@ -6954,25 +6958,110 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
             Posy = 5
             Y2 = 5
             If Ba4 Then
-              pdf.Entete("Récapitulatif des tickets du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+              pdf.Entete("Récapitulatif des tickets encaissés du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
               Posy += 10
               Y2 += 10
             Endif
           Endif
           If Ba4 Then
             If Nbt < 2 Then
-              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & " " & rTkx!nom, X2, Posy, 1, "")
+              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date, X2, Posy, 1, "")
             Else
-              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & rTkx!nom, X2, Y2, 1, "")
+              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date, X2, Y2, 1, "")
             Endif
           Else
-            pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date & " " & rTkx!nom, X2, Posy, 1, "")
+            pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date, X2, Posy, 1, "")
           Endif
           If Ba4 Then
             If Nbt = 1 Then Posy += 8
             If Nbt = 2 Then Y2 += 8
           Else
             Posy += 8
+          Endif
+          rTkl = Utils.db.Exec(" select * from " & Tabl & " where numero = &1 order by LInd", rTkx!numero)
+          If rTkl.Available Then
+            Repeat
+              $code = rTkl!code & String$(15 - Len(rTkl!code), " ")
+              $intitule = rTkl!intitule & String$(40 - (Len(rTkl!intitule) - 10), " ")
+              If Ba4 Then
+                If Nbt < 2 Then
+                  pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, PosY, "")
+                Else
+                  pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, Y2, "")
+                Endif
+              Else
+                pdf.Level1($code, $intitule, rTkl!montant, rTkl!qte, X2, PosY, "")
+              Endif
+              If Ba4 Then
+                If Nbt = 1 Then Posy += 3
+                If Nbt = 2 Then Y2 += 3
+              Else
+                Posy += 3
+              Endif
+              If Posy >= 280 Or If Y2 >= 280 Then
+                pdf.Baspage()
+                pdf.newPage
+                Posy = 5
+                Y2 = 5
+                If Ba4 Then
+                  pdf.Entete("Récapitulatif des tickets encaissés du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+                  Posy += 10
+                  Y2 += 10
+                Endif
+              Endif
+            Until rTkl.MoveNext()
+          Endif
+          If Nbt = 2 Then nbt = 0
+        Until rTkx.MoveNext()
+      Endif
+      nbt = 0
+      pdf.Baspage()
+      'On imprime les tickets client compte.
+      pdf.Baspage()
+      pdf.newPage
+      Posy = 5
+      Y2 = 5
+      pdf.Entete("Récapitulatif des tickets des clients en compte du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+      Posy += 10
+      Y2 += 10
+      rTkx = Utils.db.Exec(" select * from " & Tabe & " where type = 1 and ( statut = &1 and suppr = &2 or statut = &1 and isnull(suppr) ) order by numero", 0, False, 1)
+      If rTkx.Available Then
+        Repeat
+          Inc NBT
+          If Nbt = 2 Then
+            X2 = 106
+          Else
+            X2 = 2
+          Endif
+          If Not Ba4 Then X2 = 2
+          If Posy >= 278 Or If Y2 >= 278 Then
+            pdf.Baspage()
+            pdf.newPage
+            Posy = 5
+            Y2 = 5
+            If Ba4 Then
+              pdf.Entete("Récapitulatif des tickets des clients en compte du " & Format$(Now, "dd.mm.yyyy"), ipos, Posy, 1, Ba4)
+              Posy += 10
+              Y2 += 10
+            Endif
+          Endif
+          If Ba4 Then
+            If Nbt < 2 Then
+              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date, X2, Posy, 1, "")
+              pdf.Entete(rTkx!client & " " & rTkx!nom, X2, Posy + 4, 1, "")
+            Else
+              pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date, X2, Y2, 1, "")
+              pdf.Entete(rTkx!client & " " & rTkx!nom, X2, Y2 + 4, 1, "")
+            Endif
+          Else
+            pdf.Entete("Ticket numéro " & rTkx!numero & "     " & rTkx!date, X2, Posy, 1, "")
+            pdf.Entete(rTkx!client & " " & rTkx!nom, X2, Posy + 4, 1, "")
+          Endif
+          If Ba4 Then
+            If Nbt = 1 Then Posy += 10
+            If Nbt = 2 Then Y2 += 10
+          Else
+            Posy += 10
           Endif
           rTkl = Utils.db.Exec(" select * from " & Tabl & " where numero = &1 order by LInd", rTkx!numero)
           If rTkl.Available Then
@@ -7010,7 +7099,6 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
           If Nbt = 2 Then nbt = 0
         Until rTkx.MoveNext()
       Endif
-      pdf.Baspage()
       Dec Application.Busy
       pdf.Output(Filename, False)
       If Org Then DupliZ(Filename)
@@ -7677,6 +7765,7 @@ Public Sub Recup_Client()
   Cliburdist = Clitab!cli_ville
   Bdc.Text = "Bon de caisse " & Clitab!cli_nom & " " & Clitab!cli_pnm & " (solde = " & Format$((solde + soldebl), "0.00") & ")"
   Clicompte = 1
+  $Cli = Clinom & " " & Clitab!cli_pnm
   Cart.SetFocus
   Zone = "Article"
 
