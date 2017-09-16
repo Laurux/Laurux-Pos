@@ -5712,7 +5712,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       stype = LigTk.Item[5]
       If stype = "A" Or stype = "S" Then
         smontantfam = smontant
-        smontantFam = Val(Utils.cpoint(smontantFam)) * Val(Utils.cpoint(sqte))
+        smontantFam = Val(Utils.cpoint(smontantFam)) * Abs(Val(Utils.cpoint(sqte)))
         rFam = Utils.db.Exec(" select * from " & Cbase.Table("TabArt") & " where art_code = &1", scode)
         Fam = rFam!art_fam
       Else
