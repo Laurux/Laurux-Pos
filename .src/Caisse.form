@@ -48,9 +48,6 @@
           Picture = Picture["Icones/exit.png"]
         }
       }
-      { Panel8 Panel
-        MoveScaled(1,17,10,1)
-      }
       { Panel3 Panel
         MoveScaled(0,16,65,40.5)
         Background = Color.Background
@@ -159,6 +156,9 @@
           MoveScaled(17,33,14,7)
           Text = ("F2\nAppel produit")
         }
+      }
+      { Panel8 Panel
+        MoveScaled(1,17,10,1)
       }
     }
     { TextLabel8 TextLabel
@@ -1211,58 +1211,6 @@
         Tag = "8"
         ToolTip = ("Imprime une facturette")
         Text = ("Facturette")
-      }
-    }
-    { Panel5 Panel
-      MoveScaled(6,1,9,8)
-      Visible = False
-      Background = Color.Background
-      Border = Border.Raised
-      { TextBox1 TextBox
-        MoveScaled(5,12,23,3)
-        Font = Font["-1"]
-      }
-      { ComboBox1 ComboBox
-        MoveScaled(37,12,25,3)
-        Font = Font["-1"]
-        List = [("Espèces"), ("Chèque"), ("Carte")]
-      }
-      { Label5 Label
-        MoveScaled(4,9,24,2)
-        Font = Font["-1"]
-        Text = ("Numéro ticket")
-        Alignment = Align.Center
-      }
-      { Label6 Label
-        MoveScaled(37,9,25,2)
-        Font = Font["-1"]
-        Text = ("Mode de règlement")
-        Alignment = Align.Center
-      }
-      { Button42 Button
-        MoveScaled(48,20,14,4)
-        Font = Font["Bold,-1"]
-        Text = ("Quitter")
-        Picture = Picture["Icones/exit.png"]
-      }
-      { Button44 Button
-        MoveScaled(30,20,17,4)
-        Font = Font["Bold,-1"]
-        Text = ("Enregistrer")
-        Picture = Picture["Icones/filesave.png"]
-      }
-      { ToggleButton5 ToggleButton
-        MoveScaled(28,11.625,3.625,3.625)
-        Picture = Picture["Icones/next_frame.png"]
-      }
-      { Label7 Label
-        MoveScaled(1,1,64,7)
-        Text = ("Modification du mode de règlement.\nAttention ! Ne pas utiliser si plusieurs \nréglements identiques (ex : 2 chèques).")
-        Alignment = Align.Center
-      }
-      { Lister ColumnView
-        MoveScaled(6,16,56,29)
-        Visible = False
       }
     }
   }
