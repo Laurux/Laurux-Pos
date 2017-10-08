@@ -3,23 +3,88 @@
 Private hlb As Label
 Private hpb As ProgressBar
 
-Public Sub Verif_Version()
 
-  If Val(Right$(Settings["/dbase/Version"], 2)) <= 23 Then
-    Maj()
-    Settings["/dbase/Version"] = "Laurux.Pos V3.24"
-    Fmenu.Frame1.text = "Laurux.Pos V3.24"
-    Settings.save
-    Try Kill User.home & "/Laurux.Pos.lock"
-  Else
-    Message.Info("Aucune mise à jour n'est a faire !")
+Public Sub Verif_Maj()
+
+  Dim txt As String
+  Dim $hform As Form
+  Dim hLabel As Label
+  Dim VersionWeb As String
+  Dim VersionWebFull As String
+  Dim VersionWebArr As String[]
+  Dim VersionAppArr As String[]
+  Dim VersionApp As String
+  
+  VersionApp = Application.Version
+  VersionAppArr = Split(VersionApp, ".")
+  VersionApp = VersionAppArr[0] & "." & VersionAppArr[1]
+
+  $hForm = New Form As "Form"
+  $hform.Width = 600
+  $hform.Height = 400
+  $hForm.Border = Border.Etched
+  $hform.Title = "Mise à jour de Laurux.Pos"
+  hLabel = New Label($hForm)
+  hLabel.Text = "La mise à jour prend un peu de temps.\n Veuillez patienter SVP."
+  hLabel.Width = 600
+  hLabel.Alignment = Align.center
+  hLabel.Height = 40
+  hLabel.Y = 12
+  'hLabel.Border = Border.Plain
+  hlb = New Label($hForm)
+  hlb.Width = 600
+  hlb.Height = 20
+  hlb.Y = 70
+  hlb.Alignment = Align.center
+  hpb = New ProgressBar($hForm)
+  hpb.Width = 400
+  hpb.Height = 20
+  hpb.X = 100
+  hpb.Y = 100
+  $hForm.Move($hForm.ScreenX, $hForm.ScreenY, 600, 200)
+  $hform.Center
+  
+  ' If Not Exist(User.home & "/tmp") Then Mkdir User.home & "/tmp"
+  If Exist(User.Home & "/tmp/pb1.txt") Then Kill User.Home & "/tmp/pb1.txt"
+  If Exist(User.Home & "/tmp/ping.txt") Then Kill User.Home & "/tmp/ping.txt"
+  If Exist(User.Home & "/tmp/version_pos.txt") Then Kill User.Home & "/tmp/version_pos.txt"
+  If Exist(User.Home & "/Laurux.Pos.tar.gz") Then Kill User.Home & "/Laurux.Pos.tar.gz"
+  Shell "ping -c 1 www.laurux.fr >" & User.Home & "/tmp/ping.txt 2>&1" Wait
+  If Exist(User.Home & "/tmp/ping.txt") Then
+    txt = Trim$(File.Load(User.Home & "/tmp/ping.txt"))
   Endif
-  Settings.Save
-  Settings.Reload
+  If InStr(txt, "cpanel1") <> 0 Then
+    Shell "wget -q" & " " & "http://www.laurux.fr/file/version_pos.txt" & " -P " & User.Home & "/tmp" Wait
+    If Exist(User.Home & "/tmp/version_pos.txt") Then
+      VersionWebFull = File.Load(User.Home & "/tmp/version_pos.txt")
+      VersionWeb = Trim$(Split(VersionWebFull, "\n")[0])
+      VersionWeb = Replace(VersionWeb, "Laurux.Pos V", "")
+      VersionWebArr = Split(VersionWeb, ".")
+      VersionWeb = VersionWebArr[0] & "." & VersionWebArr[1]
+      If Val(VersionWebArr[1]) > Val(VersionAppArr[1]) Then
+        Maj(VersionWebFull)
+      Else
+        If Message.Question("Aucune mise à jour n'est a faire !", "OK", "Forcer") = 2 Then
+          Maj(VersionWebFull)
+        Endif
+      Endif
+    Else
+      $hform.Mouse = Mouse.Default
+      Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
+    Endif
+  Else
+    $hform.Mouse = Mouse.Default
+    Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
+  Endif
+Catch
+  Music.Load("son/warning.ogg")
+  Music.Play
+  message.Error(Error.Text & " " & Error.where)
 
 End
 
-Public Sub Maj()
+
+Public Sub Maj(FullVersion As String)
 
   Dim $hform As Form
   Dim hLabel As Label
@@ -48,11 +113,11 @@ Public Sub Maj()
   hpb.Y = 100
   $hForm.Move($hForm.ScreenX, $hForm.ScreenY, 600, 200)
   $hform.Center
-  If Exist(User.Home & "/version.txt") Then Kill User.Home & "/version.txt"
+  If Exist(User.Home & "/version_pos.txt") Then Kill User.Home & "/version_pos.txt"
   If Exist(User.Home & "/Laurux.Pos.tar.gz") Then Kill User.Home & "/Laurux.Pos.tar.gz"
-  Shell "wget -q" & " " & "http://www.laurux.fr/file/version.txt" & " -P " & User.Home Wait
-  If Exist(User.Home & "/version.txt") Then
-    If Message.Question("Attention ! Vous allez mettre à jour votre logiciel Laurux.Pos\n Vous devez être connecté au réseau internet. \n Etes-vous d'accord ?", "Oui", "Non") = "1" Then
+  Shell "wget -q" & " " & "http://www.laurux.fr/file/version_pos.txt" & " -P " & User.Home Wait
+  If Exist(User.Home & "/version_pos.txt") Then
+    If Message.Question("Attention ! Vous allez mettre à jour votre logiciel Laurux.Pos\n" & FullVersion & "\nVous devez être connecté au réseau internet. \n Etes-vous d'accord ?", "Oui", "Non") = "1" Then
       Try Move Application.Path & "/Laurux.Pos.gambas" To Application.Path & "/Laurux.Pos.old.gambas"
       Shell "cd " & User.Home
       $hForm.Show
@@ -63,10 +128,10 @@ Public Sub Maj()
       Shell "cd " & User.Home & " " & "; tar xvfz " & User.Home & "/Laurux.Pos.tar.gz" Wait
       Wait 2
       Kill User.Home & "/Laurux.Pos.tar.gz"
-      Kill User.Home & "/version.txt"
+      Kill User.Home & "/version_pos.txt"
       $hform.Mouse = Mouse.Default
       $hform.Close
-      Message.Warning("Mise à jour terminée ! Veuillez relancer Laurux3.Pos SVP !")
+      Message.Warning("Mise à jour terminée ! Veuillez relancer Laurux.Pos SVP !")
     Endif
   Else
     $hform.Mouse = Mouse.Default
