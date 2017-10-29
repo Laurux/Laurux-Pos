@@ -121,14 +121,14 @@ Public Sub Button1_Click()
   Dim b As Integer = 1
   Dim VersionAppArr As String[]
   Dim VersionApp As String
-  
+
   VersionApp = Application.Version
   VersionAppArr = Split(VersionApp, ".")
   VersionApp = VersionAppArr[0] & "." & VersionAppArr[1]
-  
+
   Try rParams = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabParam"))
   If Not Error Then
-    If (Val(VersionAppArr[1]) < Val(Split(rParams!version_pos, ".")[1])) Then 
+    If (Val(VersionAppArr[1]) < Val(Split(rParams!version_pos, ".")[1])) Then
       Message.Error("Votre Logiciel de caisse\n\tVersion " & Version & "\nn'est pas compatible avec la version du logiciel de gestion\n\tVersion " & rParams!version & ".\nVotre logiciel de caisse doit etre mis à jour.\n\tVersion attendue " & rParams!version_pos, "Sortir")
       Quit
     Else

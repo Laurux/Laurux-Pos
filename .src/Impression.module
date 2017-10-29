@@ -55,11 +55,11 @@ Public Sub Facture(Fic As String, nb As Integer) As String
     Shell $Exec & " " & Fic
   Else
     If $Exec = "lpr" Then
-      If Not IsNull(Settings["/Cimp"]) Then
-        Shell "lpr -P " & Settings["/Cimp"] & " -# " & nb & " " & Fic Wait
-      Else
-        Shell $Exec & " -# " & nb & " " & Fic Wait
-      Endif
+      ' If Not IsNull(Settings["/Cimp"]) Then
+      '  Shell "lpr -P " & Settings["/Cimp"] & " -# " & nb & " " & Fic Wait
+      'Else
+      Shell $Exec & " -# " & nb & " " & Fic Wait
+      '  Endif
     Endif
   Endif
 
