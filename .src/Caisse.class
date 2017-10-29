@@ -157,9 +157,6 @@ Private Touche_P As String
 Private BA6X As Socket
 Private bAffUSB As Boolean
 Private $depot As String
-Private $reg As String
-Private $nom As String
-Private ireg As Float
 Private bretro As Boolean = False
 Private bmodifregl As Boolean = False
 Private Val_retro As String ' variable pour coeff retrocession
@@ -447,7 +444,7 @@ Public Sub Ent_tk(numtk As String)
   Endif
 
   Ecole = rResult!ecole
-  If Imprimante = "DéfautA4" Then
+  If Imprimante = "DéfautA4" Or If Settings["/choiximp2"] Then
     Entete.Text = Entete.Text & "Ticket No " & numero_tk & Space$(40) & datetk '& "\n"
   Else
     If Imprimante = "Défaut80" Then
@@ -2176,7 +2173,6 @@ Public Sub ColTka_Click()
   Dim Mtk As String
   Dim RTck As Result
   Dim Tab As String
-  Dim Tab2 As String
   Dim heuretk As String
   Dim Clitab As Result
   Dim Caisse As String
@@ -5514,7 +5510,6 @@ End
 '*********************************************
 Public Sub Enrg_Tk(Supprime As Boolean)
 
-  Dim Rcai As Result
   Dim rLastTk As Result
   Dim rFam As Result
   Dim Fam As String
@@ -5536,7 +5531,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Dim smcarte, smcarte2 As String = "0"
   Dim nmcarte As String
   Dim scheque As String
-  Dim smcheque, smcheque2, tcheque As String = "0"
+  Dim smcheque, tcheque As String = "0"
   Dim nmcheque As String
   Dim scredit As String
   Dim smcredit As String
@@ -6201,7 +6196,7 @@ Public Sub button29_Click()
   If Not IsNull(Nmc4.Text) Then
     If Settings["/histocli"] Then Enrg_Clientd()
     Ent_tk2()
-    If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
+    If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Or If Settings["/choiximp2"] Then
       Defaut_Facture()
     Else
       Serial_Facture()
@@ -6327,7 +6322,7 @@ Public Sub Defaut_Facture()
 
   Tabe = "Fiches_LigTickets" & Ncaisse
   Filename = User.home & "/Ticket.pdf"
-  If Imprimante = "DéfautA4" Then
+  If Imprimante = "DéfautA4" Or If Settings["/choiximp2"] Then
     pdf = New Cfacture("P", "mm", "A4")
     Ba4 = True
   Else
@@ -7488,7 +7483,6 @@ End
 Public Sub Ajout_Reg_Bl(numtick As String) As Boolean
 
   Dim rBl As Result
-  Dim numl As Integer
   Dim Blexists As Boolean = False
 
   'Remove all previously created BL lines
@@ -8021,8 +8015,6 @@ Public Sub ColumnView1_Activate()
 End
 
 Public Sub ColumnView1_Delete()
-
-  Dim numl As Integer
 
   If ColumnView1.count > 0 Then
     If message.Question("Voulez-vous supprimer les lignes de règlements ?", "Oui", "Non") = 1 Then
