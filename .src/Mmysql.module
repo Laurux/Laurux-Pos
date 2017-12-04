@@ -23,7 +23,7 @@ Public Function Process_List(lg As Integer) As Integer
   Dim sline As String
   Dim txterror As String
 
-  Shell "mysqladmin -h " & Settings["/dbase/Host"] & " -u " & Utils.db.Login & " -p" & Utils.db.Password & " processlist >" & User.home & "/tmp/resultat 2>&1" Wait
+  Shell "mysqladmin -h " & Start.LocalSettings["/dbase/Host"] & " -u " & Utils.db.Login & " -p" & Utils.db.Password & " processlist >" & User.home & "/tmp/resultat 2>&1" Wait
   If Exist(User.home & "/tmp/resultat") Then txterror = File.Load(User.home & "/tmp/resultat")
   For Each sline In Split(txterror, "\n")
     Inc lg

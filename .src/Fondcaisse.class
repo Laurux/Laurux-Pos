@@ -15,7 +15,7 @@ Public Sub _new(org As String)
   Dim Tab As String
 
   SetObservers(Me, Me)
-  $cai = Settings["/Cai" & "/Ncai"]
+  $cai = Start.LocalSettings["/Cai" & "/Ncai"]
   Ncaisse = Left$($cai, 1)
   $vdr = Ouverture.Rvdr($vdr)
   Origine = org

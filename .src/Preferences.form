@@ -4,7 +4,7 @@
   MoveScaled(0,0,94,93)
   Border = False
   { TabStrip1 TabStrip
-    MoveScaled(0,1,94,84)
+    MoveScaled(0,1,94,82)
     Count = 6
     Index = 0
     Text = ("Environnement")
@@ -265,5 +265,9 @@
     ToolTip = ("Lance le programme de configuration de la base de données.")
     Text = Shortcut(("Config Mysql"), "C")
     Picture = Picture["icon:/22/exec"]
+  }
+  { TextLabel3 TextLabel
+    MoveScaled(5,83,83,3)
+    Alignment = Align.BottomLeft
   }
 }

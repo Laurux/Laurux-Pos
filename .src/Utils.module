@@ -62,25 +62,25 @@ End
 Public Sub glb()
 
   '# -- valeurs de connexion communes avec ou sans tunnel
-  db.type = Settings["/dbase/type"]
-  db.Name = Settings["/dbase/Name"]
-  db.Login = Settings["/dbase/Login"]
-  db.Password = hexdblKey.crypt("de", Settings["/dbase/Password"], "Laurux")
+  db.type = Start.LocalSettings["/dbase/type"]
+  db.Name = Start.LocalSettings["/dbase/Name"]
+  db.Login = Start.LocalSettings["/dbase/Login"]
+  db.Password = hexdblKey.crypt("de", Start.LocalSettings["/dbase/Password"], "Laurux")
   '# -- valeurs dépendant du tunnel
-  If Settings["/dbase/Con-ssh"] Then
+  If Start.LocalSettings["/dbase/Con-ssh"] Then
     '# -- Valeurs de connexion via tunnel
     db.Host = "127.0.0.1"
-    db.Port = Settings["/dbase/ssh/Portlocal"]
+    db.Port = Start.LocalSettings["/dbase/ssh/Portlocal"]
     ' on définit des variables pour l'établissement du tunnel ssh
-    MysqlServeur = Settings["/dbase/Host"]
-    RemotePort = Settings["/dbase/Port"]
-    SshPort = Settings["/dbase/ssh/Portssh"]
-    SshHost = Settings["/dbase/ssh/Hostssh"]
-    SshUser = Settings["/dbase/ssh/Login"]
+    MysqlServeur = Start.LocalSettings["/dbase/Host"]
+    RemotePort = Start.LocalSettings["/dbase/Port"]
+    SshPort = Start.LocalSettings["/dbase/ssh/Portssh"]
+    SshHost = Start.LocalSettings["/dbase/ssh/Hostssh"]
+    SshUser = Start.LocalSettings["/dbase/ssh/Login"]
   Else
     '# -- Valeurs de connexion sans tunnel
-    db.Host = Settings["/dbase/Host"]
-    db.Port = Settings["/dbase/Port"]
+    db.Host = Start.LocalSettings["/dbase/Host"]
+    db.Port = Start.LocalSettings["/dbase/Port"]
   Endif
 
 End
@@ -260,7 +260,7 @@ Public Function Cdate_calc(Ye As String, Mo As String, Da As String) As Date
   Dim Dtn As Date
   Dim son As Integer
 
-  son = Settings["/son"]
+  son = Start.LocalSettings["/son"]
   Music.Load("son/warning.ogg")
   Try dtn = Date(ye, mo, da)
   If Error Then
@@ -333,10 +333,10 @@ Public Sub SetEditColor(oObj As Object, objLast As Control)
   Dim CoulZns As Integer ' Variable pour la couleur du background des zones de saisie
   Dim CoulFoc As Integer ' Variable pour la couleur du focus
 
-  If Settings["/Soc" & Start.Soc & "/Coul_fen"] = 0
-    Frmt = FColr(Settings["/Coul/Znss"])
+  If Start.LocalSettings["/Soc" & Start.Soc & "/Coul_fen"] = 0
+    Frmt = FColr(Start.LocalSettings["/Coul/Znss"])
     CoulZns = Val(Frmt[0])
-    Frmt = FColr(Settings["/Coul/Focus"])
+    Frmt = FColr(Start.LocalSettings["/Coul/Focus"])
     CoulFoc = Val(Frmt[0])
   Else
     CoulFoc = &HAAFF7F&
@@ -557,14 +557,14 @@ Public Sub Observers(hCont As Container)
   Dim hCtrl As Object
   Dim Frmt As String[]
 
-  If Settings["/Soc" & Start.Soc & "/Coul_fen"] = 0
-    Frmt = Utils.FColr(Settings["/Coul/Fnets"])
+  If Start.LocalSettings["/Soc" & Start.Soc & "/Coul_fen"] = 0
+    Frmt = Utils.FColr(Start.LocalSettings["/Coul/Fnets"])
     CoulFn = Val(Frmt[0])
-    Frmt = Utils.FColr(Settings["/Coul/Btns"])
+    Frmt = Utils.FColr(Start.LocalSettings["/Coul/Btns"])
     Try CoulBtn = Val(Frmt[0])
-    Frmt = Utils.FColr(Settings["/Coul/Znss"])
+    Frmt = Utils.FColr(Start.LocalSettings["/Coul/Znss"])
     CoulZns = Val(Frmt[0])
-    Frmt = Utils.FColr(Settings["/Coul/Znaff"])
+    Frmt = Utils.FColr(Start.LocalSettings["/Coul/Znaff"])
     CoulZnaf = Val(Frmt[0])
     For Each hCtrl In hCont.Children
       If hCtrl Is Button Then hCtrl.Background = CoulBtn
@@ -596,8 +596,8 @@ Public Sub ObsLstf(TBox As TextBox)
   Dim CoulZns As Integer ' Variable pour la couleur du background des zones de saisie
   Dim Frmt As String[]
 
-  If Settings["/Soc" & Start.Soc & "/Coul_fen"] = 0
-    Frmt = Utils.FColr(Settings["/Coul/Znss"])
+  If Start.LocalSettings["/Soc" & Start.Soc & "/Coul_fen"] = 0
+    Frmt = Utils.FColr(Start.LocalSettings["/Coul/Znss"])
     CoulZns = Val(Frmt[0])
     If TBox.readonly = False Then
       TBox.Background = CoulZns
@@ -650,7 +650,7 @@ Public Function Coulfd() As String[]
 
   Dim Coulfond As String[]
 
-  Coulfond = Utils.FColr(Settings["/Coul/Others"])
+  Coulfond = Utils.FColr(Start.LocalSettings["/Coul/Others"])
   Return Coulfond
 
 End

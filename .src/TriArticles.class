@@ -13,9 +13,9 @@ Private lg As Integer
 '************************************** Gestion des articles *****************************************************
 Public Sub _new()
   
+  Utils.Observers(Me)
   Origine = Caisse.origine
-  If Settings["/tactile"] Then Fermer.Visible = True
-  If Settings["/Soc" & Start.Soc & "/Coul_fen"] Then Utils.Observers(Me)
+  If Start.LocalSettings["/tactile"] Then Fermer.Visible = True
   colart.Rows.Height = 22
   lg = Int(Colart.height / colart.Rows.Height) - 1
   Me.Center
@@ -53,7 +53,7 @@ Public Sub CO_Click()
   Else
     Deb5()
   Endif
-  'If Settings["/tactile2"] Then MForm.Showmodal() 
+  'If Start.LocalSettings["/tactile2"] Then MForm.Showmodal() 
   
 End
 
@@ -156,7 +156,7 @@ Public Sub It_Click()
   Else
     Deb5()
   Endif
-  'If Settings["/tactile2"] Then MForm.Showmodal()
+  'If Start.LocalSettings["/tactile2"] Then MForm.Showmodal()
   
 End
 
@@ -754,7 +754,7 @@ Public Sub CB2_LostFocus()
   Dim CoulZns As Integer ' Variable pour la couleur du background des zones de saisie
   Dim Frmt As New String[]
   
-  Frmt = Utils.FColr(Settings["/Coul/Znss"])
+  Frmt = Utils.FColr(Start.LocalSettings["/Coul/Znss"])
   CoulZns = Val(Frmt[0])
   CB2.Background = CoulZns
   

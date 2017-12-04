@@ -18,25 +18,27 @@ Public Sub _new()
   Dim titre As String
   Dim $con_ok As Boolean = True ' flag d'autorisation de connexion
 
+  Utils.Observers(Me)
   Me.Center
   Me.Width = Screens[0].width
   Me.Height = Screens[0].Height
-  Frame1.Text = "Laurux3-Pos. Version " & Application.Version
+  
+  AppTitre.Text = Application.Name & " v" & Application.Version
+  TextLabel2.Text = Left$(Start.version_sha1, 7) & " (branche: " & Start.version_branch & ")"
   titre = fmenu.text
-  Try intitule = Settings["/intitule"]
+  Try intitule = Start.LocalSettings["/intitule"]
   'Fmenu.text = titre & " ( Société  " " " & Right$(Soc, 2) & " - " & intitule & ") "
-  Try Version = Settings["/dbase/Version"]
-  If Settings["/Cnomade"] Then
+  Try Version = Start.LocalSettings["/dbase/Version"]
+  If Start.LocalSettings["/Cnomade"] Then
     Button3.Text = "&Export vers csv"
     Button4.Visible = True
   Else
     Button3.Text = "&Préférences"
     Button3.Tooltip = ""
     Button4.Visible = False
-    Label2.visible = False
   Endif
   SetObservers(Me, Me)
-  Try Soc = Settings["/Soc"]
+  Try Soc = Start.LocalSettings["/Soc"]
   TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
 
   '# -- initialisation des informations SQL
@@ -45,7 +47,7 @@ Public Sub _new()
 
   '# -- montage éventuel du tunnel ssh
   '* MG - 07 janvier 2010
-  If Settings["/dbase/Con-ssh"] Then
+  If Start.LocalSettings["/dbase/Con-ssh"] Then
     If Not Utils.monteTunnel() Then
       $con_ok = False
     Endif
@@ -190,7 +192,7 @@ Public Sub form_close()
 
   Dim Cai As Result
 
-  Ncaisse = Left$(Settings["/Cai" & "/Ncai"], 1)
+  Ncaisse = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
   If Not IsNull(Ncaisse) Then
     Cai = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
     If Start.son Then
@@ -201,28 +203,28 @@ Public Sub form_close()
       If Efface = 1 Then
         Try Kill User.home & "/" & "Caisse" & Ncaisse & ".lock"
         Utils.db.Exec("UPdate  " & Cbase.Table("TabCaisses") & "  SET dtefm = &1, connecte = &2 WHERE code = &3", utils.Cdate_Dbase(Format$(Now, "dd.mm.yyyy")), 0, Ncaisse)
-        Settings["/Cai" & "/Ncai"] = ""
-        Settings.Save
+        Start.LocalSettings["/Cai" & "/Ncai"] = ""
+        Start.LocalSettings.Save
         If Start.son Then
           Music.Play
         Endif
         Message.Info("La caisse numéro " & Ncaisse & " est déconnectée ! Au revoir.")
       Endif
-      Try Kill User.home & "/Laurux.Pos.lock"
+      Try Kill User.home & "/" & Application.Name & ".lock"
     Else
       Stop Event
     Endif
   Else
-    Try Kill User.home & "/Laurux.Pos.lock"
+    Try Kill User.home & "/" & Application.Name & ".lock"
   Endif
 Catch
-  Try Kill User.home & "/Laurux.Pos.lock"
+  Try Kill User.home & "/" & Application.Name & ".lock"
 
 End
 
 Public Sub Button10_Click()
 
-  If IsNull(Settings["/Cai" & "/Ncai"]) Then
+  If IsNull(Start.LocalSettings["/Cai" & "/Ncai"]) Then
     If Start.son Then
       Music.Play
     Endif
@@ -244,7 +246,7 @@ End
 
 Public Sub Button11_Click()
 
-  If IsNull(Settings["/Cai" & "/Ncai"]) Then
+  If IsNull(Start.LocalSettings["/Cai" & "/Ncai"]) Then
     If Start.son Then
       Music.Play
     Endif
@@ -293,15 +295,15 @@ End
 
 Public Sub mdp_admin2()
 
-  If Settings["/admin2"] = True Then
+  If Start.LocalSettings["/admin2"] = True Then
     Mdp.Clear
     Frame8.visible = True
     Mdp.SetFocus
   Else
     Preferences.ShowModal()
-    Try intitule = Settings["/intitule"]
-    Try Version = Settings["/dbase/Version"]
-    Try Soc = Settings["/Soc"]
+    Try intitule = Start.LocalSettings["/intitule"]
+    Try Version = Start.LocalSettings["/dbase/Version"]
+    Try Soc = Start.LocalSettings["/Soc"]
     TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
   Endif
 
@@ -412,7 +414,7 @@ End
 
 Public Sub Button3_Click()
 
-  If Settings["/Cnomade"] Then
+  If Start.LocalSettings["/Cnomade"] Then
     Export.ShowModal()
   Else
     mdp_admin2()

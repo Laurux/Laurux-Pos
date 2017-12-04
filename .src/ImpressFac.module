@@ -11,8 +11,8 @@ Public Sub Facture(Fic As String, nb As Integer) As String
     Shell $Exec & " " & Fic
   Else
     If $Exec = "lpr" Then
-      If Not IsNull(Settings["/Cimp"]) Then
-        Shell "lpr -P " & Settings["/Cimp"] & " -# " & nb & " " & Fic Wait
+      If Not IsNull(Start.LocalSettings["/Cimp"]) Then
+        Shell "lpr -P " & Start.LocalSettings["/Cimp"] & " -# " & nb & " " & Fic Wait
       Else
         Shell $Exec & " -# " & nb & " " & Fic Wait
       Endif

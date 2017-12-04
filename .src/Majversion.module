@@ -20,7 +20,7 @@ Public Sub Verif_Maj()
   hLabel.Text = "La mise à jour prend quelques minutes.\n Veuillez patienter SVP."
   $hForm.Move($hForm.ScreenX, $hForm.ScreenY, 600, 200)
   $hform.Center
-  Version = Settings["/dbase/Version"]
+  Version = Start.LocalSettings["/dbase/Version"]
   If Exist(User.Home & "/version.txt") Then Kill User.Home & "/version.txt"
   Shell "wget -q" & " " & "http://www.laurux.fr/version.txt" & " -O " & User.Home & "/version.txt" Wait
   If Exist(User.Home & "/version.txt") Then
@@ -39,8 +39,8 @@ Public Sub Verif_Maj()
           Kill User.Home & "/version.txt"
           $hform.Close
           $hform.Mouse = Mouse.Default
-          Settings["/Affmaj"] = 1
-          Settings.Save
+          Start.LocalSettings["/Affmaj"] = 1
+          Start.LocalSettings.Save
           Message.Warning("Mise à jour terminée ! Veuillez relancer Laurux SVP !")
         Endif
       Else

@@ -30,8 +30,8 @@ Private Compb As Boolean
 
 Public Sub _New()
 
-  Try Sauves.Text = Settings["/Rep_Sauv"]
-  Try Compb = Settings["/Compression"]
+  Try Sauves.Text = Start.LocalSettings["/Rep_Sauv"]
+  Try Compb = Start.LocalSettings["/Compression"]
   Me.Center
 
 End
@@ -56,7 +56,7 @@ Public Sub Button2_Click()
   Dim lg As Integer
   Dim Hnew As File
   Dim filename As String
-  Dim cs As String = Settings["/Soc"]
+  Dim cs As String = Start.LocalSettings["/Soc"]
 
   filename = User.home & "/tmp/resultat"
   If Not Exist(User.home & "/tmp") Then Mkdir User.home & "/tmp"
@@ -116,12 +116,12 @@ Public Sub Button2_Click()
       hnew = Open filename For Create 'On vide le fichier
       If Message.Question("Vous allez restaurer la base Laurux" & cs & ".sql" & " sauvegardée par " & Utilisateur & " le " & Date_Sauve & " à " & Heure_Sauve & " heures ! ", "Oui", "Non") = 1 Then
         Me.Mouse = Mouse.Wait
-        Shell "mysql -h " & Settings["/dbase/Host"] & " -u " & Utils.db.login & " -p" & Utils.db.Password & " -e \"Drop database Laurux" & cs & ";\" " Wait
-        Shell "mysql -h " & Settings["/dbase/Host"] & " -u " & Utils.db.login & " -p" & Utils.db.Password & " -e \"Create database Laurux" & cs & ";\" " Wait
+        Shell "mysql -h " & Start.LocalSettings["/dbase/Host"] & " -u " & Utils.db.login & " -p" & Utils.db.Password & " -e \"Drop database Laurux" & cs & ";\" " Wait
+        Shell "mysql -h " & Start.LocalSettings["/dbase/Host"] & " -u " & Utils.db.login & " -p" & Utils.db.Password & " -e \"Create database Laurux" & cs & ";\" " Wait
         If IsNull(Utils.db.Password) Then  'Gère l'absence de mot de passe
-          Shell "mysql -h " & Settings["/dbase/Host"] & " -u " & Utils.db.login & " Laurux" & cs & " < " & Sauves.Text & "/Laurux" & cs & ".sql > /tmp/resultat 2>&1" Wait
+          Shell "mysql -h " & Start.LocalSettings["/dbase/Host"] & " -u " & Utils.db.login & " Laurux" & cs & " < " & Sauves.Text & "/Laurux" & cs & ".sql > /tmp/resultat 2>&1" Wait
         Else
-          Shell "mysql -h " & Settings["/dbase/Host"] & " -u " & Utils.db.login & " -p" & Utils.db.Password & " Laurux" & cs & " < " & Sauves.Text & "/Laurux" & cs & ".sql > /tmp/resultat 2>&1" Wait
+          Shell "mysql -h " & Start.LocalSettings["/dbase/Host"] & " -u " & Utils.db.login & " -p" & Utils.db.Password & " Laurux" & cs & " < " & Sauves.Text & "/Laurux" & cs & ".sql > /tmp/resultat 2>&1" Wait
         Endif
         If Exist(User.home & "/tmp/resultat") Then txterror = File.Load(User.home & "/tmp/resultat")
         If Txterror Then

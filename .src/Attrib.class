@@ -123,7 +123,7 @@ Public Sub Clav2_Dblclick()
 
   Try hCont = Last
   If Not Error Then
-    hFormat = CFormat[Settings[hCont.tag]]
+    hFormat = CFormat[Start.LocalSettings[hCont.tag]]
     FSetFormat.Format = hFormat
     FSetFormat.Run()
     hFormat = FSetFormat.Format
@@ -349,7 +349,7 @@ Public Sub Fond_ImageButton()
   Try hCont = Last
   If Not Error Then
     btn = Last
-    hFormat = CFormat[Settings[hCont.tag]]
+    hFormat = CFormat[Start.LocalSettings[hCont.tag]]
     FSetFormat.Format = hFormat
     FSetFormat.Run()
     hFormat = FSetFormat.Format

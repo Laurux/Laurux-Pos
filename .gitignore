@@ -1,4 +1,6 @@
 #---- Gambas files to ignore (v1)
+branch.txt
+sha1.txt
 *.gambas
 .lock
 .startup

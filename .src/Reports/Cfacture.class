@@ -287,8 +287,8 @@ Public Sub Logo2(type As String, Ba4 As Boolean)
 
   Dim $logo As String
 
-  If Settings["/logo"] Then
-    Try $Logo = Settings["/ilogo"]
+  If Start.LocalSettings["/logo"] Then
+    Try $Logo = Start.LocalSettings["/ilogo"]
     If Not Error Then
       If Not IsNull($Logo) Then
         If type = "fac" Then
@@ -318,9 +318,9 @@ Public Sub Logo()
   Dim x As Integer = 110
   Dim Y As Integer = 8
 
-  If Settings["/Soc" & Start.Soc & "/glogo"] Then
-    Try $Logo = Settings["/Soc" & Start.Soc & "/Logo"]
-    Try hImage = Image.Load(Settings["/Soc" & Start.Soc & "/Logo"])
+  If Start.LocalSettings["/Soc" & Start.Soc & "/glogo"] Then
+    Try $Logo = Start.LocalSettings["/Soc" & Start.Soc & "/Logo"]
+    Try hImage = Image.Load(Start.LocalSettings["/Soc" & Start.Soc & "/Logo"])
     iFormat = hImage.Width / hImage.Height
     L2 = hImage.Width * iFormat
     h2 = hImage.Height * iFormat

@@ -12,11 +12,11 @@ Private Ntk As String
 '************************************** Gestion des bl/factures *****************************************************
 Public Sub _new(ccode As String, numtick As String)
 
+  Utils.Observers(Me)
   Tri = "numbl"
   sel = ""
   Clicode = ccode
   Ntk = numtick
-  If Settings["/Soc" & Start.Soc & "/Coul_fen"] Then Utils.Observers(Me)
   colcli.Rows.Height = 22
   colcli.Columns.Count = 4
   lg = Int(Colcli.height / colcli.Rows.Height) - 1
@@ -53,8 +53,8 @@ Public Sub Colcli_Data(Row As Integer, Column As Integer)
   Dim Frmt As New String[]
   Dim Frmt2 As String[]
   
-  Frmt = Utils.FColr(Settings["/Coul/Fnets"])
-  Frmt2 = Utils.FColr(Settings["/Coul/Znaff"])
+  Frmt = Utils.FColr(Start.LocalSettings["/Coul/Fnets"])
+  Frmt2 = Utils.FColr(Start.LocalSettings["/Coul/Znaff"])
   With Utils
     CliTable[0] = "numbl"
     CliTable[1] = "datebl"

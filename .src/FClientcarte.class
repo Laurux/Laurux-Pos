@@ -46,9 +46,9 @@ Public Sub _New()
 
   Me.center
   Balloon.Delay = 1500
-  Frmt = Utils.FColr(Settings["/Coul/Znaff"])
+  Frmt = Utils.FColr(Start.LocalSettings["/Coul/Znaff"])
   CoulZnaf = Val(Frmt[0])
-  Frmt = Utils.FColr(Settings["/Coul/Focus"])
+  Frmt = Utils.FColr(Start.LocalSettings["/Coul/Focus"])
   Coulfc = Val(Frmt[0])
   n = 1
   C1.Text = "Code"
@@ -170,8 +170,8 @@ Public Sub Maj_Zones()
     Observation.text = Clitab!obs
     Cb.Text = Clitab!cb
     Divers2.value = Clitab!divers
-    If IsNull(Tp1.Text) Then Try Tp1.Text = Format$(Val(Settings["/Soc" & Start.Societe & "/Tp1"]), "0.00")
-    If IsNull(Tg1.Text) Then Try Tg1.Text = Format$(Val(Settings["/Soc" & Start.Societe & "/Tg1"]), "0.00")
+    If IsNull(Tp1.Text) Then Try Tp1.Text = Format$(Val(Start.LocalSettings["/Soc" & Start.Societe & "/Tp1"]), "0.00")
+    If IsNull(Tg1.Text) Then Try Tg1.Text = Format$(Val(Start.LocalSettings["/Soc" & Start.Societe & "/Tg1"]), "0.00")
   Endif
 
 End
@@ -670,8 +670,8 @@ Public Sub Button2_Click()
   Calc_barre()
   Dte1.Text = Format$(Now, "dd.mm.yyyy")
   Dte2.Text = Left$(dte1.Text, 6) & Str(Val(Right$(Dte1.Text, 4)) + 20)
-  Try Tp1.Text = Format$(Val(Settings["/Soc" & Start.Societe & "/Tp1"]), "0.00")
-  Try Tg1.Text = Format$(Val(Settings["/Soc" & Start.Societe & "/Tg1"]), "0.00")
+  Try Tp1.Text = Format$(Val(Start.LocalSettings["/Soc" & Start.Societe & "/Tp1"]), "0.00")
+  Try Tg1.Text = Format$(Val(Start.LocalSettings["/Soc" & Start.Societe & "/Tg1"]), "0.00")
   enr = "1"
   chkfocus = True
   Tp2.ReadOnly = False

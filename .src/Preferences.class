@@ -12,69 +12,71 @@ Public Sub _new()
 
   Dim $imp, $lp As String
 
-  If Exist("/usr/bin/laurux") Then Button2.Visible = False
+  Utils.Observers(Me)
+  If Exist("/usr/bin/" & Application.Name) Then Button2.Visible = False
+  TextLabel3.Text = "Fichier de conf : " & Start.LocalSettings.Path
   SetObservers(Me, Me)
-  Try Logo.value = Settings["/logo"]
+  Try Logo.value = Start.LocalSettings["/logo"]
   If Logo.Value Then
     Panlogo.Visible = True
-    Try Logo2.text = Settings["/ilogo"]
+    Try Logo2.text = Start.LocalSettings["/ilogo"]
     aff_logo()
   Endif
-  Try admin.value = Settings["/admin"]
-  Try admin2.value = Settings["/admin2"]
-  Try Qt1.value = Settings["/qt1"]
-  Try Ctrlstk.value = Settings["/ctrlstk"]
-  Try RecapBonus.value = Settings["/recapbonus"]
-  Try Ordre.Text = Settings["/ordre"]
-  Try Lieu.Text = Settings["/lieu"]
-  Try Fontes = Settings["/Soc" & Start.Soc & "/Font"]
-  Try cs = Settings["/Soc"]
-  Try Intitule = Settings["/intitule"]
-  Try son.Value = Settings["/son"]
-  Try Balance.Value = Settings["/balance"]
+  Try admin.value = Start.LocalSettings["/admin"]
+  Try admin2.value = Start.LocalSettings["/admin2"]
+  Try Qt1.value = Start.LocalSettings["/qt1"]
+  Try Ctrlstk.value = Start.LocalSettings["/ctrlstk"]
+  Try RecapBonus.value = Start.LocalSettings["/recapbonus"]
+  Try Ordre.Text = Start.LocalSettings["/ordre"]
+  Try Lieu.Text = Start.LocalSettings["/lieu"]
+  Try Fontes = Start.LocalSettings["/Soc" & Start.Soc & "/Font"]
+  Try cs = Start.LocalSettings["/Soc"]
+  Try Intitule = Start.LocalSettings["/intitule"]
+  Try son.Value = Start.LocalSettings["/son"]
+  Try Balance.Value = Start.LocalSettings["/balance"]
   If Balance.value Then
     TypeB.Visible = True
-    TypeB.text = Settings["/Tbalance"]
+    TypeB.text = Start.LocalSettings["/Tbalance"]
   Endif
-  Try Portb.Text = Settings["/portb"]
-  Try TypeB.text = Settings["/Tbalance"]
-  Try ChoixImp.Value = Settings["/choiximp"]
-  Try ChoixImp2.Value = Settings["/choiximp2"]
-  Try ChoixImpn.Value = Settings["/choiximpn"]
-  Try ChoixImpc.Value = Settings["/choiximpc"]
-  Try HistoCli.Value = Settings["/histocli"]
-  Try Tircarte.Value = Settings["/tircarte"]
-  Try Nbf.Text = Settings["/nbf"]
-  Try GestAffUSB.Value = Settings["/affusbwn"]
-  Try Tactile.Value = Settings["/tactile"]
-  Try ChoixTouches.Value = Settings["/choixtouches"]
-  Try Tfamille.Value = Settings["/Tfamilles"]
-  Try Chmcsv.Text = Settings["/Chmcsv"]
-  Try ChmZ.Text = Settings["/ChmZ"]
+  Try Portb.Text = Start.LocalSettings["/portb"]
+  Try TypeB.text = Start.LocalSettings["/Tbalance"]
+  Try ChoixImp.Value = Start.LocalSettings["/choiximp"]
+  Try ChoixImp2.Value = Start.LocalSettings["/choiximp2"]
+  Try ChoixImpn.Value = Start.LocalSettings["/choiximpn"]
+  Try ChoixImpc.Value = Start.LocalSettings["/choiximpc"]
+  Try HistoCli.Value = Start.LocalSettings["/histocli"]
+  Try Tircarte.Value = Start.LocalSettings["/tircarte"]
+  Try Nbf.Text = Start.LocalSettings["/nbf"]
+  Try GestAffUSB.Value = Start.LocalSettings["/affusbwn"]
+  Try Tactile.Value = Start.LocalSettings["/tactile"]
+  Try ChoixTouches.Value = Start.LocalSettings["/choixtouches"]
+  Try Tfamille.Value = Start.LocalSettings["/Tfamilles"]
+  Try Chmcsv.Text = Start.LocalSettings["/Chmcsv"]
+  Try ChmZ.Text = Start.LocalSettings["/ChmZ"]
   If IsNull(Nbf.text) Then Nbf.Text = "1"
   If IsNull(fontes) Then
     FontChooser1.SelectedFont = "Serif,9"
   Else
     FontChooser1.SelectedFont = Fontes
   Endif
-  Try Cnomade.Value = Settings["/Cnomade"]
+  Try Cnomade.Value = Start.LocalSettings["/Cnomade"]
   If Cnomade.value = True Then
     Panel1.visible = True
     Fmenu.Button3.Text = "&Export vers csv"
     Fmenu.Button4.Visible = True
-    Chmcsv.Text = Settings["/Chmcsv"]
+    Chmcsv.Text = Start.LocalSettings["/Chmcsv"]
   Else
     Panel1.visible = False
     Fmenu.Button3.Text = "&Préférences"
     Fmenu.Button4.visible = False
   Endif
   Init_Nbase()
-  Nbase.text = "Laurux" & Settings["/Soc"]
+  Nbase.text = "Laurux" & Start.LocalSettings["/Soc"]
   Shell "lpc status 2>&1" To $imp
   For Each $lp In Split($imp, "\n")
     If Right($lp) = ":" Then Cimp.add(Left($lp, -1))
   Next
-  Try Cimp.Text = Settings["/Cimp"]
+  Try Cimp.Text = Start.LocalSettings["/Cimp"]
 
 End
 
@@ -182,38 +184,38 @@ End
 
 Public Sub Form_Close()
 
-  Settings["/logo"] = logo.Value
-  Settings["/admin"] = admin.Value
-  Settings["/admin2"] = admin2.Value
-  Settings["/qt1"] = Qt1.value
-  Settings["/ctrlstk"] = Ctrlstk.value
-  Settings["/recapbonus"] = RecapBonus.value
-  Settings["/ilogo"] = Logo2.Text
-  Settings["/ordre"] = Ordre.Text
-  Settings["/lieu"] = Lieu.Text
-  Settings["/Soc" & Start.Soc & "/Font"] = FontChooser1.SelectedFont
-  Settings["/Soc"] = cs
-  Settings["/intitule"] = Intitule
-  Settings["/son"] = son.Value
-  Settings["/balance"] = Balance.Value
-  Settings["/Tbalance"] = TypeB.text
-  Settings["/portb"] = Portb.Text
-  Settings["/choiximp"] = ChoixImp.Value
-  Settings["/choiximp2"] = ChoixImp2.Value
-  Settings["/choiximpn"] = ChoixImpn.Value
-  Settings["/choiximpc"] = ChoixImpc.Value
-  Settings["/histocli"] = HistoCli.Value
-  Settings["/nbf"] = Nbf.Text
-  Settings["/tactile"] = Tactile.Value
-  Settings["/Cnomade"] = Cnomade.Value
-  Settings["/Chmcsv"] = Chmcsv.Text
-  Settings["/tircarte"] = Tircarte.Value
-  Settings["/affusbwn"] = GestAffUSB.Value
-  Settings["/choixtouches"] = ChoixTouches.Value
-  Settings["/Tfamilles"] = Tfamille.Value
-  Settings["/ChmZ"] = ChmZ.Text
-  Settings["/Cimp"] = Cimp.Text
-  Settings.Save
+  Start.LocalSettings["/logo"] = logo.Value
+  Start.LocalSettings["/admin"] = admin.Value
+  Start.LocalSettings["/admin2"] = admin2.Value
+  Start.LocalSettings["/qt1"] = Qt1.value
+  Start.LocalSettings["/ctrlstk"] = Ctrlstk.value
+  Start.LocalSettings["/recapbonus"] = RecapBonus.value
+  Start.LocalSettings["/ilogo"] = Logo2.Text
+  Start.LocalSettings["/ordre"] = Ordre.Text
+  Start.LocalSettings["/lieu"] = Lieu.Text
+  Start.LocalSettings["/Soc" & Start.Soc & "/Font"] = FontChooser1.SelectedFont
+  Start.LocalSettings["/Soc"] = cs
+  Start.LocalSettings["/intitule"] = Intitule
+  Start.LocalSettings["/son"] = son.Value
+  Start.LocalSettings["/balance"] = Balance.Value
+  Start.LocalSettings["/Tbalance"] = TypeB.text
+  Start.LocalSettings["/portb"] = Portb.Text
+  Start.LocalSettings["/choiximp"] = ChoixImp.Value
+  Start.LocalSettings["/choiximp2"] = ChoixImp2.Value
+  Start.LocalSettings["/choiximpn"] = ChoixImpn.Value
+  Start.LocalSettings["/choiximpc"] = ChoixImpc.Value
+  Start.LocalSettings["/histocli"] = HistoCli.Value
+  Start.LocalSettings["/nbf"] = Nbf.Text
+  Start.LocalSettings["/tactile"] = Tactile.Value
+  Start.LocalSettings["/Cnomade"] = Cnomade.Value
+  Start.LocalSettings["/Chmcsv"] = Chmcsv.Text
+  Start.LocalSettings["/tircarte"] = Tircarte.Value
+  Start.LocalSettings["/affusbwn"] = GestAffUSB.Value
+  Start.LocalSettings["/choixtouches"] = ChoixTouches.Value
+  Start.LocalSettings["/Tfamilles"] = Tfamille.Value
+  Start.LocalSettings["/ChmZ"] = ChmZ.Text
+  Start.LocalSettings["/Cimp"] = Cimp.Text
+  Start.LocalSettings.Save
 
 End
 
@@ -234,11 +236,11 @@ Public Sub Nbase_Change()
     Utils.db.Open
     Utils.db.exec("SET NAMES 'latin1'")
     cs = Right$(Nbase.text, Len(Nbase.text) - 6)
-    Settings["/Soc"] = cs
-    'Settings["/intitule"] = intitule.Text
-    Settings["/dbase/Name"] = "Laurux" & cs
-    Settings.Save
-    Settings.Reload
+    Start.LocalSettings["/Soc"] = cs
+    'Start.LocalSettings["/intitule"] = intitule.Text
+    Start.LocalSettings["/dbase/Name"] = "Laurux" & cs
+    Start.LocalSettings.Save
+    Start.LocalSettings.Reload
     Start.Soc = cs
 
     Tab = "Fiches_Societes"

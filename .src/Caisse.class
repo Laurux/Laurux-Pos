@@ -6,7 +6,7 @@ Tel As String
 Tvaintra As String
 iQte As Integer = 0 ' Variable pour quantité
 Fcinq As Boolean = False ' idem
-Qt1 As Boolean = Settings["/qt1"] 'Variable pour validation automatique du code barre
+Qt1 As Boolean = Start.LocalSettings["/qt1"] 'Variable pour validation automatique du code barre
 iComm As Integer = 0 ' Variable pour commentaire
 iRem As Integer = 0 ' Variable pour remise
 iRemq As Integer = 0 ' variable pour remise quantitatives
@@ -195,11 +195,12 @@ Public Sub Form_Open()
 
   Dim Frmt As String[]
   Dim tab As String
-
+  
+  Utils.Observers(Me)
   Music.Load("son/warning.ogg")
   SetObservers(Me, Me)
   Balloon.Delay = 1500
-  If Settings["/tactile"] Then
+  If Start.LocalSettings["/tactile"] Then
     Button38.Visible = True
     Button39.Visible = True
   Else
@@ -212,16 +213,16 @@ Public Sub Form_Open()
     Promo = True
     Cpromo = rResult!code
   Endif
-  Try nbf = Settings["/nbf"]
+  Try nbf = Start.LocalSettings["/nbf"]
   If IsNull(nbf) Then nbf = 1
-  Try Txtvis = Settings["/Txt_viseur"]
+  Try Txtvis = Start.LocalSettings["/Txt_viseur"]
   If IsNull(Txtvis) Then Txtvis = "Bienvenue"
-  Try bAffUSB = Settings["/affusbwn"]
+  Try bAffUSB = Start.LocalSettings["/affusbwn"]
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCliCaisse") & "")
   Clicaisse = rResult!nom
   Codeclient = rResult!code
   CodeclientDefault = rResult!code
-  Frmt = Utils.FColr(Settings["/Coul/Focus"])
+  Frmt = Utils.FColr(Start.LocalSettings["/Coul/Focus"])
   Coulfc = Val(Frmt[0])
   Init_LigTk()
   Init_Columnview1()
@@ -248,17 +249,17 @@ Public Sub Form_Open()
   Else
     Adr = rResult!type_sc & " " & rResult!int_sc & "\n" & rResult!adr1_sc & "\n" & rResult!adr2_sc & "\n" & rResult!cp_sc & " " & rResult!burdis_sc
   Endif
-  If IsNull(Settings["/Soc" & Start.Soc & "/Siret"]) Then
+  If IsNull(Start.LocalSettings["/Soc" & Start.Soc & "/Siret"]) Then
     siret = "Siret : " & rResult!siret_sc
   Else
-    Siret = Settings["/Soc" & Start.Soc & "/Siret"] & " : " & rResult!siret_sc
+    Siret = Start.LocalSettings["/Soc" & Start.Soc & "/Siret"] & " : " & rResult!siret_sc
   Endif
   Tel = "Tel : " & rResult!tel_sc
   Tvaintra = "Tva intra : " & rResult!tvaintra_sc
   Datetk = Format$(Now, "dd-mm-yyyy  hh-nn")
   Client = "Client : " & Clicaisse & "\n"
-  Ncaisse = Left$(Settings["/Cai" & "/Ncai"], 1)
-  Caissiere = Right$(Settings["/Cai" & "/Ncai"], 1)
+  Ncaisse = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
+  Caissiere = Right$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Caissiere)
   Caissiere = rResult!nom
   $Caissiere = rResult!nom & "\n"
@@ -272,11 +273,11 @@ Public Sub Form_Open()
     Init_sport()
     Aff_viseur(Txtvis)
   Endif
-  Try sBalance = Settings["/balance"]
+  Try sBalance = Start.LocalSettings["/balance"]
   If sBalance = True Then Init_sport2()
-  If Settings["/choiximp"] Then Button37.visible = True
-  If Settings["/touchfam"] Then TouchFam = True
-  If Settings["/Tfamilles"] Then
+  If Start.LocalSettings["/choiximp"] Then Button37.visible = True
+  If Start.LocalSettings["/touchfam"] Then TouchFam = True
+  If Start.LocalSettings["/Tfamilles"] Then
     Panel17.Visible = True
   Endif
   'Entete_Tck("0")
@@ -286,7 +287,7 @@ Public Sub Form_Open()
   rResult = Utils.db.Exec("SELECT * FROM " & tab & "")
   If rResult.Available Then sAvoir = rResult!libelav
   Tbremq_Create()
-  Try Ctrlstk = Settings["/ctrlstk"]
+  Try Ctrlstk = Start.LocalSettings["/ctrlstk"]
   If Error Then Ctrlstk = False
   If IsNull(Ctrlstk) Then Ctrlstk = False
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabParam") & "")
@@ -444,7 +445,7 @@ Public Sub Ent_tk(numtk As String)
   Endif
 
   Ecole = rResult!ecole
-  If Imprimante = "DéfautA4" Or If Settings["/choiximp2"] Then
+  If Imprimante = "DéfautA4" Or If Start.LocalSettings["/choiximp2"] Then
     Entete.Text = Entete.Text & "Ticket No " & numero_tk & Space$(40) & datetk '& "\n"
   Else
     If Imprimante = "Défaut80" Then
@@ -1693,7 +1694,7 @@ Public Sub pvttc_LostFocus()
 
   'Protection benefique meme en mode sans admin
   'Modif_tk est accessible via F3
-  'If Settings["/admin"] Then
+  'If Start.LocalSettings["/admin"] Then
   Design.ReadOnly = True
   Pvttc.ReadOnly = True
   Design.Background = &H00BFBFBF&
@@ -2583,7 +2584,7 @@ Public Sub Button12_Click()
       icarte = 0
       Inpm.SetFocus
     Else
-      If Not Settings["/choiximpc"] Then
+      If Not Start.LocalSettings["/choiximpc"] Then
         Frame4.visible = True
         icarte = 1
         Nmc2.clear
@@ -2786,7 +2787,7 @@ Public Sub Button13_Click()
       icheque = 0
       Inpm.SetFocus
     Else
-      If Not Settings["/choiximpn"] Then
+      If Not Start.LocalSettings["/choiximpn"] Then
         Nmc2.clear
         Frame4.visible = True
         icheque = 1
@@ -3733,7 +3734,7 @@ Public Sub pointsF()
       Endif
     Next
     If icartef = 1 Then
-      If Settings["/recapbonus"] <> "0" Then
+      If Start.LocalSettings["/recapbonus"] <> "0" Then
         Try LigTk.Add("Da", "Da")
         If Not Error Then
           LigTk.Item[0] = iNlg
@@ -4746,10 +4747,10 @@ Public Sub Imp_Cheque()
       Print #Sport, Space$(1)
     Endif
     Print #Sport, Space$(1)
-    Print #sport, .Replace(settings["/ordre"]);
+    Print #sport, .Replace(Start.LocalSettings["/ordre"]);
     Print #sport, Space$(nb) & Cheque.Text
     Print #Sport, Space$(1)
-    Print #sport, Space$(nb) & .Replace(Settings["/lieu"])
+    Print #sport, Space$(nb) & .Replace(Start.LocalSettings["/lieu"])
     Print #sport, Space$(nb) & Format$(Now, "dd.mm.yyyy")
     Print #Sport, Chr$(&HC);
   End With
@@ -4831,10 +4832,10 @@ Public Sub Imp_Cheque1()
           Print #Sport, Space$(1)
         Endif
         Print #Sport, Space$(1)
-        Print #sport, .Replace(settings["/ordre"]);
+        Print #sport, .Replace(Start.LocalSettings["/ordre"]);
         Print #sport, Space$(nb) & LigTk.Item[3]
         Print #Sport, Space$(1)
-        Print #sport, Space$(nb) & .Replace(Settings["/lieu"])
+        Print #sport, Space$(nb) & .Replace(Start.LocalSettings["/lieu"])
         Print #sport, Space$(nb) & Format$(Now, "dd.mm.yyyy")
         Print #Sport, Chr$(&HC);
         Break
@@ -4976,22 +4977,22 @@ End
 Public Sub Init_sport2()
 
   If Sport2.Status = Net.Active Then Close Sport2
-  If Settings["/Tbalance"] = "Tropper" Then
-    Sport2.PortName = Settings["/portb"]
+  If Start.LocalSettings["/Tbalance"] = "Tropper" Then
+    Sport2.PortName = Start.LocalSettings["/portb"]
     Sport2.Speed = "9600"
     Sport2.Parity = 0
     Sport2.DataBits = 8
     Sport2.StopBits = 1
     Sport2.FlowControl = 0
-  Else If Settings["/Tbalance"] = "Mettler Toledo" Then
-    Sport2.PortName = Settings["/portb"]
+  Else If Start.LocalSettings["/Tbalance"] = "Mettler Toledo" Then
+    Sport2.PortName = Start.LocalSettings["/portb"]
     Sport2.Speed = "9600"
     Sport2.Parity = 0
     Sport2.DataBits = 7
     Sport2.StopBits = 1
     Sport2.FlowControl = 0
-  Else If Settings["/Tbalance"] = "Precia Molen" Then
-    Sport2.PortName = Settings["/portb"]
+  Else If Start.LocalSettings["/Tbalance"] = "Precia Molen" Then
+    Sport2.PortName = Start.LocalSettings["/portb"]
     Sport2.Speed = "9600"
     Sport2.Parity = 0
     Sport2.DataBits = 8
@@ -5014,11 +5015,11 @@ End
 
 Public Sub Recup_Poids()
 
-  If Settings["/Tbalance"] = "Tropper" Then
+  If Start.LocalSettings["/Tbalance"] = "Tropper" Then
     Print #Sport2, "P"; Chr$(13); Chr$(10)
-  Else If Settings["/Tbalance"] = "Mettler Toledo" Then
+  Else If Start.LocalSettings["/Tbalance"] = "Mettler Toledo" Then
     Print #Sport2, "W"; Chr$(13)
-  Else If Settings["/Tbalance"] = "Precia Molen" Then
+  Else If Start.LocalSettings["/Tbalance"] = "Precia Molen" Then
     Print #Sport2, Chr$(1); Chr$(5); Chr$(48); Chr$(51); Chr$(76); Chr$(13); Chr$(10)
   Endif
 
@@ -5042,7 +5043,7 @@ End
 
 Public Sub mdp_admin()
 
-  If Settings["/admin"] = True Then GestMdp = 1
+  If Start.LocalSettings["/admin"] = True Then GestMdp = 1
 
 End
 
@@ -6185,7 +6186,7 @@ Public Sub Nmc4_KeyPress()
     Cart.SetFocus
     Zone = "Article"
   Endif
-  If key.code = key.F2 And Settings["/histocli"] Then
+  If key.code = key.F2 And Start.LocalSettings["/histocli"] Then
     ClientsDivers()
   Endif
 
@@ -6195,9 +6196,9 @@ Public Sub button29_Click()
   ' on imprime
 
   If Not IsNull(Nmc4.Text) Then
-    If Settings["/histocli"] Then Enrg_Clientd()
+    If Start.LocalSettings["/histocli"] Then Enrg_Clientd()
     Ent_tk2()
-    If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Or If Settings["/choiximp2"] Then
+    If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Or If Start.LocalSettings["/choiximp2"] Then
       Defaut_Facture()
     Else
       Serial_Facture()
@@ -6323,7 +6324,7 @@ Public Sub Defaut_Facture()
 
   Tabe = "Fiches_LigTickets" & Ncaisse
   Filename = User.home & "/Ticket.pdf"
-  If Imprimante = "DéfautA4" Or If Settings["/choiximp2"] Then
+  If Imprimante = "DéfautA4" Or If Start.LocalSettings["/choiximp2"] Then
     pdf = New Cfacture("P", "mm", "A4")
     Ba4 = True
   Else
@@ -6472,7 +6473,7 @@ Public Sub button24_Click()
     Zone = "Mdp"
   Else
     If Val(Utils.cpoint(TotalTk.Text)) = 0 Then
-      If Not IsNull(Settings["/ChmZ"]) Then
+      If Not IsNull(Start.LocalSettings["/ChmZ"]) Then
         Ticketz()
       Else
         Message.Error("Impression Bande Z impossible ! Le chemin de l'historique n'est pas défini dans les préférences de la caisse")
@@ -7144,13 +7145,13 @@ Public Sub DupliZ(Zfile As String)
 
   Dim chemin As String
 
-  If Not Exist(Settings["/ChmZ"]) Then
-    Try Mkdir Settings["/ChmZ"]
+  If Not Exist(Start.LocalSettings["/ChmZ"]) Then
+    Try Mkdir Start.LocalSettings["/ChmZ"]
     If Error Then
       Message.Error("Problème lors de la création d'un répertoire\nMerci de créer manuellement un répertoire nommé  : & Chemin'")
     Endif
   Else
-    Chemin = Settings["/ChmZ"]
+    Chemin = Start.LocalSettings["/ChmZ"]
     Chemin = chemin & "/" & Format$(Now, "yyyy")
     If Not Exist(chemin) Then Try Mkdir chemin
     Chemin = Chemin & "/" & Format$(Now, "mm")

@@ -49,23 +49,23 @@ Public Sub _new()
   Dim Frmt As String[]
   Dim ssh As String
 
-  Frmt = Utils.FColr(Settings["/Coul/Fnets"])
-  If Settings["/Soc" & Start.Soc & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
+  Frmt = Utils.FColr(Start.LocalSettings["/Coul/Fnets"])
+  If Start.LocalSettings["/Soc" & Start.Soc & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
   Utils.Observers(LauruxConf)
   Music.Load("son/warning.ogg")
   'Me.Center
-  Try ssh = Settings["/dbase/Con-ssh"]
+  Try ssh = Start.LocalSettings["/dbase/Con-ssh"]
   If ssh <> 0 And Not IsNull(ssh) Then
     Bssh.value = True
     Bssh_Click()
   Endif
-  Host.Add(Settings["/dbase/Host"], 0)
-  Host.Add(Settings["/dbase/Host2"], 1)
-  Try Cnl.value = Settings["/dbase/Cnl"]
+  Host.Add(Start.LocalSettings["/dbase/Host"], 0)
+  Host.Add(Start.LocalSettings["/dbase/Host2"], 1)
+  Try Cnl.value = Start.LocalSettings["/dbase/Cnl"]
   If Cnl.value Then
-    Host.Text = Settings["/dbase/Host2"]
+    Host.Text = Start.LocalSettings["/dbase/Host2"]
   Else
-    Host.Text = Settings["/dbase/Host"]
+    Host.Text = Start.LocalSettings["/dbase/Host"]
   Endif
 
 End
@@ -83,67 +83,67 @@ Public Sub Button1_Click()
   $ready_connect = True
   Soc = "01"
   intitule = "  "
-  Settings["/dbase/Version"] = "Laurux.Pos V3.21"
+  Start.LocalSettings["/dbase/Version"] = "Laurux.Pos V3.21"
   '# -- Partie commune aux connexions avec ou sans tunnel
-  Settings["/dbase/type"] = "mysql"
-  Settings["/dbase/Name"] = "Laurux01"
-  Settings["/dbase/Login"] = login.Text
-  Settings["/dbase/Password"] = hexdblKey.crypt("en", Password.Text, "Laurux")
-  Settings["/dbase/Port"] = Port.Text
-  Settings["/dbase/Cnl"] = Cnl.value
+  Start.LocalSettings["/dbase/type"] = "mysql"
+  Start.LocalSettings["/dbase/Name"] = "Laurux01"
+  Start.LocalSettings["/dbase/Login"] = login.Text
+  Start.LocalSettings["/dbase/Password"] = hexdblKey.crypt("en", Password.Text, "Laurux")
+  Start.LocalSettings["/dbase/Port"] = Port.Text
+  Start.LocalSettings["/dbase/Cnl"] = Cnl.value
   If Cnl.value Then
-    Settings["/dbase/Host2"] = Host.Text
+    Start.LocalSettings["/dbase/Host2"] = Host.Text
   Else
-    Settings["/dbase/Host"] = Host.Text
+    Start.LocalSettings["/dbase/Host"] = Host.Text
   Endif
   '# -- Partie variant suivant que l'on utilise un tunnel ssh ou pas
-  Settings["/dbase/ssh/Con-ssh"] = Bssh.Value
+  Start.LocalSettings["/dbase/ssh/Con-ssh"] = Bssh.Value
   If Bssh.value Then
-    Settings["/dbase/ssh/Login"] = Loginssh.Text
-    Settings["/dbase/ssh/Portssh"] = Portssh.Text
-    Settings["/dbase/ssh/Hostssh"] = Hostssh.Text
-    Settings["/dbase/ssh/Portlocal"] = Portlocal.Text
+    Start.LocalSettings["/dbase/ssh/Login"] = Loginssh.Text
+    Start.LocalSettings["/dbase/ssh/Portssh"] = Portssh.Text
+    Start.LocalSettings["/dbase/ssh/Hostssh"] = Hostssh.Text
+    Start.LocalSettings["/dbase/ssh/Portlocal"] = Portlocal.Text
   Endif
-  Settings["/dbase/Con-ssh"] = Bssh.Value
-  Settings["/Soc"] = Soc
-  Settings["/intitule"] = intitule
-  Settings["/son"] = 0
-  Settings["/Tips"] = 1
-  Settings["/Soc" & Soc & "/Entete"] = 1
-  Settings["/Soc" & Soc & "/Conditions"] = 1
-  Settings["/Soc" & Soc & "/Tva550"] = 0
-  Settings["/Soc" & Soc & "/Codetva"] = " "
-  Settings["/Soc" & Soc & "/Compta"] = 0
-  Settings["/Soc" & Soc & "/Gestion"] = 0
-  Settings["/Soc" & Soc & "/CptFac"] = 1
-  Settings["/Soc" & Soc & "/Qt1"] = 0
-  Settings["/Soc" & Soc & "/Coul_fen"] = 0
-  Settings["/Soc" & Soc & "/Qt1"] = 0
-  Settings["/Soc" & Soc & "/Ctrlstk"] = 0
-  Settings["/Soc" & Soc & "/AutoEnt"] = 0
-  Settings["/tactile"] = 0
-  Settings["/Coul" & "/Fnets"] = "BackColor: &HDDDDDD&; "
-  Settings["/Coul" & "/Btns"] = "BackColor: &HBDBDBD&; "
-  Settings["/Coul" & "/Znss"] = "BackColor: &HFAFAFA&; "
-  Settings["/Coul" & "/Znaff"] = "BackColor: &HEEEEEE&; "
-  Settings["/Coul" & "/Focus"] = "BackColor: &HF9FFC7&; "
-  Settings["/Coul" & "/Coulfonds"] = "Backcolor: &FFEE81&; "
-  Settings["/Coul" & "/Others"] = "Backcolor: &FFE0B8&; "
-  Settings["/Soc" & Soc & "/Copie"] = 0
-  Settings["/Soc" & Soc & "/Siret"] = "Siret"
-  Settings["/Soc" & Soc & "/Prxdec"] = 0
-  Settings["/Soc" & Soc & "/Taxe"] = "TVA"
-  Settings.Save
+  Start.LocalSettings["/dbase/Con-ssh"] = Bssh.Value
+  Start.LocalSettings["/Soc"] = Soc
+  Start.LocalSettings["/intitule"] = intitule
+  Start.LocalSettings["/son"] = 0
+  Start.LocalSettings["/Tips"] = 1
+  Start.LocalSettings["/Soc" & Soc & "/Entete"] = 1
+  Start.LocalSettings["/Soc" & Soc & "/Conditions"] = 1
+  Start.LocalSettings["/Soc" & Soc & "/Tva550"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Codetva"] = " "
+  Start.LocalSettings["/Soc" & Soc & "/Compta"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Gestion"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/CptFac"] = 1
+  Start.LocalSettings["/Soc" & Soc & "/Qt1"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Coul_fen"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Qt1"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Ctrlstk"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/AutoEnt"] = 0
+  Start.LocalSettings["/tactile"] = 0
+  Start.LocalSettings["/Coul" & "/Fnets"] = "BackColor: &HDDDDDD&; "
+  Start.LocalSettings["/Coul" & "/Btns"] = "BackColor: &HBDBDBD&; "
+  Start.LocalSettings["/Coul" & "/Znss"] = "BackColor: &HFAFAFA&; "
+  Start.LocalSettings["/Coul" & "/Znaff"] = "BackColor: &HEEEEEE&; "
+  Start.LocalSettings["/Coul" & "/Focus"] = "BackColor: &HF9FFC7&; "
+  Start.LocalSettings["/Coul" & "/Coulfonds"] = "Backcolor: &FFEE81&; "
+  Start.LocalSettings["/Coul" & "/Others"] = "Backcolor: &FFE0B8&; "
+  Start.LocalSettings["/Soc" & Soc & "/Copie"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Siret"] = "Siret"
+  Start.LocalSettings["/Soc" & Soc & "/Prxdec"] = 0
+  Start.LocalSettings["/Soc" & Soc & "/Taxe"] = "TVA"
+  Start.LocalSettings.Save
 
   '# -- valeurs de connexion communes avec ou sans tunnel
   ' Le type reste bien entendu mysql
-  hcon.type = Settings["/dbase/type"]
+  hcon.type = Start.LocalSettings["/dbase/type"]
   ' le nom est celui de la base
-  hcon.Name = Settings["/dbase/Name"]
+  hcon.Name = Start.LocalSettings["/dbase/Name"]
   ' le login est celui de la base
-  hcon.Login = Settings["/dbase/Login"]
+  hcon.Login = Start.LocalSettings["/dbase/Login"]
   ' le mot de passe est celui de la base
-  hcon.Password = hexdblKey.crypt("de", Settings["/dbase/Password"], "Laurux")
+  hcon.Password = hexdblKey.crypt("de", Start.LocalSettings["/dbase/Password"], "Laurux")
 
   '*************************************
   '* On initialise les variables
@@ -157,25 +157,25 @@ Public Sub Button1_Click()
     ' par contre on utilise le port local de loopback pour la connexion (et pas localhost qui impliquerait une connexion socket unix)
     hcon.Host = "127.0.0.1"
     ' on remplace le port mysql par le port local du tunnel ssh
-    hcon.Port = Settings["/dbase/ssh/Portlocal"]
+    hcon.Port = Start.LocalSettings["/dbase/ssh/Portlocal"]
     ' on définit des variables pour l'établissement du tunnel ssh
-    Utils.MysqlServeur = Settings["/dbase/Host"]
-    Utils.RemotePort = Settings["/dbase/Port"]
-    Utils.SshHost = Settings["/dbase/ssh/Hostssh"]
-    Utils.SshPort = Settings["/dbase/ssh/Portssh"]
-    Utils.SshUser = Settings["/dbase/ssh/Login"]
+    Utils.MysqlServeur = Start.LocalSettings["/dbase/Host"]
+    Utils.RemotePort = Start.LocalSettings["/dbase/Port"]
+    Utils.SshHost = Start.LocalSettings["/dbase/ssh/Hostssh"]
+    Utils.SshPort = Start.LocalSettings["/dbase/ssh/Portssh"]
+    Utils.SshUser = Start.LocalSettings["/dbase/ssh/Login"]
   Else
     '# -- Valeurs de connexion sans tunnel
     ' l'hôte à utiliser est le serveur MySQL
-    hcon.Host = Settings["/dbase/Host"]
+    hcon.Host = Start.LocalSettings["/dbase/Host"]
     ' le port le port MySQL du serveur
     If Not Cnl.value Then
-      hcon.Port = Settings["/dbase/Port"]
+      hcon.Port = Start.LocalSettings["/dbase/Port"]
     Else
-      hcon.Port = Settings["/dbase/Port2"]
+      hcon.Port = Start.LocalSettings["/dbase/Port2"]
     Endif
   Endif
-  Soc = Settings["/Soc"]
+  Soc = Start.LocalSettings["/Soc"]
 
   '# -- lancement si nécessaire du tunnel ssh
   If Bssh.Value Then
@@ -216,7 +216,7 @@ End
 
 Public Sub Button2_Click()
 
-  Try Kill User.home & "/Laurux.Pos.lock"
+  Try Kill User.home & "/" & Application.Name & ".lock"
   Me.close
 
 End
