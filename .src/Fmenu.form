@@ -17,7 +17,7 @@
       Expand = True
     }
     { !Frame1 Frame
-      MoveScaled(3,3,52,68)
+      MoveScaled(2,3,52,68)
       #Public = True
       { AppTitre TextLabel
         MoveScaled(2,-2,44,8)
@@ -102,6 +102,11 @@
         MoveScaled(7,61,24,3)
         Font = Font["-4"]
         Text = ("CTRL + F12 = Attribution des touches")
+      }
+      { Label4 Label
+        MoveScaled(30,61,24,3)
+        Font = Font["-4"]
+        Text = ("Alt + L = debug Log")
       }
     }
     { Panel3 Panel

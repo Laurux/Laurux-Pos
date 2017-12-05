@@ -5,7 +5,7 @@ Public GlobalSettings As Settings
 Public version_sha1 As String = "SHA1_REPO_GIT_Laurux"
 Public version_branch As String = "BRANCH_REPO_GIT_Laurux"
 Public Son As Integer
-Public Soc As String
+Public Societe As String
 Public R As Integer = 255
 Public G As Integer = 252
 Public B As Integer = 216
@@ -51,10 +51,10 @@ Public Sub Lancement()
   File.Save(User.home & "/" & Application.Name & ".lock", Pids & Application.Id)
 
   Start.LocalSettings = New Settings(User.Home &/ ".config/gambas3" &/ Application.Name & ".conf", Application.Name & " local configuration")
-  Try Soc = Start.LocalSettings["/Soc"]
+  Try Societe = Start.LocalSettings["/Soc"]
   Try Son = Start.LocalSettings["/son"]
   Try Music.Load("son/warning.ogg")
-  Try Fontes = Start.LocalSettings["/Soc" & Start.Soc & "/Font"]
+  Try Fontes = Start.LocalSettings["/Soc" & Start.Societe & "/Font"]
   If IsNull(fontes) Then
     Application.Font = Font["Serif,10"]
   Else

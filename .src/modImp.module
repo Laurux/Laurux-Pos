@@ -12,7 +12,7 @@ Public Sub Entete1(rs As String, rs2 As String, adr11 As String, adr211 As Strin
   Posx = 300
   Posy = 180
   'IF Visudoc = FALSE THEN
-  If Start.LocalSettings["/Soc" & Start.Soc & "/glogo"] Then Try Draw_Image(logo)
+  If Start.LocalSettings["/Soc" & Start.Societe & "/glogo"] Then Try Draw_Image(logo)
   'ENDIF
   Draw.FillColor = &FFFFFF&
   Draw.FillStyle = Fill.Solid

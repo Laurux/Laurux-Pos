@@ -290,6 +290,9 @@ Public Sub Form_KeyPress()
   If key.Alt Then
     If key.code = 80 Then mdp_admin2()
   Endif
+  If key.Alt Then
+    If key.code = 76 Then mdp_admin3()
+  Endif
 
 End
 
@@ -308,6 +311,22 @@ Public Sub mdp_admin2()
   Endif
 
 End
+
+Public Sub mdp_admin3()
+  
+  Dim dbl As DB_Log
+  
+  If Start.LocalSettings["/admin2"] = True Then
+    Mdp.Clear
+    Frame8.visible = True
+    Mdp.SetFocus
+  Else
+    Dbl = New DB_Log(Utils.db)
+    Dbl.Show()
+  Endif
+
+End
+
 
 '*******************************************************
 '*          On gère le mot de passe admin               *
@@ -409,6 +428,12 @@ End
 Public Sub Label2_MouseDown()
 
   mdp_admin2()
+
+End
+
+Public Sub Label4_MouseDown()
+
+  mdp_admin3()
 
 End
 

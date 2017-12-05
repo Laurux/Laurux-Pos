@@ -15,6 +15,7 @@ Private Pan As Boolean = False
 
 Public Sub Form_Open()
 
+  Utils.Observers(Me)
   Init()
   Caisse.origine = "Attrib"
   createPanel()

@@ -61,6 +61,29 @@ View_Draw
 m
 
 
+#NetHandler
+LogHandler
+C
+_new
+m
+
+(Host)s(Port)i[(iMinLevel)i]
+Open
+m
+
+
+Write
+m
+
+(sMessage)s[(iLevel)i]
+Close
+m
+
+
+GetOutput
+m
+s
+
 #hexdblKey
 
 C

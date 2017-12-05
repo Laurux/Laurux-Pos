@@ -39,6 +39,7 @@ End
 
 Public Sub Form_Open()
   
+  Utils.Observers(Me)
   ColorButton1.Color = IIf(Format.Background = -1, color.TextBackground, Format.Background)
   ColorButton2.Color = IIf(Format.Foreground = -1, color.TextForeground, Format.Foreground)
   lblExemple.Font = Format.Font

@@ -4,6 +4,7 @@ Public Sub _new()
   
   Dim Rslt As Result
   
+  Utils.Observers(Me)
   Me.center
   Try Rslt = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs"))
   If Not Error Then

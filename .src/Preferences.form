@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,94,93)
+  MoveScaled(0,0,96,93)
   Border = False
   { TabStrip1 TabStrip
-    MoveScaled(0,1,94,82)
-    Count = 6
+    MoveScaled(1,1,94,82)
+    Count = 7
     Index = 0
     Text = ("Environnement")
     { Admin CheckBox
@@ -246,6 +246,20 @@
     { Label3 Label
       MoveScaled(4,8,36,3)
       Text = ("Imprimante utilisée par la caisse")
+    }
+    Index = 6
+    Text = ("Réseaux")
+    { ServerLogPort ValueBox
+      MoveScaled(23,8,7,4)
+      Text = ("6556")
+    }
+    { ServerLogIP ValueBox
+      MoveScaled(2,8,19,4)
+      Type = ValueBox.IPAddress
+    }
+    { TextLabel4 TextLabel
+      MoveScaled(2,4,31,4)
+      Text = ("Server de log (Addresse IP : port)")
     }
     Index = 0
   }

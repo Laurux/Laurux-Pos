@@ -30,14 +30,14 @@
 '########################################################
 '
 Public Hwnd As Fmenu
-Public hcon As New Connection
+Public hcon As DB_Connection = Utils.db 'As New Connection
 Public Soc As String
 Public intitule As String
 Public Fonte As Integer
 Public Version As String
 Public Hfile As File
 Public d As String
-Static Public DB As New Connection
+'Static Public DB As New Connection
 Public lnd As Integer
 Public Lig As String
 Public Key As String
@@ -49,9 +49,9 @@ Public Sub _new()
   Dim Frmt As String[]
   Dim ssh As String
 
+  Utils.Observers(Me)
   Frmt = Utils.FColr(Start.LocalSettings["/Coul/Fnets"])
-  If Start.LocalSettings["/Soc" & Start.Soc & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
-  Utils.Observers(LauruxConf)
+  If Start.LocalSettings["/Soc" & Start.Societe & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
   Music.Load("son/warning.ogg")
   'Me.Center
   Try ssh = Start.LocalSettings["/dbase/Con-ssh"]
@@ -122,13 +122,13 @@ Public Sub Button1_Click()
   Start.LocalSettings["/Soc" & Soc & "/Ctrlstk"] = 0
   Start.LocalSettings["/Soc" & Soc & "/AutoEnt"] = 0
   Start.LocalSettings["/tactile"] = 0
-  Start.LocalSettings["/Coul" & "/Fnets"] = "BackColor: &HDDDDDD&; "
-  Start.LocalSettings["/Coul" & "/Btns"] = "BackColor: &HBDBDBD&; "
-  Start.LocalSettings["/Coul" & "/Znss"] = "BackColor: &HFAFAFA&; "
-  Start.LocalSettings["/Coul" & "/Znaff"] = "BackColor: &HEEEEEE&; "
-  Start.LocalSettings["/Coul" & "/Focus"] = "BackColor: &HF9FFC7&; "
-  Start.LocalSettings["/Coul" & "/Coulfonds"] = "Backcolor: &FFEE81&; "
-  Start.LocalSettings["/Coul" & "/Others"] = "Backcolor: &FFE0B8&; "
+  Start.LocalSettings["/Coul" & "/Fnets"] = "Background: &HDDDDDD&; "
+  Start.LocalSettings["/Coul" & "/Btns"] = "Background: &HBDBDBD&; "
+  Start.LocalSettings["/Coul" & "/Znss"] = "Background: &HFAFAFA&; "
+  Start.LocalSettings["/Coul" & "/Znaff"] = "Background: &HEEEEEE&; "
+  Start.LocalSettings["/Coul" & "/Focus"] = "Background: &HF9FFC7&; "
+  Start.LocalSettings["/Coul" & "/Coulfonds"] = "Background: &FFEE81&; "
+  Start.LocalSettings["/Coul" & "/Others"] = "Background: &FFE0B8&; "
   Start.LocalSettings["/Soc" & Soc & "/Copie"] = 0
   Start.LocalSettings["/Soc" & Soc & "/Siret"] = "Siret"
   Start.LocalSettings["/Soc" & Soc & "/Prxdec"] = 0

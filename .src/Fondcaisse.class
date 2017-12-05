@@ -14,6 +14,7 @@ Public Sub _new(org As String)
   Dim rResult As Result
   Dim Tab As String
 
+  Utils.Observers(Me)
   SetObservers(Me, Me)
   $cai = Start.LocalSettings["/Cai" & "/Ncai"]
   Ncaisse = Left$($cai, 1)

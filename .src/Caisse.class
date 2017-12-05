@@ -243,16 +243,16 @@ Public Sub Form_Open()
   'Else
   Pointille = String$(34, "-")
   'Endif
-  rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabSoc") & " where cd_sc = &1", Start.Soc)
+  rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabSoc") & " where cd_sc = &1", Start.Societe)
   If IsNull(rResult!type_sc) Then
     Adr = rResult!int_sc & "\n" & rResult!adr1_sc & "\n" & rResult!adr2_sc & "\n" & rResult!cp_sc & " " & rResult!burdis_sc
   Else
     Adr = rResult!type_sc & " " & rResult!int_sc & "\n" & rResult!adr1_sc & "\n" & rResult!adr2_sc & "\n" & rResult!cp_sc & " " & rResult!burdis_sc
   Endif
-  If IsNull(Start.LocalSettings["/Soc" & Start.Soc & "/Siret"]) Then
+  If IsNull(Start.LocalSettings["/Soc" & Start.Societe & "/Siret"]) Then
     siret = "Siret : " & rResult!siret_sc
   Else
-    Siret = Start.LocalSettings["/Soc" & Start.Soc & "/Siret"] & " : " & rResult!siret_sc
+    Siret = Start.LocalSettings["/Soc" & Start.Societe & "/Siret"] & " : " & rResult!siret_sc
   Endif
   Tel = "Tel : " & rResult!tel_sc
   Tvaintra = "Tva intra : " & rResult!tvaintra_sc

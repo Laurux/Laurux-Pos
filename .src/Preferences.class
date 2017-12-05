@@ -29,7 +29,7 @@ Public Sub _new()
   Try RecapBonus.value = Start.LocalSettings["/recapbonus"]
   Try Ordre.Text = Start.LocalSettings["/ordre"]
   Try Lieu.Text = Start.LocalSettings["/lieu"]
-  Try Fontes = Start.LocalSettings["/Soc" & Start.Soc & "/Font"]
+  Try Fontes = Start.LocalSettings["/Soc" & Start.Societe & "/Font"]
   Try cs = Start.LocalSettings["/Soc"]
   Try Intitule = Start.LocalSettings["/intitule"]
   Try son.Value = Start.LocalSettings["/son"]
@@ -77,6 +77,10 @@ Public Sub _new()
     If Right($lp) = ":" Then Cimp.add(Left($lp, -1))
   Next
   Try Cimp.Text = Start.LocalSettings["/Cimp"]
+  Try ServerLogIP.Value = Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogIP"]
+  If ServerLogIP.Value = "" Then ServerLogIP.Value = "127.0.0.1"
+  Try ServerLogPort.Value = Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogPort"]
+  If ServerLogPort.Value = 0 Then ServerLogPort.Value = 6556
 
 End
 
@@ -193,7 +197,7 @@ Public Sub Form_Close()
   Start.LocalSettings["/ilogo"] = Logo2.Text
   Start.LocalSettings["/ordre"] = Ordre.Text
   Start.LocalSettings["/lieu"] = Lieu.Text
-  Start.LocalSettings["/Soc" & Start.Soc & "/Font"] = FontChooser1.SelectedFont
+  Start.LocalSettings["/Soc" & Start.Societe & "/Font"] = FontChooser1.SelectedFont
   Start.LocalSettings["/Soc"] = cs
   Start.LocalSettings["/intitule"] = Intitule
   Start.LocalSettings["/son"] = son.Value
@@ -215,6 +219,8 @@ Public Sub Form_Close()
   Start.LocalSettings["/Tfamilles"] = Tfamille.Value
   Start.LocalSettings["/ChmZ"] = ChmZ.Text
   Start.LocalSettings["/Cimp"] = Cimp.Text
+  Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogIP"] = ServerLogIP.Value
+  Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogPort"] = ServerLogPort.Value
   Start.LocalSettings.Save
 
 End
@@ -241,7 +247,7 @@ Public Sub Nbase_Change()
     Start.LocalSettings["/dbase/Name"] = "Laurux" & cs
     Start.LocalSettings.Save
     Start.LocalSettings.Reload
-    Start.Soc = cs
+    Start.Societe = cs
 
     Tab = "Fiches_Societes"
     If Not IsNull(cs) Then

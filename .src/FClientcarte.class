@@ -44,6 +44,7 @@ Public Sub _New()
 
   Dim Frmt As New String[]
 
+  Utils.Observers(Me)
   Me.center
   Balloon.Delay = 1500
   Frmt = Utils.FColr(Start.LocalSettings["/Coul/Znaff"])

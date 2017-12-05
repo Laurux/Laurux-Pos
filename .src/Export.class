@@ -14,6 +14,7 @@ Private Tab3 As String = "Fiches_Regltz"
 Public Sub Form_Show()
 
   Me.Center
+  Utils.Observers(Me)
   Ncaisse = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
   Caissiere = Right$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
 

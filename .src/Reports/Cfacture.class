@@ -318,9 +318,9 @@ Public Sub Logo()
   Dim x As Integer = 110
   Dim Y As Integer = 8
 
-  If Start.LocalSettings["/Soc" & Start.Soc & "/glogo"] Then
-    Try $Logo = Start.LocalSettings["/Soc" & Start.Soc & "/Logo"]
-    Try hImage = Image.Load(Start.LocalSettings["/Soc" & Start.Soc & "/Logo"])
+  If Start.LocalSettings["/Soc" & Start.Societe & "/glogo"] Then
+    Try $Logo = Start.LocalSettings["/Soc" & Start.Societe & "/Logo"]
+    Try hImage = Image.Load(Start.LocalSettings["/Soc" & Start.Societe & "/Logo"])
     iFormat = hImage.Width / hImage.Height
     L2 = hImage.Width * iFormat
     h2 = hImage.Height * iFormat

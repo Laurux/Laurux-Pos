@@ -87,6 +87,7 @@ End
 
 Public Sub Form_Open()
   
+  Utils.Observers(Me)
   Panel1.Raise
   ToolButton1.Value = True
   InitTxtB(Me)

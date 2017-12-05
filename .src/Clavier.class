@@ -5,6 +5,7 @@ Private $saisie As String
 Public Sub _new(Org As String)
 
   Me.center
+  Utils.Observers(Me)
   Me.Move(120, 280)
 
 End

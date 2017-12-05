@@ -12,6 +12,7 @@ Public Sub _new()
 
   Dim Rrslt As Result
 
+  Utils.Observers(Me)
   Music.Load("son/warning.ogg")
   SetObservers(Me, Me)
   Try Rrslt = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs"))
