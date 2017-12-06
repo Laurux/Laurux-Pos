@@ -3904,15 +3904,15 @@ Public Sub Valid_Bacompte()
       If Val(Bacompte.Text) <> 0 And Val(Rticket.Text) > 0 Then
         Bacompte.Text = Format$(Val(Bacompte.Text), "0.00")
         Calc_reste(Bacompte.text)
-        Try ColumnView1.Add("A", "A")
+        Try ColumnView1.Add("RA", "RA")
         If Not Error Then
-          ColumnView1.Item[0] = "A"
+          ColumnView1.Item[0] = "RA"
           ColumnView1.Item[1] = "acompte " & sIacompte
           ColumnView1.Item[2] = Bacompte.Text
         Else
           ColumnView1.MoveFirst()
           Repeat
-            If ColumnView1.Item[0] = "A" Then
+            If ColumnView1.Item[0] = "RA" Then
               ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[3])) + Val(Utils.cpoint(Bacompte.Text)), "0.00")
               Break
             Endif
@@ -6560,7 +6560,7 @@ Public Sub Ticketz()
           'Print rtx!intitule & rtx!montant & rtx!qte & rtx!type & Ncaisse
           If rtx.Available Then
             Repeat
-              Utils.db.Exec("INSERT INTO " & Tabrgx & " (intitule, montant, qte, type, caisse, date) VALUES (&1, &2, &3, &4, &5, &6)", rtx!intitule, rtx!montant, rtx!qte, rtx!type, Ncaisse, rtx!date)
+              Utils.db.Exec("INSERT INTO " & Tabrgz & " (intitule, montant, qte, type, caisse, date) VALUES (&1, &2, &3, &4, &5, &6)", rtx!intitule, rtx!montant, rtx!qte, rtx!type, Ncaisse, rtx!date)
             Until rtx.MoveNext()
           Endif
           ' on efface
