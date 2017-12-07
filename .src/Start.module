@@ -6,6 +6,7 @@ Public version_sha1 As String = "SHA1_REPO_GIT_Laurux"
 Public version_branch As String = "BRANCH_REPO_GIT_Laurux"
 Public Son As Integer
 Public Societe As String
+Public Musique As String = "son/warning.ogg"
 Public R As Integer = 255
 Public G As Integer = 252
 Public B As Integer = 216

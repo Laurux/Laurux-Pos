@@ -17,6 +17,7 @@ Public Sub _new()
 
   Dim titre As String
   Dim $con_ok As Boolean = True ' flag d'autorisation de connexion
+  Dim rResult As Result
 
   Utils.Observers(Me)
   Me.Center
@@ -27,7 +28,6 @@ Public Sub _new()
   TextLabel2.Text = Left$(Start.version_sha1, 7) & " (branche: " & Start.version_branch & ")"
   titre = fmenu.text
   Try intitule = Start.LocalSettings["/intitule"]
-  'Fmenu.text = titre & " ( Société  " " " & Right$(Soc, 2) & " - " & intitule & ") "
   Try Version = Start.LocalSettings["/dbase/Version"]
   If Start.LocalSettings["/Cnomade"] Then
     Button3.Text = "&Export vers csv"
@@ -39,7 +39,8 @@ Public Sub _new()
   Endif
   SetObservers(Me, Me)
   Try Soc = Start.LocalSettings["/Soc"]
-  TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
+  If Error Then Soc = "01"
+  TextLabel1.text = "Vous êtes sur le poste " & System.host
 
   '# -- initialisation des informations SQL
   '* MG - 07 janvier 2010
@@ -56,7 +57,14 @@ Public Sub _new()
   If $con_ok Then
     Utils.db.Open
     Utils.db.exec("SET NAMES 'latin1'")
-    Fmenu.text = titre & " ( Société  " " " & Right$(Soc, 2) & " - " & intitule & ") "
+    rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabSoc") & " where cd_sc = &1", Soc)
+    If rResult.Available Then Soc = Soc & " " & rResult!type_sc & " - " & rResult!int_sc
+    Fmenu.text = titre & " ( Société en cours : " & Soc & ")"
+    TextLabel1.text &= "<BR> Vous êtes connecté sur la société :<BR>" & Soc
+    If Application.Path <> "/usr/bin/" & Application.Name Then
+      Majversion.RecupVersion()
+    Endif
+    LauruxMaj.Verif_Version()
   Else
     Message.Warning("Le tunnel SSH n'a pu être établi, la connexion SQL est impossible")
     Config()
@@ -304,10 +312,6 @@ Public Sub mdp_admin2()
     Mdp.SetFocus
   Else
     Preferences.ShowModal()
-    Try intitule = Start.LocalSettings["/intitule"]
-    Try Version = Start.LocalSettings["/dbase/Version"]
-    Try Soc = Start.LocalSettings["/Soc"]
-    TextLabel1.text = "Vous êtes sur le poste " & System.host & "<BR> Vous êtes connecté sur la société :<BR>" & Soc & " " & intitule
   Endif
 
 End

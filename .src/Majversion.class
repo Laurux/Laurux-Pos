@@ -1,0 +1,292 @@
+' Gambas class file
+
+Private hlb As Label
+Private hpb As ProgressBar
+Public Version As String
+'To test new web site interface
+'Private siteurl As String = "devel.Laurux.fr"
+Private siteurl As String = "www.Laurux.fr"
+'Private wwwpath As String = "https://" & siteurl & "/" & Application.Name & "/"  '
+Private wwwpath As String = "http://" & siteurl & "/file/"
+Private version_file As String = "version_pos.txt"
+
+
+Public Sub _New()
+
+  'Message.Info("Hello")
+
+End
+
+Public Sub Form_Open()
+  
+  Dim VersionWebArr As String[]
+  Dim hClient As HttpClient
+  Dim hDoc As HtmlDocument
+  Dim sBuffer As String
+  Dim Elem As XmlElement[]
+  Dim i As Integer = 1
+  Dim wwwlpath As String = wwwpath
+  
+  Majtitle.Text = "Mise à Jour de " & Application.Name
+
+  hClient = New HttpClient As "hClient"
+  hDoc = New HtmlDocument As "hDoc"
+  hClient.URL = wwwpath
+  hClient.Async = False
+  hClient.Timeout = 60
+  hClient.Get
+
+  Print "Begin"
+  If hClient.Status < 0 Then
+    Print "ERROR"
+  Else
+    ' Succès - données lue.
+    If Lof(hClient) Then
+      Read #hClient, sBuffer, Lof(hClient)
+      'Print sBuffer
+      hDoc.HtmlFromString(sBuffer)
+      Elem = hDoc.GetElementsByTagName("a")
+    Endif
+  Endif
+  
+  If Not (IsNull(Elem)) Then
+    While (i < Elem.Length)
+      Type.Add(Elem[i].GetAttribute("href"))
+      Type.Enabled = True
+      i = i + 1
+    Wend
+  
+    hClient.URL = wwwpath & Type.Current.Text
+    hClient.Async = False
+    hClient.Timeout = 60
+    hClient.Get
+
+    Print "Begin"
+    If hClient.Status < 0 Then
+      Print "ERROR"
+    Else
+      ' Succès - données lue.
+      If Lof(hClient) Then
+        Read #hClient, sBuffer, Lof(hClient)
+        'Print sBuffer
+        hDoc.HtmlFromString(sBuffer)
+        Elem = hDoc.GetElementsByTagName("a")
+      Endif
+    Endif
+  
+    i = 1
+    While (i < Elem.Length)
+      ListVersion.Add(Elem[i].GetAttribute("href"))
+      ListVersion.Enabled = True
+      i = i + 1
+    Wend
+    
+    wwwpath = wwwlpath & Type.Current.Text & ListVersion.Current.Text
+  
+  Endif
+  
+  RecupVersion()
+  VerAct.Text = "Version Actuelle: " & Version & " (" & Application.Version & ")"
+  
+  VersionWebArr = Verif_Maj(wwwpath, False)
+  If (VersionWebArr.Length >= 2) Then
+    If VersionWebArr.Length = 2 Then VersionWebArr.Add("?") 'backward compat
+    VerWeb.Text = "Version Web: " & VersionWebArr[0] & "." & VersionWebArr[1] & " (" & VersionWebArr[0] & "." & VersionWebArr[1] & "." & VersionWebArr[2] & ")"
+  Else
+    VerWeb.Text = "Version Web: Not found"
+  Endif
+  
+End
+
+
+Public Sub OK_Click()
+
+  Verif_Maj(wwwpath, True)
+
+End
+
+
+Public Sub Annuler_Click()
+
+  Me.Close()
+
+End
+
+
+Public Sub RecupVersion()
+
+  Dim rResult As Result
+
+  rResult = Utils.db.Exec("SELECT * FROM Fiches_Parametres ")
+  If Application.Name = "Laurux"
+    Try Version = rResult!version
+    version_file = "version.txt"
+  Else If Application.Name = "Laurux-Pos"
+    Try Version = rResult!version_pos
+    version_file = "version_pos.txt"
+  Endif 
+  If Start.LocalSettings["/Majver"] And If Not Application.Path = "/usr/bin/" & Application.Name Then Verif_Maj()
+
+End
+
+
+Public Sub Verif_Maj(Optional wwwlpath As String = wwwpath, Optional Update As Boolean = True) As String[]
+
+  Dim txt As String
+  Dim VersionWeb As String
+  Dim VersionWebFull As String
+  Dim VersionWebArr As String[]
+  Dim VersionAppArr As String[]
+  Dim VersionApp As String
+  
+  VersionApp = Application.Version
+  VersionAppArr = Split(VersionApp, ".")
+  VersionApp = VersionAppArr[0] & "." & VersionAppArr[1]
+
+  If Not Exist(User.home & "/tmp") Then Mkdir User.home & "/tmp"
+  If Exist(User.Home & "/tmp/pb1.txt") Then Kill User.Home & "/tmp/pb1.txt"
+  If Exist(User.Home & "/tmp/ping.txt") Then Kill User.Home & "/tmp/ping.txt"
+  If Exist(User.Home & "/tmp/" & version_file) Then Kill User.Home & "/tmp/" & version_file
+  If Exist(User.Home & "/" & Application.Name & ".tar.gz") Then Kill User.Home & "/" & Application.Name & ".tar.gz"
+  Shell "ping -c 1 " & siteurl & " >" & User.Home & "/tmp/ping.txt 2>&1" Wait
+  If Exist(User.Home & "/tmp/ping.txt") Then
+    txt = Trim$(File.Load(User.Home & "/tmp/ping.txt"))
+  Endif
+  If InStr(txt, "cpanel1") <> 0 Then
+    Shell "wget -q" & " " & wwwlpath & "/" & version_file & " -P " & User.Home & "/tmp" Wait
+    If Exist(User.Home & "/tmp/" & version_file) Then
+      VersionWebFull = File.Load(User.Home & "/tmp/" & version_file)
+      VersionWeb = Trim$(Split(VersionWebFull, "\n")[0])
+      VersionWeb = Replace(VersionWeb, Application.Name & " ", "")
+      VersionWeb = Replace(VersionWeb, "V", "")
+      VersionWeb = Replace(VersionWeb, "v", "")
+      VersionWebArr = Split(VersionWeb, ".")
+      VersionWeb = VersionWebArr[0] & "." & VersionWebArr[1]
+      If update Then
+        If Val(VersionWebArr[1]) > Val(VersionAppArr[1]) Then
+          Maj(VersionWebFull, wwwlpath)
+        Else
+          If Message.Question("Aucune mise à jour n'est a faire !", "OK", "Forcer") = 2 Then
+            Maj(VersionWebFull, wwwlpath)
+          Endif
+        Endif
+      Endif
+      Return VersionWebArr
+    Else
+      If update Then Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
+      Return []
+    Endif
+  Else
+    If update Then Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
+    Return []
+  Endif
+Catch
+  Music.Load(Start.Musique)
+  Music.Play
+  message.Error(Error.Text & " " & Error.where)
+  Return []
+
+End
+
+Public Sub Maj(FullVersion As String, Optional wwwlpath As String = wwwpath)
+
+  Dim $hform As Form
+  Dim hLabel As Label
+
+  $hForm = New Form As "Form"
+  $hform.Width = 600
+  $hform.Height = 400
+  $hForm.Border = Border.Etched
+  $hform.Title = Majtitle.Text
+  hLabel = New Label($hForm)
+  hLabel.Text = "La mise à jour prend un peu de temps.\n Veuillez patienter SVP."
+  hLabel.Width = 600
+  hLabel.Alignment = Align.center
+  hLabel.Height = 40
+  hLabel.Y = 12
+  'hLabel.Border = Border.Plain
+  hlb = New Label($hForm)
+  hlb.Width = 600
+  hlb.Height = 20
+  hlb.Y = 70
+  hlb.Alignment = Align.center
+  hpb = New ProgressBar($hForm)
+  hpb.Width = 400
+  hpb.Height = 20
+  hpb.X = 100
+  hpb.Y = 100
+  $hForm.Move($hForm.ScreenX, $hForm.ScreenY, 600, 200)
+  $hform.Center
+  If Exist(User.Home & "/" & version_file) Then Kill User.Home & "/" & version_file
+  If Exist(User.Home & "/" & Application.Name & ".tar.gz") Then Kill User.Home & "/" & Application.Name & ".tar.gz"
+  Shell "wget -q" & " " & wwwlpath & "/" & version_file & " -P " & User.Home Wait
+  If Exist(User.Home & "/" & version_file) Then
+    If Message.Question("Attention ! Vous allez mettre à jour votre logiciel " & Application.Name & "\n" & FullVersion & "\nVous devez être connecté au réseau internet. \n Etes-vous d'accord ?", "Oui", "Non") = "1" Then
+      Try Move Application.Path & "/" & Application.Name & "3.gambas" To Application.Path & "/" & Application.Name & "3.old.gambas"
+      Try Move Application.Path & "/" & Application.Name To Application.Path & "/" & Application.Name & ".old"
+      Shell "cd " & User.Home
+      $hForm.Show
+      Wait 1
+      $hform.Mouse = Mouse.Wait
+      Shell "wget " & wwwlpath & "/" & Application.Name & ".tar.gz -P " & User.Home & " -o " & User.Home & "/tmp/pb1.txt"
+      Avancement(hlb, hpb)
+      Shell "cd " & User.Home & " " & "; tar xvfz " & User.Home & "/" & Application.Name & ".tar.gz" Wait
+      Wait 2
+      Kill User.Home & "/" & Application.Name & ".tar.gz"
+      Kill User.Home & "/" & version_file
+      $hform.Mouse = Mouse.Default
+      $hform.Close
+      Message.Warning("Mise à jour terminée ! Veuillez relancer " & Application.Name & " SVP !")
+    Endif
+  Else
+    $hform.Mouse = Mouse.Default
+    Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
+  Endif
+Catch
+  Music.Load("son/warning.ogg")
+  Music.Play
+  message.Error(Error.Text & " " & Error.where)
+
+End
+
+
+Public Sub Avancement(hlb As Label, hpb As ProgressBar)
+
+  Dim hFile As File
+  Dim chaine As String
+  Dim v As Integer
+  Dim numligne As Integer
+  Dim L3 As String = "0"
+
+  numligne = 0
+  v = 0
+  Do While Not Exist(User.Home & "/tmp/pb1.txt")  'On test l'existence du fichier temporaire
+  Loop
+  Wait 0.1
+  Do While L3 <> "100"      'On test la fin du téléchargement
+    hFile = Open User.Home & "/tmp/pb1.txt" For Input
+    numligne = 0
+    While Not Eof(hFile)
+      Line Input #hFile, chaine
+      If v = 100 Then L3 = "100"
+      If Mid(chaine, 7, 2) = "K " And Len(chaine) <= 78 And Len(chaine) >= 75 Then
+        L3 = Mid(chaine, 63, 3)
+        If CInt(L3) > v Then  'On incrémente la barre de progression
+          v = CInt(L3)
+          hpb.Value = CInt(L3) / 100
+          hlb.Text = Chaine
+          hlb.Refresh
+          hpb.Refresh
+          Wait
+        Endif
+      Else
+        Wait
+      Endif
+    Wend
+    Close #hFile
+  Loop
+  'CLOSE #hFile
+  Try Kill User.Home & "/tmp/pb1.txt"  '--- Suppression du fichier temporaire ---
+
+End
+

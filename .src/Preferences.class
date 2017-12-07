@@ -267,7 +267,7 @@ End
 
 Public Sub Button2_Click()
 
-  LauruxMaj.Verif_Maj()
+  Majversion.Show()
 
 End
 
