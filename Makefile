@@ -34,7 +34,7 @@ clean:
 	$(Q)rm -f $(APP)
 	$(Q)rm -rf .gambas
 
-$(O)/$(VERSION)/$(PROJECT).tar.gz: $(APP) Icones/Caisse3.png
+$(O)/$(VERSION)/$(PROJECT).tar.gz: $(APP) Icones/$(PROJECT).png
 	$(vecho) "Packaging $(PROJECT) v$(VERSION) ($(GIT_SHA1)) in path $(O)/$(VERSION)"
 	$(Q) mkdir -p $(O)/$(VERSION)
 	$(Q) tar --transform 's,^,$(PROJECT)/,' -zcf $@ $^
