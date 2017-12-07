@@ -2,8 +2,8 @@
 
 { Form Form
   MoveScaled(0,0,64,81)
-  Text = ("Accueil Laurux.Pos")
-  Icon = Picture["Icones/caisse3.png"]
+  Text = ("Accueil Laurux-Pos")
+  Icon = Picture["Icones/Laurux-Pos.png"]
   Border = False
   Arrangement = Arrange.Vertical
   { HBox2 HBox

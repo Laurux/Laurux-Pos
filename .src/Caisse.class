@@ -892,7 +892,7 @@ Public Sub Cart_KeyPress()
         Photos_MouseDown()
       Endif
     Endif
-    If Key.code = Key.F1 Then Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
+    If Key.code = Key.F1 Then Doc.Open("Laurux.PosIndexParCategories")
     If Key.Alt Then
       If Key.code = 86 Then 'CTRL+X
         If Ligtk.Count = 0 Then
@@ -8905,8 +8905,8 @@ End
 
 Public Sub F1_Click()
 
-  Visdoc.Web(Application.Path &/ "Doc_Caisse/Laurux.PosIndexParCategories.html")
-
+  Doc.Open("Laurux.PosIndexParCategories")
+  
 End
 
 Public Sub F2_Click()

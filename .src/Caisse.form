@@ -2,7 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,131,100.875)
-  Text = ("Laurux.Pos")
+  Text = ("Laurux-Pos")
   Border = False
   { Panel1 Panel
     MoveScaled(0,0,146,101)

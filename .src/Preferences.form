@@ -143,7 +143,7 @@
     }
     { Tfamille CheckBox
       MoveScaled(48,28,44,3)
-      ToolTip = ("A cocher si vous souhaitez que la fenêtre des familles soit ouverte à l'ouverture de Laurux.pos")
+      ToolTip = ("A cocher si vous souhaitez que la fenêtre des familles soit ouverte à l'ouverture de Laurux-Pos")
       Text = ("Fenêtre famille par défaut")
     }
     Index = 1
@@ -265,7 +265,7 @@
   }
   { Button2 Button
     MoveScaled(10,87,19,5)
-    ToolTip = ("Lance la mise à jour de Laurux.Pos")
+    ToolTip = ("Lance la mise à jour de Laurux-Pos")
     Text = Shortcut(("Mise à jour"), "M")
     Picture = Picture["icon:/22/make"]
   }
