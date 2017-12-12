@@ -52,7 +52,7 @@ Public Sub _new()
   Utils.Observers(Me)
   Frmt = Utils.FColr(Start.LocalSettings["/Coul/Fnets"])
   If Start.LocalSettings["/Soc" & Start.Societe & "/Coul_fen"] = 0 Then Me.Background = Val(Frmt[0])
-  Music.Load("son/warning.ogg")
+  Music.Load(Start.Musique)
   'Me.Center
   Try ssh = Start.LocalSettings["/dbase/Con-ssh"]
   If ssh <> 0 And Not IsNull(ssh) Then

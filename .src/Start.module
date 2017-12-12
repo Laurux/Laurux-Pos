@@ -4,7 +4,7 @@ Public LocalSettings As Settings
 Public GlobalSettings As Settings
 Public version_sha1 As String = "SHA1_REPO_GIT_Laurux"
 Public version_branch As String = "BRANCH_REPO_GIT_Laurux"
-Public Son As Integer
+Public Son As Integer = 0
 Public Societe As String
 Public Musique As String = "son/warning.ogg"
 Public R As Integer = 255
@@ -24,9 +24,6 @@ Public Sub Main()
   Try Start.version_sha1 = File.Load("sha1.txt")
   
   If Exist(User.home & "/" & Application.Name & ".lock") Then
-    If Start.son Then
-      Music.Play
-    Endif
     Pids = File.Load(User.home & "/" & Application.Name & ".lock")
     psExist = Shell "ps -p " & Pids Wait
     If psExist.Value = 0 Then
@@ -54,7 +51,9 @@ Public Sub Lancement()
   Start.LocalSettings = New Settings(User.Home &/ ".config/gambas3" &/ Application.Name & ".conf", Application.Name & " local configuration")
   Try Societe = Start.LocalSettings["/Soc"]
   Try Son = Start.LocalSettings["/son"]
-  Try Music.Load("son/warning.ogg")
+  If Son Then
+    Music.Load(Start.Musique)
+  Endif
   Try Fontes = Start.LocalSettings["/Soc" & Start.Societe & "/Font"]
   If IsNull(fontes) Then
     Application.Font = Font["Serif,10"]

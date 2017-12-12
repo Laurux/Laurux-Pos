@@ -243,7 +243,7 @@ Public Sub Maj(FullVersion As String, Optional wwwlpath As String = wwwpath)
     Message.Warning("Problème de mise à jour! Veuillez vérifier votre connexion SVP.")
   Endif
 Catch
-  Music.Load("son/warning.ogg")
+  Music.Load(Start.Musique)
   Music.Play
   message.Error(Error.Text & " " & Error.where)
 
