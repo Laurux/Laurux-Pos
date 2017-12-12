@@ -68,9 +68,9 @@ Tri As String
 Rms As New String[] ' Tableau des remises quantitatives
 artrmq As String ' remise quantitative
 Clicaisse As String ' nom client caisse
-Codeclient As String ' code client caisse ou compte
-CodeclientDefault As String ' code client caisse
+CodeclientDefault As String ' code client caisse par défault
 Clicompte As Integer 'si 1 bon de caisse pour client en compte, si 0 client caisse
+Public Clicode As String ' code client compte ou caisse exported
 Coulfc As Integer
 Datetk As String
 Datetk2 As String
@@ -94,7 +94,6 @@ Static Private $iSpc As New String[20]
 Static Private $iSpc2 As New String[20]
 GestMdp As Integer = 0
 Public Bsel As Boolean = False
-Public Clicode As String
 Private Clinom As String
 Private Clipnm As String
 Private Clicp As String
@@ -197,7 +196,7 @@ Public Sub Form_Open()
   Dim tab As String
   
   Utils.Observers(Me)
-  Music.Load("son/warning.ogg")
+  Music.Load(Start.Musique)
   SetObservers(Me, Me)
   Balloon.Delay = 1500
   If Start.LocalSettings["/tactile"] Then
@@ -220,7 +219,7 @@ Public Sub Form_Open()
   Try bAffUSB = Start.LocalSettings["/affusbwn"]
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCliCaisse") & "")
   Clicaisse = rResult!nom
-  Codeclient = rResult!code
+  clicode = rResult!code
   CodeclientDefault = rResult!code
   Frmt = Utils.FColr(Start.LocalSettings["/Coul/Focus"])
   Coulfc = Val(Frmt[0])
@@ -4301,11 +4300,11 @@ Public Sub Maj_Acomptes(intitule As String, Reg As String, smnt As String, libel
     If reg = "P" Then typeP = Vic
     If reg = "H" Then typeP = Vichq
     If reg = "G" Then typeP = CptCaisse
-    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, intitule, dte, numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, Codeclient, Clicaisse, Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, 0, Val(.cpoint(smnt)), 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
-    maj_solde(codeclient, sMnt)
+    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, intitule, dte, numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, clicode, Clicaisse, Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, 0, Val(.cpoint(smnt)), 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
+    maj_solde(clicode, sMnt)
     Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour,numero,compte,intitule,dte,numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, typeP, "Espèces", Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, Val(.cpoint(smnt)), 0, 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
     maj_solde(typeP, sMnt)
-    Maj_Collectif(Codeclient, Clicaisse, libelac, smnt)
+    Maj_Collectif(clicode, Clicaisse, libelac, smnt)
     ' On met à jour le numéro d'écriture
     Utils.db.Exec("UPDATE " & Cbase.Table("TabParam") & " set numecriture = &1, numecriture2 = &2", numr, numr2)
   End With
@@ -4400,6 +4399,10 @@ End
 
 Public Sub Button15_Click()
 
+  If bmodifregl = True And (Val(Mticket.Text) <> 0 Or Val(Rticket.Text) <> 0) Then
+    Message.Warning("Un ticket de modification de règlement doit avoir un solde à zero!")
+    Return
+  Endif
   If iavoir = 1 Then
     If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
       Defaut_Tk()
@@ -4407,7 +4410,7 @@ Public Sub Button15_Click()
       Serial_Tk()
     Endif
   Else
-    If Clicompte = 1 And If LigTk.count > 0 Then
+    If Clicompte = 1 And clicode <> CodeclientDefault And LigTk.count > 0 Then
       'IF NOT IsNull(clicode) THEN
       'rcli = Utils.db.Exec(" select * from " & Cbase.Table("TabCli") & " where cli_code = &1", clicode)
       'Entetcli = rcli!cli_rs_soc & " " & rcli!cli_nom & " " & rcli!cli_pnm & "\n" & rcli!cli_adr1 & "\n" & rcli!cli_adr2 & "\n" & rcli!cli_cd_ptl & " " & rcli!cli_ville & "\n"
@@ -5573,7 +5576,8 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Else
     numero_tk = numtk
   Endif
-  rLastTk = Utils.db.Exec("Select * From " & Tab & " WHERE statut = 0 order by date DESC, numero DESC")
+  'On recupère le dernier ticket du jour (le moulinage ce fait par jour, on ne chaine les tickets que sur la journée)
+  rLastTk = Utils.db.Exec("Select * From " & Tab & " WHERE statut = 0 and date like &1 order by numero DESC", Format$(Now, "dd-mm-yyyy") & "%")
   If rLastTk.Available Then
     prev_numero = rLastTk!numero
   Else
@@ -5678,6 +5682,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
         If Clicompte = 1 Then
           sstatut = 0
           smttc = TotalTk.text
+          Maj_Paiements("M", TotalTk.text, "1")
         Endif
       Until LigTk.MoveNext()
     Else
@@ -5689,16 +5694,12 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       smtva = Format$(Val(Utils.cpoint(TotalTk.Text)) - Val(Utils.cpoint(Totalht)), "0.00")
       smttc = TotalTk.text
     Endif
-    If clicompte = 1 Then
-      Codeclient = clicode
-      Maj_Paiements("M", TotalTk.text, "1")
-    Endif
 
     If IsNull(scartef) Then scartef = $Cli
     If Not IsNull($Nomd) Then $Cli = $Nomd
 
     'On enregistre dans la table Ent_Ticket
-    Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, Codeclient, scheque, tcheque, nmcheque, scarte, smcarte2, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, Left(scartef, 13), ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, Left$($Cli, 35), ssuppr, bretro)
+    Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, clicode, scheque, tcheque, nmcheque, scarte, smcarte2, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, Left(scartef, 13), ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, Left$($Cli, 35), ssuppr, bretro)
     Sha1Calc.CalcSha1(Ncaisse, numero_tk, prev_numero)
     'On enregistre le total si ticket non supprimé, ni en attente, ni en client compte (BL n'est pas un encaissement)
     If iAttente = 0 And Supprime = False And clicompte = 0 Then
@@ -5924,11 +5925,7 @@ Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
       QteReglt = Val(utils.cpoint(QteReglt)) + Val(Utils.cpoint(sqte))
       Utils.db.Exec("UPdate  " & TabReglt & "  SET montant = &1, qte = &2 WHERE type = &3 and date = &4", MntReglt, QteReglt, Reg, Format$(Now, "dd-mm-yyyy"))
     Else
-      If clicompte = 0 Then
-        Utils.db.Exec("INSERT INTO " & TabReglt & " (type, montant, qte, date) VALUES (&1, &2, &3, &4)", Reg, smnt, sqte, Format$(Now, "dd-mm-yyyy"))
-      Else
-        Utils.db.Exec("INSERT INTO " & TabReglt & " (type, montant, qte, date) VALUES (&1, &2, &3, &4)", "M", smnt, "1", Format$(Now, "dd-mm-yyyy"))
-      Endif
+      Utils.db.Exec("INSERT INTO " & TabReglt & " (type, montant, qte, date) VALUES (&1, &2, &3, &4)", Reg, smnt, sqte, Format$(Now, "dd-mm-yyyy"))
     Endif
   Endif
 
@@ -5944,7 +5941,7 @@ Public Sub Init_LigTk()
   LigTk.Columns[3].Alignment = 2
   LigTk.Columns[4].Width = 40
   LigTk.Columns[4].Alignment = 2
-  Codeclient = CodeclientDefault
+  clicode = CodeclientDefault
   TextLabel5.text = "Reste à payer :"
   Clicompte = 0
   Bdc.Text = ""
@@ -6689,6 +6686,9 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       Totnbtck = rTkx.count
       If rTkx.Available Then
         Repeat
+          ' Les clients comptes génère des BL il n'y a donc pas de vente/d'encaissement
+          ' l'encaissement pourra avoir lieu en caisse lors du règlement de BL
+          If rTkx!type = 1 Then Continue
           If rTkx!savoir = 1 Then
             Try totventes = Val(.cpoint(Totventes)) - Val(.cpoint(rTkx!mttc))
           Else
@@ -6790,7 +6790,8 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
         Until rTkhv.MoveNext()
       Endif
       totcaisse = Val(.cpoint(Totcaisse)) + tespece
-      pdf.Level2("Total ventes ", Format$(Val(.cpoint(Totventes)), "0.00"), "", Posy)
+      pdf.Lines2(Posy)
+      pdf.Level2("Total ventes (hors clients compte) ", Format$(Val(.cpoint(Totventes)), "0.00"), "", Posy)
       Posy += 5
       pdf.Lines2(Posy)
       pdf.Level2("Fond de caisse ", Format$(Val(.cpoint(Totcaisse)), "0.00"), "", Posy)
@@ -8144,14 +8145,14 @@ Public Sub Ligtk_Delete()
               quantite = LigTk.Current[4]
               Tot = LigTk.Current[6]
               Rem = True
-              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
+              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
               Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
               Totalht = Format$(Totalht, "0.00")
             Else
               Ligtk.MovePrevious()
               If LigTk.Item[5] = "A" Or If LigTk.Item[5] = "T" And Not rem Then
                 If LigTk.Item[5] = "A" Then
-                  TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
+                  TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
                   Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
                   Totalht = Format$(Totalht, "0.00")
                   'Else
@@ -8175,7 +8176,7 @@ Public Sub Ligtk_Delete()
           Else
             Ligtk.MoveLast()
             If LigTk.Item[5] = "A" Then
-              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
+              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
               Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
               Totalht = Format$(Totalht, "0.00")
             Endif
