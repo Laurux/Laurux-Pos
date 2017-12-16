@@ -7782,9 +7782,9 @@ Public Sub RecupCarte()
 End
 
 '**************************************** Gestion du stock *****************************************************************
-'*****************************************
-'* Maj de la quantite en stock en moins  *
-'*****************************************
+'**********************************************
+'*        Maj de la quantite en stock         *
+'**********************************************
 Public Sub Maj_Quantite()
 
   Dim Qstock As Float
@@ -7802,8 +7802,12 @@ Public Sub Maj_Quantite()
           If rStk.Available Then
             If rStk!art_stocke Then
               Qline = Val(LigTk.Item[4])
-              Try Qstock = rStk!art_qte
-              If Error Then Qstock = 0
+              If IsNull(rStk!art_qte) Then
+                Message.Error("Article stocké, mais quantité indefini dans la base!")
+                Qstock = 0
+              Else
+                Qstock = rStk!art_qte
+              Endif
               If iavoir = 1 Then
                 Qstock = Qstock + Qline
               Else
@@ -7824,43 +7828,10 @@ Public Sub Maj_Quantite()
 
 End
 
-'**********************************************************
-'*        Maj de la quantite en stock en plus            *
-'**********************************************************
-Public Sub Maj_Quantite2()
 
-  Dim Qstock As Float
-  Dim Qline As Float
-  Dim rStk As Result
-
-  Utils.db.Exec("LOCK TABLES " & Cbase.Table("TabArt") & " WRITE, " & Cbase.Table("TabArtPromo") & " WRITE ")
-  With utils
-    If LigTk.Count <> 0 Then
-      LigTk.MoveFirst
-      Repeat
-        LigTk.Item.Selected = True
-        If LigTk.Item[5] = "A" Then
-          rStk = Utils.db.Exec("select * from " & Cbase.Table("TabArt") & " where art_code = &1", LigTk.Item[1])
-          If rStk.Available Then
-            If rStk!art_stocke Then
-              Qline = Val(.cpoint(LigTk.Item[4]))
-              Try Qstock = rStk!art_qte
-              If Error Then Qstock = 0
-              Qstock = Qstock + Qline
-              Utils.db.Exec("UPDATE  " & Cbase.Table("TabArt") & "  SET art_qte = &2 WHERE art_code = &1", LigTk.Item[1], Qstock)
-              If Promo Then Apromo = ArtPromo.art_Promo(LigTk.Item[1], Cpromo)
-              If Apromo = True Then ArtPromo.Maj_qteplus(LigTk.Item[1], Cpromo, Qline)
-            Endif
-          Endif
-        Endif
-      Until LigTk.Movenext()
-    Endif
-    Qline = 0
-    Qstock = 0
-  End With
-  Utils.db.Exec("UNLOCK TABLES")
-
-End
+'****************************************************
+'*        Maj de la quantite en stock Depot         *
+'****************************************************
 
 Public Sub Maj_QteDep()
 
@@ -7878,8 +7849,12 @@ Public Sub Maj_QteDep()
           rStk = Utils.db.Exec("select * from Fiches_StkDepots where codea = &1 and coded = &2", LigTk.Item[1], $depot)
           If rStk.Available Then
             Qline = Val(LigTk.Item[4])
-            Try Qstock = rStk!qte
-            If Error Then Qstock = 0
+            If IsNull(rStk!art_qte) Then
+              Message.Error("Article stocké, mais quantité indefini dans la base!")
+              Qstock = 0
+            Else
+              Qstock = rStk!art_qte
+            Endif
             If iavoir = 1 Then
               Qstock = Qstock + Qline
             Else
@@ -7899,41 +7874,6 @@ Public Sub Maj_QteDep()
 
 End
 
-'**********************************************************
-'*        Maj de la quantite en stock en plus            *
-'**********************************************************
-Public Sub Maj_QteDep2()
-
-  Dim Qstock As Float
-  Dim Qline As Float
-  Dim rStk As Result
-
-  Utils.db.Exec("LOCK TABLES Fiches_StkDepots WRITE, " & Cbase.Table("TabArtPromo") & " WRITE ")
-  With utils
-    If LigTk.Count <> 0 Then
-      LigTk.MoveFirst
-      Repeat
-        LigTk.Item.Selected = True
-        If LigTk.Item[5] = "A" Then
-          rStk = Utils.db.Exec("select * from Fiches_StkDepots where codea = &1 and coded = &2", LigTk.Item[1], $depot)
-          If rStk.Available Then
-            Qline = Val(.cpoint(LigTk.Item[4]))
-            Try Qstock = rStk!qte
-            If Error Then Qstock = 0
-            Qstock = Qstock + Qline
-            Utils.db.Exec("UPDATE  Fiches_StkDepots  SET qte = &3 WHERE codea = &1 and coded = &2", LigTk.Item[1], $depot, Qstock)
-            If Promo Then Apromo = ArtPromo.art_Promo(LigTk.Item[1], Cpromo)
-            If Apromo = True Then ArtPromo.Maj_qteplus(LigTk.Item[1], Cpromo, Qline)
-          Endif
-        Endif
-      Until LigTk.Movenext()
-    Endif
-    Qline = 0
-    Qstock = 0
-  End With
-  Utils.db.Exec("UNLOCK TABLES")
-
-End
 
 Public Sub Tbremq_Create()
 
