@@ -718,11 +718,11 @@ Public Function Fcolr(sFormat As String) As String[]
   For Each s In Split(LCase(sFormat), ";")
     spl = Scan(s, "*: *")
     Select Case Trim(spl[0])
-      Case "background"
+      Case "backcolor"
         BColor[0] = spl[1]
       Case "font"
         BColor[1] = spl[1]
-      Case "foreground"
+      Case "forecolor"
         BColor[2] = spl[1]
     End Select
   Next
