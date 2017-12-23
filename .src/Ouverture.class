@@ -257,7 +257,7 @@ Public Sub Button3_Click()
 
   Dim MyForm As Clavier
 
-  MyForm = New Clavier(" ")
+  MyForm = New Clavier
   MyForm.Show()
 
 End

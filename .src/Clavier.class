@@ -2,7 +2,7 @@
 
 Private $saisie As String
 
-Public Sub _new(Org As String)
+Public Sub _new()
 
   Me.center
   Utils.Observers(Me)
