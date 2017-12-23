@@ -53,19 +53,54 @@ Public Sub Verif_Version()
     'Endif
   Endif
 
-  If bMaj Then Shell "xdg-open 'http://www.laurux.fr/index.php?id=quoi-de-neuf'"
+  If bMaj Then Shell "xdg-open 'http://www.laurux.fr/drupal/changelog'"
 
 End
 
 
 Public Sub Maj325()
 
+  Dim newsettings As String
+  Dim key As Variant
+  Dim hObject As Object
+   
+
   If Exist(User.Home & "/.config/gambas3/Laurux.Pos.conf")
     If Not Exist(User.Home & "/.config/gambas3/" & Application.Name & ".conf")
       Move User.Home & "/.config/gambas3/Laurux.Pos.conf" To User.Home & "/.config/gambas3/" & Application.Name & ".conf"
+      newsettings = File.Load(User.Home & "/.config/gambas3/" & Application.Name & ".conf")
+      newsettings = Replace$(newsettings, "BackColor", "Background")
+      newsettings = Replace$(newsettings, "ForeColor", "Foreground")
+      newsettings = Replace$(newsettings, "Backcolor", "Background")
+      newsettings = Replace$(newsettings, "Forecolor", "Foreground")
+      newsettings = Replace$(newsettings, "backColor", "Background")
+      newsettings = Replace$(newsettings, "foreColor", "Foreground")
+      File.Save(User.Home & "/.config/gambas3/" & Application.Name & ".conf", newsettings)
+      Start.LocalSettings.Reload
     Else
-      Message.Warning("Warning Maj325 n'a pas déplacé les fichiers de conf, car la source et la destination existent!\nVeuillez verifier manuellement les configurations!\n source: " & User.Home & "/.config/gambas3/Laurux.Pos.conf\n destination: " & User.Home & "/.config/gambas3/" & Application.Name & ".conf")
+      If Message.Warning("Warning Maj325 n'a pas déplacé les fichiers de conf, car la source et la destination existent!\nVeuillez verifier les configurations!\n source: " & User.Home & "/.config/gambas3/Laurux.Pos.conf\n destination: " & User.Home & "/.config/gambas3/" & Application.Name & ".conf\n\nSouhaitez-vous tenter une récupération de votre ancienne configuration", "Oui", "Non") == 1 Then
+        newsettings = File.Load(User.Home & "/.config/gambas3/Laurux.Pos.conf")
+        newsettings = Replace$(newsettings, "BackColor", "Background")
+        newsettings = Replace$(newsettings, "ForeColor", "Foreground")
+        newsettings = Replace$(newsettings, "Backcolor", "Background")
+        newsettings = Replace$(newsettings, "Forecolor", "Foreground")
+        newsettings = Replace$(newsettings, "backColor", "Background")
+        newsettings = Replace$(newsettings, "foreColor", "Foreground")
+        File.Save(User.Home & "/.config/gambas3/" & Application.Name & ".conf", newsettings)
+        Kill User.Home & "/.config/gambas3/Laurux.Pos.conf"
+        Start.LocalSettings.Reload
+      Endif
     Endif
+  Else
+    newsettings = File.Load(User.Home & "/.config/gambas3/" & Application.Name & ".conf")
+    newsettings = Replace$(newsettings, "BackColor", "Background")
+    newsettings = Replace$(newsettings, "ForeColor", "Foreground")
+    newsettings = Replace$(newsettings, "Backcolor", "Background")
+    newsettings = Replace$(newsettings, "Forecolor", "Foreground")
+    newsettings = Replace$(newsettings, "backColor", "Background")
+    newsettings = Replace$(newsettings, "foreColor", "Foreground")
+    File.Save(User.Home & "/.config/gambas3/" & Application.Name & ".conf", newsettings)
+    Start.LocalSettings.Reload
   Endif
   
   If Not Error Then bmaj = True
