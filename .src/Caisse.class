@@ -5679,10 +5679,10 @@ Public Sub Enrg_Tk(Supprime As Boolean)
           Utils.db.Exec("DELETE FROM  " & Cbase.Table("TabAcomptes") & " WHERE lind = &1", slinda)
           sstatut = 0
         Endif
-        If Clicompte = 1 Then
+        If Clicompte = 1 And LigTk.Item[5] = "BC" Then 'On enregistre le montant TTC en compte client
           sstatut = 0
-          smttc = TotalTk.text
-          Maj_Paiements("M", TotalTk.text, "1")
+          smttc = LigTk.Item[3]
+          Maj_Paiements("M", LigTk.Item[3], "1")
         Endif
       Until LigTk.MoveNext()
     Else
