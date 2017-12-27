@@ -218,15 +218,15 @@ Public Sub form_close()
         Endif
         Message.Info("La caisse numéro " & Ncaisse & " est déconnectée ! Au revoir.")
       Endif
-      Try Kill User.home & "/" & Application.Name & ".lock"
+      Start.UnLock()
     Else
       Stop Event
     Endif
   Else
-    Try Kill User.home & "/" & Application.Name & ".lock"
+    Start.UnLock()
   Endif
 Catch
-  Try Kill User.home & "/" & Application.Name & ".lock"
+  Start.UnLock()
 
 End
 

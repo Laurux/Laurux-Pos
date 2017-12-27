@@ -216,7 +216,7 @@ End
 
 Public Sub Button2_Click()
 
-  Try Kill User.home & "/" & Application.Name & ".lock"
+  Start.UnLock()
   Me.close
 
 End
