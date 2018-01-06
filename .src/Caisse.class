@@ -2029,7 +2029,7 @@ Public Sub Button6_Click()
   If (Frame8.visible = True)
     Return
   Endif
-  If Clicompte = 1 Then
+  If Clicompte = 1 And CodeclientDefault <> clicode Then
     If LigTk.count > 0 Then
       Aff_bastk()
       Button15_Click()
