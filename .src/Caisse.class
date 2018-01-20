@@ -1038,6 +1038,7 @@ Public Sub Cart_KeyPress()
                           Valid_commentaire()
                         Else
                           If IsNull(RemTot.text) Then
+                            Stop Event
                             Valid_Cart()
                           Else
                             Message.Warning("Saisie impossible une remise sur le total a été effectuée !")
