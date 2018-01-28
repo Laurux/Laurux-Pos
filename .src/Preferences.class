@@ -27,6 +27,7 @@ Public Sub _new()
   Try Qt1.value = Start.LocalSettings["/qt1"]
   Try Ctrlstk.value = Start.LocalSettings["/ctrlstk"]
   Try RecapBonus.value = Start.LocalSettings["/recapbonus"]
+  Try RecapSoldeCli.value = Start.LocalSettings["/recapsoldecli"]
   Try Ordre.Text = Start.LocalSettings["/ordre"]
   Try Lieu.Text = Start.LocalSettings["/lieu"]
   Try Fontes = Start.LocalSettings["/Soc" & Start.Societe & "/Font"]
@@ -194,6 +195,7 @@ Public Sub Form_Close()
   Start.LocalSettings["/qt1"] = Qt1.value
   Start.LocalSettings["/ctrlstk"] = Ctrlstk.value
   Start.LocalSettings["/recapbonus"] = RecapBonus.value
+  Start.LocalSettings["/recapsoldecli"] = RecapSoldeCli.value
   Start.LocalSettings["/ilogo"] = Logo2.Text
   Start.LocalSettings["/ordre"] = Ordre.Text
   Start.LocalSettings["/lieu"] = Lieu.Text

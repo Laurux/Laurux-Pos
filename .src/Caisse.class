@@ -160,6 +160,7 @@ Private bretro As Boolean = False
 Private bmodifregl As Boolean = False
 Private Val_retro As String ' variable pour coeff retrocession
 Private Blexists As Boolean = False
+Private RecapSoldeCli As Boolean = False
 
 ' Méthode de connexion au module BA6X
 Public Sub InitBA6X(uneAdresseIP As String, unPort As Integer)
@@ -199,6 +200,9 @@ Public Sub Form_Open()
   Music.Load(Start.Musique)
   SetObservers(Me, Me)
   Balloon.Delay = 1500
+  If Start.LocalSettings["/recapsoldecli"] Then
+    RecapSoldeCli = True
+  Endif
   If Start.LocalSettings["/tactile"] Then
     Button38.Visible = True
     Button39.Visible = True
@@ -1038,7 +1042,6 @@ Public Sub Cart_KeyPress()
                           Valid_commentaire()
                         Else
                           If IsNull(RemTot.text) Then
-                            Stop Event
                             Valid_Cart()
                           Else
                             Message.Warning("Saisie impossible une remise sur le total a été effectuée !")
@@ -7605,6 +7608,7 @@ Public Sub Recup_Client()
 
   Dim Clitab As Result
   Dim Clibl As Result
+  Dim AffSolde As String
   Dim solde, soldebl, encours As Float
 
   Try Clitab = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCli") & " as c inner join  " & Cbase.Table("TabComptes") & " as a on a.compte_cc = c.cli_code where cli_code = &1", Clicode)
@@ -7621,7 +7625,12 @@ Public Sub Recup_Client()
     solde = Val(Utils.cpoint(Clitab!solde))
     If encours > 0 Then
       If encours < (solde + soldebl) Then
-        If message.Question("Saisie impossible ! L'encours actuel (" & (solde + soldebl) & ") a dépassé\nle plafond défini (" & encours & ") pour ce ce compte!\nVoulez-vous autoriser le dépassement", "Non", "Oui") = 2 Then
+        If RecapSoldeCli Then
+          AffSolde = "Saisie impossible!\nL'encours actuel (" & (solde + soldebl) & ") a dépassé\nle plafond défini (" & encours & ") pour ce ce compte!\nVoulez-vous autoriser le dépassement"
+        Else
+          AffSolde = "Saisie impossible!\nL'encours actuel a dépassé le plafond défini pour ce ce compte!\nVoulez-vous autoriser le dépassement"
+        Endif
+        If message.Question(AffSolde, "Non", "Oui") = 2 Then
           mdp_admin()
           If GestMdp = 1 Then
             org = "EF12"
@@ -7642,7 +7651,10 @@ Public Sub Recup_Client()
   Clipnm = Clitab!cli_pnm
   Clicp = Clitab!cli_cd_ptl
   Cliburdist = Clitab!cli_ville
-  Bdc.Text = "Bon de caisse " & Clitab!cli_nom & " " & Clitab!cli_pnm & " (solde = " & Format$((solde + soldebl), "0.00") & ")"
+  Bdc.Text = "Bon de caisse " & Clitab!cli_nom & " " & Clitab!cli_pnm
+  If RecapSoldeCli Then
+    Bdc.Text = Bdc.Text & " (solde = " & Format$((solde + soldebl), "0.00") & ")"
+  Endif
   Clicompte = 1
   $Cli = Clinom & " " & Clitab!cli_pnm
   Cart.SetFocus

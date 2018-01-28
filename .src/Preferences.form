@@ -66,8 +66,13 @@
       ToolTip = ("Si le récapitulatif du bonus doit s'afficher en bas de ticket")
       Text = ("Récapitulatif du bonus")
     }
+    { RecapSoldeCli CheckBox
+      MoveScaled(48,8,44,4)
+      ToolTip = ("Si sélectionné, l'affichage du solde du client\ns'affiche dans l'interface de caisse et en cas de dépassement\ndu plafond d'encours")
+      Text = ("Récapitulatif du solde Client (Factures + BLs)")
+    }
     { Son CheckBox
-      MoveScaled(48,8,23.125,3)
+      MoveScaled(48,13,23.125,3)
       ToolTip = ("A cocher si vous souhaitez un son pendant les messages d'alerte..")
       Text = Shortcut(("Gestion du son"), "s")
     }
@@ -80,12 +85,12 @@
       List = [("1"), ("2"), ("3"), ("4"), ("5"), ("6"), ("7"), ("8"), ("9")]
     }
     { ChoixImp CheckBox
-      MoveScaled(48,16,44,3)
+      MoveScaled(48,21,44,3)
       ToolTip = ("A cocher si vous souhaitez avoir la possibilité de ne pas imprimer le ticket .")
       Text = ("Choix impression du ticket")
     }
     { HistoCli CheckBox
-      MoveScaled(48,12,44,3)
+      MoveScaled(48,17,44,3)
       ToolTip = ("A cocher si vous souhaitez conserver les coordonnées des clients divers caisses. Cette fonction est utilisée lors de l'impression des facturettes.")
       Text = ("Archivage des clients facturettes.")
     }
@@ -95,12 +100,12 @@
       Text = ("Facturette sur imprimante par défaut")
     }
     { ChoixImpc CheckBox
-      MoveScaled(48,20,44,3)
+      MoveScaled(48,25,44,3)
       ToolTip = ("A cocher si vous ne souhaitez  pas saisir le nom du client lors d'un réglement par carte.")
       Text = ("Choix saisie nom des cartes")
     }
     { ChoixImpn CheckBox
-      MoveScaled(48,24,44,3)
+      MoveScaled(48,29,44,3)
       ToolTip = ("A cocher si vous souhaitez pas saisir le nom du client lors d'un réglement par chèque.")
       Text = ("Choix saisie nom des chèques")
     }
@@ -142,7 +147,7 @@
       }
     }
     { Tfamille CheckBox
-      MoveScaled(48,28,44,3)
+      MoveScaled(48,33,44,3)
       ToolTip = ("A cocher si vous souhaitez que la fenêtre des familles soit ouverte à l'ouverture de Laurux-Pos")
       Text = ("Fenêtre famille par défaut")
     }
