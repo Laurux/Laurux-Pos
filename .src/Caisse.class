@@ -6641,7 +6641,8 @@ Private Function margeart(code As String, qte As String, mht As String, rem As S
     If IsNull(rem) Then rem = "0"
     fmht = CFloat(Trim(Replace(mht, ",", "."))) - CFloat(Trim(Replace(rem, ",", ".")))
     fqte = CFloat(Trim(Replace(qte, ",", ".")))
-    marge = fmht - (fqte * res!art_prvt)
+    Try marge = fmht - (fqte * res!art_prvt)
+    If Error Then marge = fmht - (fqte * res!art_paua)
   Endif
   Return marge
 
