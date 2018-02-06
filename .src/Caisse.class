@@ -1042,6 +1042,7 @@ Public Sub Cart_KeyPress()
                           Valid_commentaire()
                         Else
                           If IsNull(RemTot.text) Then
+                            Stop Event
                             Valid_Cart()
                           Else
                             Message.Warning("Saisie impossible une remise sur le total a été effectuée !")
@@ -1168,6 +1169,7 @@ Public Sub Qte_KeyPress()
             Else
               ChkPrx()
               If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
+                Stop Event
                 Valid_Qte()
               Endif
             Endif
@@ -1232,10 +1234,11 @@ Public Sub Valid_commentaire()
 
 End
 
-Public Sub Valid_Cart()
+Public Sub Valid_Cart() As Boolean
 
   Dim Rarts As Result
   Dim cbarr As String
+  Dim ret As Boolean
 
   If Left$(Cart.Text, 1) = "*" Then
     If Len(Cart.Text) = 14 And Mid$(Cart.Text, 2, 6) = "299999" Then
@@ -1257,9 +1260,11 @@ Public Sub Valid_Cart()
   If Crt = True Then
     If Clicompte = 0 Then
       RecupCarte()
+      ret = True
     Else
       Message.Warning("Saisie d'une carte impossible sur un client en compte !")
       Crt = False
+      ret = False
     Endif
   Endif
   If Chkart = True Then
@@ -1356,6 +1361,7 @@ Public Sub Valid_Cart()
           Zone = "Qte"
         Endif
       Endif
+      ret = True
     Else
       If Start.son Then
         Music.Play
@@ -1368,10 +1374,14 @@ Public Sub Valid_Cart()
       Endif
       Cart.Text = ""
       iart = 1
+      ret = False
     Endif
   Endif
+
   Chkart = True
   Crt = False
+  
+  Return ret
 
 End
 
@@ -1714,8 +1724,9 @@ Public Sub Pvttc_KeyPress()
   Endif
   ChkPrx()
   If Key.code = Key.F3 Then Button4_Click()
-  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
     bFam = False
+    Stop Event
     TestPvttc()
   Endif
 
@@ -1776,6 +1787,9 @@ Public Sub TestPvttc()
         Try message.warning("ATTENTION ! Le Prix de vente est égal à Zero", "OK")
         Pvttc.ReadOnly = False
         Pvttc.Background = &FFFFFF&
+        Pvttc.SetFocus
+        Pvttc.Select
+        Zone = "Pvttc"
       Endif
     Endif
   End With
