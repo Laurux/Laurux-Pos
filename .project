@@ -18,6 +18,7 @@ Component=gb.form.mdi
 Component=gb.logging
 Component=gb.net
 Component=gb.net.curl
+Component=gb.openssl
 Component=gb.pcre
 Component=gb.qt4.ext
 Component=gb.sdl.sound

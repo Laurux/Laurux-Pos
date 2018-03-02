@@ -5718,7 +5718,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
 
     'On enregistre dans la table Ent_Ticket
     Utils.db.Exec("INSERT INTO " & Tab & " (caisse, numero, date, client, scheque, mcheque, nmcheque, scarte, mcarte, nmcarte, sespeces, mespeces, scredit, mcredit, mht, mtva, mttc, statut, savoir, scavoir, mavoir, type, vendeur, carte, points, sbonus, mbonus, sresto, mresto, sbachat, mbachat, nom, suppr, retro) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19}, &{20}, &{21}, &{22}, &{23}, &{24}, &{25}, &{26}, &{27}, &{28}, &{29}, &{30}, &{31}, &{32}, &{33}, &{34})", Ncaisse, numero_tk, datetk, clicode, scheque, tcheque, nmcheque, scarte, smcarte2, nmcarte, sespeces, smespeces, scredit, smcredit, smht, smtva, smttc, sstatut, iavoir, scavoir, smavoir, clicompte, Caissiere, Left(scartef, 13), ftpointg, sbonus, smbonus, sresto, smresto, sachat, smachat, Left$($Cli, 35), ssuppr, bretro)
-    Sha1Calc.CalcSha1(Ncaisse, numero_tk, prev_numero)
+    Sha1Calc.CalcSha1T(Tab, Ncaisse, numero_tk, prev_numero)
     'On enregistre le total si ticket non supprimé, ni en attente, ni en client compte (BL n'est pas un encaissement)
     If iAttente = 0 And Supprime = False And clicompte = 0 Then
       rResult = Utils.db.Exec(" select * from Fiches_Caisses where code = &1", Ncaisse)
