@@ -12,9 +12,6 @@ Public Function CalcSha1T($Tab As String, $Ncaisse As String, $numero As String,
     Repeat
       $cle = sResult!caisse & sResult!numero & sResult!date & sResult!client & sResult!scheque & sResult!mcheque & sResult!nmcheque & sResult!scarte & sResult!mcarte & sResult!nmcarte & sResult!sespeces & sResult!mespeces & sResult!scredit & sResult!mcredit & sResult!mht & sResult!mtva & sResult!mttc & sResult!savoir
       $cle &= sResult!scavoir & sResult!mavoir & sResult!type & sResult!vendeur & sResult!carte & sResult!points & sResult!sbonus & sResult!mbonus & sResult!sresto & sResult!mresto & sResult!sbachat & sResult!mbachat & sResult!nom & sResult!suppr & sResult!retro
-      $cle = Replace$($cle, ")", "")
-      $cle = Replace$($cle, "(", "")
-      $cle = Replace$($cle, "'", "")
       'On chaine les contrôle avec le ticket précédent si il existe dans la table
       lResult = Utils.db.Exec("SELECT * FROM  " & $Tab & " WHERE caisse = &1 and numero = &2", $Ncaisse, prev_numero)
       
