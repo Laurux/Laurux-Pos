@@ -2575,6 +2575,21 @@ Public Sub Valid_Especes()
         Else
           Inpm.SetFocus
         Endif
+      Else
+        'On autorise l'enregistement d'un ticket null espèce pour un echange d'article
+        'avec meme valeur
+        Especes.Text = Format$(Val(Especes.Text), "0.00")
+        Calc_reste(Especes.text)
+        Try ColumnView1.Add("N", "N")
+        If Not Error Then
+          ColumnView1.Item[0] = "N"
+          ColumnView1.Item[1] = "Especes : "
+          ColumnView1.Item[2] = Especes.Text
+        Endif
+        Especes.Clear
+        Especes.Visible = False
+        Aff_bastk()
+        Inpm.SetFocus
       Endif
     Endif
   Endif
