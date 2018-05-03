@@ -200,7 +200,7 @@ Public Sub form_close()
 
   Dim Cai As Result
 
-  Ncaisse = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
+  Ncaisse = Split(Start.LocalSettings["/Cai" & "/Ncai"], ";")[0]
   If Not IsNull(Ncaisse) Then
     Cai = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCaisses") & " where code = &1", Ncaisse)
     If Start.son Then

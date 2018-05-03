@@ -141,7 +141,7 @@ Private $saisie As String
 Private TouchFam As Boolean = False
 Private btn As ImageButton
 Private codeA As New String[72]
-Private ToucheS As New String[41]
+Private ToucheS As New String[110]
 Private hpan As Panel
 Private hbutton As ImageButton
 Private Pan As Boolean = False
@@ -261,8 +261,8 @@ Public Sub Form_Open()
   Tvaintra = "Tva intra : " & rResult!tvaintra_sc
   Datetk = Format$(Now, "dd-mm-yyyy  hh-nn")
   Client = "Client : " & Clicaisse & "\n"
-  Ncaisse = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
-  Caissiere = Right$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
+  Ncaisse = Split(Start.LocalSettings["/Cai" & "/Ncai"], ";")[0]
+  Caissiere = Split(Start.LocalSettings["/Cai" & "/Ncai"], ";")[1]
   rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Caissiere)
   Caissiere = rResult!nom
   $Caissiere = rResult!nom & "\n"
@@ -902,7 +902,7 @@ Public Sub Cart_KeyPress()
           Svendeur.showmodal()
           If $Vendeur Then
             Caissiere = Start.$Cai
-            rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Left$(Caissiere, 1))
+            rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Left$(Caissiere, 2))
             Caissiere = rResult!nom
             $Caissiere = rResult!nom & "\n"
             Ent_tk(Null)
@@ -958,7 +958,7 @@ Public Sub Cart_KeyPress()
           Svendeur.showmodal()
           If $Vendeur Then
             Caissiere = Start.$Cai
-            rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Left$(Caissiere, 1))
+            rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabVendeurs") & " where code = &1", Left$(Caissiere, 2))
             Caissiere = rResult!nom
             $Caissiere = rResult!nom & "\n"
             Ent_tk(Null)
@@ -1491,6 +1491,13 @@ End
 
 Public Sub Init_Art()
 
+  If Not IsNull(RemTot.Text) Then
+    If Message.Warning("Il est impossible de rajouter un article une fois une remise totale saisie!\nVoulez-vous la supprimer?", "Oui", "Non") = 2 Then Return
+    iremT = 0
+    RemTot.Clear
+    Valid_Remtot("0")
+  Endif
+  
   Recup_dec()
   Decimal()
   If Left$(Cart.Text) = "*" Then
@@ -1853,12 +1860,12 @@ Public Sub Button33_Click()
     Return
   Endif
   With Utils
-    If IsNull(RemTot.text) Then
+    'If IsNull(RemTot.text) Then
       If Val(.cpoint(TotalTk.text)) <> 0 Then
         If Frame1.Visible = True Then
           Frame1.visible = False
-          RemTot.Clear
-          iremT = 0
+          'RemTot.Clear
+          'iremT = 0
         Else
           mdp_admin()
           If GestMdp = 1 Then
@@ -1877,10 +1884,10 @@ Public Sub Button33_Click()
           Endif
         Endif
       Endif
-    Else
-      Message.Warning("On ne peut pas faire deux remises sur le total du ticket !")
-      Cart.SetFocus
-    Endif
+    'Else
+    '  Message.Warning("On ne peut pas faire deux remises sur le total du ticket !")
+    '  Cart.SetFocus
+    'Endif
   End With
 
 End
@@ -1891,32 +1898,52 @@ Public Sub RemTot_KeyPress()
     ChkPrx()
     If key.code = key.Esc Then
       Frame1.Visible = False
-      RemTot.Clear
-      iremT = 0
+      'RemTot.Clear
+      'iremT = 0
       Cart.SetFocus
       Zone = "Article"
     Endif
     If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Tab Then
-      Valid_Remtot()
+      Valid_Remtot(RemTot.Text)
     Endif
   End With
 
 End
 
-Public Sub Valid_Remtot()
+Public Sub Valid_Remtot(RemiseTotal As String)
 
   Dim sremT As String
   Dim mremT As String
+  Dim numl As Integer
 
+  'On supprime les lignes de remise sur total
+  LigTk.MoveFirst
+  For numl = 1 To LigTk.count
+    Try LigTk.Item.Selected = True
+    If Not Error Then
+      If LigTk.Item[5] = "MT" Then
+        LigTk.Current.Delete
+        Numl = 1
+        LigTk.MoveFirst
+      Else
+        LigTk.MoveNext()
+      Endif
+    Endif
+  Next
+
+  'On recalcul sans remise
+  Recalc_Tottk()
   rremt = 0
+
+  'On applique la nouvelle remise
   With Utils
-    If Not IsNull(RemTot.text) And If IsNumber(.cpoint(RemTot.text)) Then
-      If Val(.cpoint(RemTot.text)) > 0 And If Val(.cpoint(RemTot.text)) <= 100 Then
+    If Not IsNull(RemiseTotal) And If IsNumber(.cpoint(RemiseTotal)) Then
+      If Val(.cpoint(RemiseTotal)) >= 0 And If Val(.cpoint(RemiseTotal)) <= 100 Then
         LigTk.Movelast()
         Repeat
           LigTk.item.Selected = True
           If LigTk.Item[5] = "A" Or If LigTk.Item[5] = "S" Then
-            mremT = Format$((Val(utils.CPoint(LigTk.Item[11])) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
+            mremT = Format$((Val(utils.CPoint(LigTk.Item[11])) * Val(utils.CPoint(RemiseTotal)) / 100), "0.00")
             LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - Val(.CPoint(mremT)), "0.00")
             rremT = Val(utils.CPoint(rremT)) + (Abs(Val(utils.CPoint(mremT))) * Val(utils.CPoint(LigTk.Item[4])))
             tva = LigTk.Item[12]
@@ -1932,7 +1959,7 @@ Public Sub Valid_Remtot()
           Endif
           If LigTk.Item[2] = Space$(15) & "Prix total " Then
             'LigTk.Item[11] = LigTk.Item[3]
-            Try LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - (Val(utils.CPoint(LigTk.Item[3])) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
+            Try LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - (Val(utils.CPoint(LigTk.Item[3])) * Val(utils.CPoint(RemiseTotal)) / 100), "0.00")
             tva = LigTk.Item[12]
             Calc_Tva()
             tx = (1 + (Val(.cpoint(Tva)) / 100))
@@ -1947,42 +1974,45 @@ Public Sub Valid_Remtot()
         Until Ligtk.MovePrevious()
         Ligtk.MoveLast()
         Ligtk.item.Selected = True
-        Inc iligne
-        Inc iNlg
-        Bloc = iligne
-        sremT = Format$(Val(.CPoint(TotalTk.text)) - (Val(utils.CPoint(TotalTk.text)) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
-        rremT = Format$(Val(.CPoint(TotalTk.text)) - Val(utils.CPoint(sremT)), "0.00")
-        LigTk.Add(iligne, iligne)
-        LigTk.Item[0] = iNlg
-        LigTk.Item[2] = "total Ticket brut " & Format$(Val(.CPoint(TotalTk.text)), "0.00")
-        LigTk.Item[5] = "MT"
-        LigTk.Item[8] = bloc
-        Inc iligne
-        Inc iNlg
-        TotalTk.text = sremT
-        LigTk.Add(iligne, iligne)
-        LigTk.Item[0] = iNlg
-        LigTk.Item[2] = RemTot.Text & "% de Remise sur total soit -" & Format$(Val(.CPoint(rremT)), "0.00")
-        LigTk.Item[5] = "MT"
-        LigTk.Item[8] = bloc
-        Inc iligne
-        Inc iNlg
-        LigTk.Add(iligne, iligne)
-        LigTk.Item[0] = iNlg
-        LigTk.Item[2] = "Total ticket net " & Format$(Val(.CPoint(TotalTk.text)), "0.00")
-        LigTk.Item[5] = "MT"
-        LigTk.Item[8] = bloc
-        Frame1.Visible = False
-        'RemTot.Clear
-        iremT = 0
-        Cart.clear
-        Qte.Text = "1"
-        Design.clear
-        Cart.SetFocus
-        Zone = "Article"
-        'ClavFam()
+        If Val(.cpoint(RemiseTotal)) > 0
+          Inc iligne
+          Inc iNlg
+          Bloc = iligne
+          sremT = Format$(Val(.CPoint(TotalTk.text)) - (Val(utils.CPoint(TotalTk.text)) * Val(utils.CPoint(RemiseTotal)) / 100), "0.00")
+          rremT = Format$(Val(.CPoint(TotalTk.text)) - Val(utils.CPoint(sremT)), "0.00")
+          LigTk.Add(iligne, iligne)
+          LigTk.Item[0] = iNlg
+          LigTk.Item[2] = "total Ticket brut " & Format$(Val(.CPoint(TotalTk.text)), "0.00")
+          LigTk.Item[5] = "MT"
+          LigTk.Item[8] = bloc
+          Inc iligne
+          Inc iNlg
+          TotalTk.text = sremT
+          LigTk.Add(iligne, iligne)
+          LigTk.Item[0] = iNlg
+          LigTk.Item[2] = RemiseTotal & "% de Remise sur total soit -" & Format$(Val(.CPoint(rremT)), "0.00")
+          LigTk.Item[5] = "MT"
+          LigTk.Item[8] = bloc
+          Inc iligne
+          Inc iNlg
+          LigTk.Add(iligne, iligne)
+          LigTk.Item[0] = iNlg
+          LigTk.Item[2] = "Total ticket net " & Format$(Val(.CPoint(TotalTk.text)), "0.00")
+          LigTk.Item[5] = "MT"
+          LigTk.Item[8] = bloc
+          Cart.clear
+          Qte.Text = "1"
+          Design.clear
+          Cart.SetFocus
+          Zone = "Article"
+          'ClavFam()
+        Else
+          'RemTot est égal a 0
+          RemTot.Clear
+          iremT = 0
+        Endif
       Else
-        Message.Warning("La saisie d'une remise (en %) inféreur ou égale à zéro ou supérieur à 100 n'est pas autorisée !")
+        Message.Warning("La saisie d'une remise (en %) inféreur à zéro ou supérieur à 100 n'est pas autorisée !")
         iremT = 0
         RemTot.Clear
         RemTot.SetFocus
@@ -1990,55 +2020,11 @@ Public Sub Valid_Remtot()
     Endif
   End With
 
-End
-
-Public Sub Valid_Remtot2()
-
-  Dim sremT As String
-  Dim mremT As String
-
-  With Utils
-    If Not IsNull(RemTot.text) Then
-      If Val(.cpoint(RemTot.text)) <> 0 And If Val(.cpoint(RemTot.text)) <> 100 Then
-        Inc iligne
-        Inc iNlg
-        Bloc = iligne
-        mremT = Format$(Val(Utils.CPoint(TotalTk.text)) - (Val(utils.CPoint(TotalTk.Text)) * Val(utils.CPoint(RemTot.text)) / 100), "0.00")
-        sremT = Format$(Val(.CPoint(TotalTk.text)) - Val(.CPoint(mremT)), "0.00")
-        TotalTk.text = mremT
-        tva = txtva
-        Calc_Tva()
-        tx = (1 + (Val(.cpoint(tva)) / 100))
-        Pvht = Val(utils.cpoint(sremT)) / tx
-        Pvht = Format$(Pvht, "0.00")
-        Mtva = Val(Utils.cpoint(sremT)) - Val(Utils.cpoint(Pvht))
-        Totalht = Val(.cpoint(Totalht)) - Val(.cpoint(Pvht))
-        Totalht = Format$(Totalht, "0.00")
-        LigTk.Add(iligne, iligne)
-        LigTk.Item[0] = iNlg
-        LigTk.Item[2] = Format$(Val(.cpoint(RemTot.Text)), "0.00") & " % de Remise sur total ticket"
-        LigTk.Item[3] = sRemT
-        LigTk.Item[5] = "MT"
-        LigTk.Item[6] = Pvht
-        LigTk.Item[7] = Pvht
-        LigTk.Item[8] = bloc
-        LigTk.Item[9] = Mtva
-        LigTk.Item[10] = tva
-        Frame1.Visible = False
-        'RemTot.Clear
-        iremT = 0
-        Cart.SetFocus
-        Zone = "Article"
-      Else
-        Message.Warning("La saisie d'une remise égale à zéro ou à 100 n'est pas autorisée !")
-        iremT = 0
-        RemTot.Clear
-        RemTot.SetFocus
-      Endif
-    Endif
-  End With
+  Frame1.Visible = False
+  RenameLigne()
 
 End
+
 
 Public Sub Button6_Click()
 
@@ -5386,34 +5372,40 @@ Public Sub Aff_bastk()
               Ligtk.MoveNext()
               Try LigTk.Item.Selected = True
               If Not Error Then
-                If LigTk.Item[5] <> "T" Then
-                  LigTk.MovePrevious()
-                  LigTk.Item.Selected = True
-                  btot = False
-                Else
+                If LigTk.Item[5] = "T" Then
                   btot = True
-                  mttc = Val(Utils.cpoint(LigTk.Item[11]))
-                  LigTk.MovePrevious()
-                  LigTk.Item.Selected = True
                 Endif
+                'LigTk.MovePrevious()
+                'LigTk.Item.Selected = True
               Else
-                LigTk.MoveLast()
-                LigTk.Item.Selected = True
+                btot = False
+                'mttc = Val(Utils.cpoint(LigTk.Item[11]))
+                'LigTk.MovePrevious()
+                'LigTk.Item.Selected = True
+              '  Endif
+              'Else
+              '  LigTk.MoveLast()
+              '  LigTk.Item.Selected = True
               Endif
+              LigTk.MovePrevious()
+              LigTk.Item.Selected = True
             Endif
           Else
             LigTk.MovePrevious()
             LigTk.Item.Selected = True
           Endif
         Endif
-        If Not btot Then
-          Try mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
-          Try $code = LigTk.Item[10]
-        Else
-          'If Not brem Then mttc = mttc * Abs(Val(Utils.cpoint(LigTk.Item[4])))
-
-        Endif
-        Try mht = Val(Utils.cpoint(LigTk.Item[6]))
+        
+        mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+        $code = LigTk.Item[10]
+        
+        'If Not btot Then
+        '  mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+        '  $code = LigTk.Item[10]
+        'Else
+        '  mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+        'Endif
+        mht = Val(Utils.cpoint(LigTk.Item[6]))
         Totalht = totalht + mht
         ttvam = mttc - mht
         rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", $code)
@@ -5519,27 +5511,6 @@ Public Sub Aff_bastk()
   LigTk.Item[1] = ""
   Inc iligne
   Inc iNlg
-  RemTot.text = ""
-
-End
-
-Public Sub Tvaremtot()
-
-  Dim rtva As Result
-  Dim Tatva As String = "Tottva"
-  Dim ttva As Float = 0
-
-  totaltva = 0
-  Repeat
-    rtva = Utils.db.Exec(" select * from " & Tatva & "")
-    If rtva.Available Then
-      ttva = rtva!mtva
-      ttva = ttva - (ttva * Val(utils.cpoint(RemTot.text))) / 100
-      totaltva = totaltva + ttva
-      Utils.db.Exec("UPdate  " & Tatva & "  SET mtva = &2 WHERE code = &1", rtva!code, ttva)
-    Endif
-  Until LigTk.MoveNext()
-  RemTot.Clear
 
 End
 
@@ -5618,7 +5589,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Endif
   Dtck = numero_tk
   Mtrem = RemTot.text
-  RemTot.text = ""
+  RemTot.Clear
   If IsNull(mtrem) Then mtrem = "0"
   LigTk.MoveFirst()
   With utils
@@ -5906,6 +5877,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
     Zone = "Article"
     iQte = 0
     iRem = 0
+    RemTot.Clear
     iAttente = 0
     iRattente = 0
     iAvoir = 0
@@ -8034,13 +8006,102 @@ Public Sub LigTk_Activate()
 
 End
 
-Public Sub Ligtk_Delete()
 
-  Dim Block, $Block, Tligne As String
+Public Sub Recalc_Tottk()
+
+  Dim Tligne As String
   Dim numl As Integer
   Dim pu, quantite As String
   Dim tot As String
   Dim Rem, Trem As Boolean = False
+
+  Blexists = False
+  LigTk.MoveFirst
+  TotalTk.Text = 0
+  Mticket.Text = TotalTk.text
+  Rticket.text = TotalTk.Text
+  Totalht = 0
+
+  For numl = 1 To LigTk.count
+    Try LigTk.Item.Selected = True
+    If Not Error Then
+      If LigTk.Item[5] = "BL" Then
+        Blexists = True
+        TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(LigTk.Current[11])), "0.00")
+        Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(LigTk.Current[6]))
+      Endif
+      If LigTk.Item[5] = "A" Then
+        Tligne = LigTk.Item[5]
+        Pu = LigTk.Current[3]
+        quantite = LigTk.Current[4]
+        Tot = LigTk.Current[6]
+        rem = False
+        'LigTk.MoveNext()
+        'Try LigTk.Item.Selected = True
+        'If Error Then
+        'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
+        'Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
+        'Totalht = Format$(Totalht, "0.00")
+        'ndif
+      Endif
+      LigTk.MoveNext()
+      Try LigTk.Item.Selected = True
+      If Not Error Then
+        If LigTk.Item[5] = "M" And Not Trem Or If LigTk.Item[5] = "S" And Not Trem Then
+          Pu = LigTk.Current[3]
+          quantite = LigTk.Current[4]
+          Tot = LigTk.Current[6]
+          Rem = True
+          TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
+          Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
+          Totalht = Format$(Totalht, "0.00")
+        Else
+          Ligtk.MovePrevious()
+          If LigTk.Item[5] = "A" Or If LigTk.Item[5] = "T" And Not rem Then
+            If LigTk.Item[5] = "A" Then
+              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
+              Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
+              Totalht = Format$(Totalht, "0.00")
+              'Else
+              'Pu = LigTk.Current[3]
+              'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(pu)), "0.00")
+            Endif
+
+          Endif
+        Endif
+        'Tligne = LigTk.Item[5]
+        'Pu = LigTk.Current[3]
+        'quantite = LigTk.Current[4]
+        'Tot = LigTk.Current[6]
+        LigTk.MoveNext()
+        'Try LigTk.Item.Selected = True
+        'If Error And If Tligne = "A" Then
+        ' TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
+        'Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
+        'Totalht = Format$(Totalht, "0.00")
+        'Endif
+      Else
+        Ligtk.MoveLast()
+        If LigTk.Item[5] = "A" Then
+          TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
+          Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
+          Totalht = Format$(Totalht, "0.00")
+        Endif
+        LigTk.MoveNext()
+      Endif
+    Endif
+  Next
+  Mticket.Text = TotalTk.text
+  Rticket.text = TotalTk.Text
+
+End
+
+
+
+Public Sub Ligtk_Delete()
+
+  Dim Block, $Block As String
+  Dim numl As Integer
 
   If ColumnView1.count = 0 Then
     If message.Question("Voulez-vous supprimer cette ligne ?\nLes lignes de remise sur total seront également supprimées.", "Oui", "Non") = 1 Then
@@ -8071,104 +8132,25 @@ Public Sub Ligtk_Delete()
         Endif
       Until Ligtk.MoveNext()
 
-      RenameLigne()
-
-      'On supprime les lignes de remise sur total
-      LigTk.MoveFirst
-      For numl = 1 To LigTk.count
-        Try LigTk.Item.Selected = True
-        If Not Error Then
-          If LigTk.Item[5] = "MT" Then
-            LigTk.Current.Delete
-            Numl = 1
-            LigTk.MoveFirst
-            RemTot.clear
-          Else
-            LigTk.MoveNext()
-          Endif
-        Endif
-      Next
+      'on recalcul sans remise et on renomme les lignes
+      Valid_Remtot("0")
 
       'On recalcule le total du ticket
-      Blexists = False
-      LigTk.MoveFirst
-      TotalTk.Text = 0
-      Mticket.Text = TotalTk.text
-      Rticket.text = TotalTk.Text
-      Totalht = 0
-      rremT = 0
-      RemTot.Clear
-      For numl = 1 To LigTk.count
-        Try LigTk.Item.Selected = True
-        If Not Error Then
-          If LigTk.Item[5] = "BL" Then
-            Blexists = True
-            TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(LigTk.Current[11])), "0.00")
-            Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(LigTk.Current[6]))
-          Endif
-          If LigTk.Item[5] = "A" Then
-            Tligne = LigTk.Item[5]
-            Pu = LigTk.Current[3]
-            quantite = LigTk.Current[4]
-            Tot = LigTk.Current[6]
-            rem = False
-            'LigTk.MoveNext()
-            'Try LigTk.Item.Selected = True
-            'If Error Then
-            'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
-            'Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-            'Totalht = Format$(Totalht, "0.00")
-            'ndif
-          Endif
-          LigTk.MoveNext()
-          Try LigTk.Item.Selected = True
-          If Not Error Then
-            If LigTk.Item[5] = "M" And Not Trem Or If LigTk.Item[5] = "S" And Not Trem Then
-              Pu = LigTk.Current[3]
-              quantite = LigTk.Current[4]
-              Tot = LigTk.Current[6]
-              Rem = True
-              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
-              Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-              Totalht = Format$(Totalht, "0.00")
-            Else
-              Ligtk.MovePrevious()
-              If LigTk.Item[5] = "A" Or If LigTk.Item[5] = "T" And Not rem Then
-                If LigTk.Item[5] = "A" Then
-                  TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
-                  Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-                  Totalht = Format$(Totalht, "0.00")
-                  'Else
-                  'Pu = LigTk.Current[3]
-                  'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(pu)), "0.00")
-                Endif
-
-              Endif
-            Endif
-            'Tligne = LigTk.Item[5]
-            'Pu = LigTk.Current[3]
-            'quantite = LigTk.Current[4]
-            'Tot = LigTk.Current[6]
-            LigTk.MoveNext()
-            'Try LigTk.Item.Selected = True
-            'If Error And If Tligne = "A" Then
-            ' TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
-            'Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-            'Totalht = Format$(Totalht, "0.00")
-            'Endif
-          Else
-            Ligtk.MoveLast()
-            If LigTk.Item[5] = "A" Then
-              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
-              Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-              Totalht = Format$(Totalht, "0.00")
-            Endif
-            LigTk.MoveNext()
-          Endif
-        Endif
-      Next
-      Mticket.Text = TotalTk.text
-      Rticket.text = TotalTk.Text
+      Recalc_Tottk()
+      
+      Cart.Text = ""
+      Qte.Text = "1"
+      Remise.Text = "0,00"
+      iRem = 0
+      iremq = 0
+      ibarre = 0
+      iqte = 0
+      TextLabel7.Visible = False
+      Remise.Visible = False
+      Cart.SetFocus
+      Cart.Select
+      Zone = "Article"
+      
     Endif
   Else
     Message.Warning("Suppression impossible, un règlement a été saisi !")
@@ -8192,19 +8174,9 @@ Public Sub RenameLigne()
       Endif
     Endif
   Until LigTk.MoveNext()
-  Cart.Text = ""
-  Qte.Text = "1"
-  Remise.Text = "0,00"
-  iRem = 0
-  iremq = 0
-  ibarre = 0
-  iqte = 0
+  
   iNlg = nlig - 1
-  TextLabel7.Visible = False
-  Remise.Visible = False
-  Cart.SetFocus
-  Cart.Select
-  Zone = "Article"
+
 
 End
 
@@ -8341,7 +8313,7 @@ End
 Public Sub Button46_click()
 
   If Not IsNull(RemTot.text) Then
-    Valid_Remtot()
+    Valid_Remtot(RemTot.text)
   Else
     Frame1.visible = False
   Endif
@@ -8734,7 +8706,7 @@ Public Sub Clav2_Click()
 
   Touche_P = Last.name
   If ToucheS[Last.Tag] = 0 Or If IsNull(ToucheS[Last.Tag]) Then
-    If Last.tag <> 40 Then
+    If Last.tag <> 105 Then
       If Upper$(Last.text) = "REMISE %" Then
         If Not IsNull(Cart.text) Then
           Button3_Click()
@@ -8923,8 +8895,6 @@ Public Sub Echap_Click()
 
     Case "Remtot"
       Frame1.Visible = False
-      RemTot.Clear
-      iremT = 0
       Cart.SetFocus
       Zone = "Article"
 

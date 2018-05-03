@@ -15,8 +15,8 @@ Public Sub Form_Show()
 
   Me.Center
   Utils.Observers(Me)
-  Ncaisse = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
-  Caissiere = Right$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
+  Ncaisse = Split(Start.LocalSettings["/Cai" & "/Ncai"], ";")[0]
+  Caissiere = Split(Start.LocalSettings["/Cai" & "/Ncai"], ";")[1]
 
 End
 

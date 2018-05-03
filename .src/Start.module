@@ -98,7 +98,7 @@ Public Sub Lancement()
   Endif
   If Not IsNull(Start.LocalSettings["/Cai" & "/Ncai"]) Then
     If Start.LocalSettings["/choixtouches"] Then
-      $tcai = Left$(Start.LocalSettings["/Cai" & "/Ncai"], 1)
+      $tcai = Split(Start.LocalSettings["/Cai" & "/Ncai"], ";")[0]
     Else
       $tcai = 0
     Endif
