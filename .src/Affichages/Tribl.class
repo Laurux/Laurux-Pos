@@ -78,7 +78,7 @@ Public Sub Select_Bl(Nbl As String, Row As Integer, force_select As Boolean, for
     Else If (((rBl!numtick = Null) And (force_unselect = False And force_select = False)) Or (force_unselect = False And force_select = True))
       colcli[Row, 3].Text = Ntk
       Utils.db.Exec("Update " & Cbase.Table("TabBl") & " set numtick = &1 where numbl = &2", Ntk, Nbl)
-      If (rBl!numtick = Null) Then Total.Text = Val(Utils.cpoint(Total.Text)) + Val(colcli[Row, 2].Text)
+      If (rBl!numtick = Null) Then Total.Text = Val(Utils.cpoint(Total.Text)) + Val(utils.cpoint(colcli[Row, 2].Text))
     Endif
   Endif
 End
