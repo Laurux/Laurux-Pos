@@ -1914,7 +1914,10 @@ Public Sub Valid_Remtot(RemiseTotal As String)
 
   Dim sremT As String
   Dim mremT As String
+  Dim Nbd As String
+  Dim Nbdec As String
   Dim numl As Integer
+  Dim rarts As Result
 
   'On supprime les lignes de remise sur total
   LigTk.MoveFirst
@@ -1943,15 +1946,24 @@ Public Sub Valid_Remtot(RemiseTotal As String)
         Repeat
           LigTk.item.Selected = True
           If LigTk.Item[5] = "A" Or If LigTk.Item[5] = "S" Then
-            mremT = Format$((Val(utils.CPoint(LigTk.Item[11])) * Val(utils.CPoint(RemiseTotal)) / 100), "0.00")
-            LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - Val(.CPoint(mremT)), "0.00")
+            'on recupere le nombre de decimal de la ligne
+            Rarts = Utils.db.Exec("SELECT art_nbd FROM " & Cbase.Table("TabArt") & " where art_code = &1", LigTk.Item[1])
+            If Rarts.Available Then
+              Nbd = Rarts!art_nbd
+              Nbdec = Utils.Find_Nbdec(Nbd)
+            Else
+              Nbdec = "0.00"
+            Endif
+    
+            mremT = Format$((Val(utils.CPoint(LigTk.Item[11])) * Val(utils.CPoint(RemiseTotal)) / 100), Nbdec)
+            LigTk.Item[11] = Format$(Val(utils.CPoint(LigTk.Item[3])) - Val(.CPoint(mremT)), Nbdec)
             rremT = Val(utils.CPoint(rremT)) + (Abs(Val(utils.CPoint(mremT))) * Val(utils.CPoint(LigTk.Item[4])))
             tva = LigTk.Item[12]
             Calc_Tva()
             Try tx = (1 + (Val(.cpoint(Tva)) / 100))
             Try Pvht = Abs(Val(utils.cpoint(LigTk.Item[11]))) / tx
-            Try Pvht = Format$(Pvht * Val(utils.CPoint(LigTk.Item[4])), "0.00")
-            Try Mtva = Format$(Val(Utils.cpoint(LigTk.Item[11])) * Val(utils.CPoint(LigTk.Item[4])) - Val(Utils.cpoint(Pvht)), "0.00")
+            Try Pvht = Format$(Pvht * Val(utils.CPoint(LigTk.Item[4])), Nbdec)
+            Try Mtva = Format$(Val(Utils.cpoint(LigTk.Item[11])) * Val(utils.CPoint(LigTk.Item[4])) - Val(Utils.cpoint(Pvht)), Nbdec)
             LigTk.Item[6] = Pvht
             LigTk.Item[7] = "0"
             LigTk.Item[9] = Mtva
@@ -7957,10 +7969,12 @@ Public Sub Delete_Reglements_Tk()
 
 End
 
-'On supprime les lignes de règlements
+'On supprime / sort des lignes de règlements
 Public Sub ColumnView1_KeyPress()
 
-  If key.code = key.Delete Then
+  If Key.code = Key.Esc And ColumnView1.Count = 0 Then
+    Init_Reg()
+  Else If key.code = key.Delete Then
     ColumnView1_Delete()
   Endif
 

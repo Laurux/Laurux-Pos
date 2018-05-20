@@ -1,10 +1,6 @@
-#---- Gambas files to ignore (v1)
-branch.txt
-sha1.txt
+#---- Gambas files to ignore (v4)
 *.gambas
 .lock
-.startup
-.settings
 *~
 core
 core.*
@@ -14,4 +10,6 @@ vgcore.*
 .*.prof
 .lang/*.pot
 .gambas/*
+.settings
+.startup
 #----
