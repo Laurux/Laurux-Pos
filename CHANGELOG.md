@@ -1,5 +1,14 @@
 # Change Log
 
+## [v3.25.2](https://github.com/Laurux/Laurux-Pos/tree/v3.25.2) (2018-05-20)
+[Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.1...v3.25.2)
+
+**Closed issues:**
+
+- Ticket a 0 [\#16](https://github.com/Laurux/Laurux-Pos/issues/16)
+- Gestion des clefs de control non fonctionnel [\#14](https://github.com/Laurux/Laurux-Pos/issues/14)
+- commit 58374ee935d7f89f8448cd49fea4879c6f1ebf5a [\#13](https://github.com/Laurux/Laurux-Pos/issues/13)
+
 ## [v3.25.1](https://github.com/Laurux/Laurux-Pos/tree/v3.25.1) (2018-01-28)
 [Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.0...v3.25.1)
 
