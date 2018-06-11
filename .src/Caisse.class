@@ -2046,8 +2046,7 @@ Public Sub Button6_Click()
     Return
   Endif
   If Clicompte = 1 And CodeclientDefault <> clicode Then
-    If LigTk.count > 0 Then
-      Aff_bastk()
+    If Aff_bastk() = True Then
       Button15_Click()
     Else
       Message.Error("Impression impossible ! Aucune ligne sur ticket client " & clicode & " " & clinom & " " & clipnm)
@@ -2576,18 +2575,22 @@ Public Sub Valid_Especes()
       Else
         'On autorise l'enregistement d'un ticket null espèce pour un echange d'article
         'avec meme valeur
-        Especes.Text = Format$(Val(Especes.Text), "0.00")
-        Calc_reste(Especes.text)
-        Try ColumnView1.Add("N", "N")
-        If Not Error Then
-          ColumnView1.Item[0] = "N"
-          ColumnView1.Item[1] = "Especes : "
-          ColumnView1.Item[2] = Especes.Text
+        If Ligtk.Count > 0 Then
+          Especes.Text = Format$(Val(Especes.Text), "0.00")
+          Calc_reste(Especes.text)
+          Try ColumnView1.Add("N", "N")
+          If Not Error Then
+            ColumnView1.Item[0] = "N"
+            ColumnView1.Item[1] = "Especes : "
+            ColumnView1.Item[2] = Especes.Text
+          Endif
+          Especes.Clear
+          Especes.Visible = False
+          Aff_bastk()
+          Inpm.SetFocus
+        Else
+          Message.Error("Règlement impossible ! Aucune ligne sur ticket")
         Endif
-        Especes.Clear
-        Especes.Visible = False
-        Aff_bastk()
-        Inpm.SetFocus
       Endif
     Endif
   Endif
@@ -4476,7 +4479,7 @@ Public Sub Button37_Click()
   If Clicompte = 1 And If LigTk.count > 0 Then
     Defaut_Tk()
   Else
-    If ((Abs(Val(Utils.cpoint(Rticket.Text))) = 0) Or TextLabel5.text = "A rendre :") And If LigTk.count > 0 Then
+    If ((Abs(Val(Utils.cpoint(Rticket.Text))) = 0) Or TextLabel5.text = "A rendre :") And If LigTk.count > 0 And ColumnView1.Count > 0 Then
       If ecole = False Then
         If IsNull($depot) Then
           Maj_Quantite()
@@ -4496,7 +4499,7 @@ Public Sub Button37_Click()
           Music.Play
         Endif
       Endif
-      Try Message.Error("Sortie de ticket impossible ! \n Le solde est différent de zéro.")
+      Try Message.Error("Sortie de ticket impossible ! \n Ticket vide ou solde différent de zéro.")
     Endif
   Endif
 
@@ -5309,7 +5312,7 @@ End
 '*          On affiche le bas du ticket                *
 '*******************************************************
 
-Public Sub Aff_bastk()
+Public Sub Aff_bastk() As Boolean
 
   Dim rtva, lBl As Result
   Dim Tatva As String = "Tottva"
@@ -5318,12 +5321,15 @@ Public Sub Aff_bastk()
   Dim brem, btot As Boolean = False
   Dim $code As String
 
+  Ligtk.MoveFirst()
+  If Ligtk.Count <= 0 Then
+    Return False
+  Endif
   Mtrem = RemTot.text
   If IsNull(mtrem) Then mtrem = "0"
   Totaltva = 0
   Totalht = 0
   TabTva()
-  Ligtk.MoveFirst()
   Repeat
     LigTk.Item.Selected = True
     If Not IsNull(LigTk.Item[10]) Then
@@ -5387,10 +5393,12 @@ Public Sub Aff_bastk()
                 If LigTk.Item[5] = "T" Then
                   btot = True
                 Endif
-                'LigTk.MovePrevious()
-                'LigTk.Item.Selected = True
+                LigTk.MovePrevious()
+                LigTk.Item.Selected = True
               Else
                 btot = False
+                LigTk.MoveLast()
+                LigTk.Item.Selected = True
                 'mttc = Val(Utils.cpoint(LigTk.Item[11]))
                 'LigTk.MovePrevious()
                 'LigTk.Item.Selected = True
@@ -5399,8 +5407,6 @@ Public Sub Aff_bastk()
               '  LigTk.MoveLast()
               '  LigTk.Item.Selected = True
               Endif
-              LigTk.MovePrevious()
-              LigTk.Item.Selected = True
             Endif
           Else
             LigTk.MovePrevious()
@@ -5523,6 +5529,8 @@ Public Sub Aff_bastk()
   LigTk.Item[1] = ""
   Inc iligne
   Inc iNlg
+  
+  Return True
 
 End
 
@@ -5930,7 +5938,7 @@ Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
     rReglt = Utils.db.Exec(" select * from " & TabReglt & " where type = &1 and date = &2", reg, Format$(Now, "dd-mm-yyyy"))
     If rReglt.Available Then
       MntReglt = rReglt!montant
-      MntReglt = Val(Utils.cpoint(MntReglt)) - Val(Utils.cpoint(smnt))
+      MntReglt = Format$(Val(Utils.cpoint(MntReglt)) - Val(Utils.cpoint(smnt)), "0.00")
       Utils.db.Exec("UPdate  " & TabReglt & "  SET montant = &1 WHERE type = &2 and date = &3", MntReglt, Reg, Format$(Now, "dd-mm-yyyy"))
     Endif
   Else
