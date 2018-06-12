@@ -5334,7 +5334,7 @@ Public Sub Aff_bastk() As Boolean
     LigTk.Item.Selected = True
     If Not IsNull(LigTk.Item[10]) Then
       If LigTk.Item[5] = "MT" Then mtrem = 0
-      If LigTk.Item[5] <> "T" And If LigTk.Item[5] <> "MT" Then
+      If LigTk.Item[5] <> "T" And If LigTk.Item[5] <> "MT" And If LigTk.Item[5] <> "C" Then
         If LigTk.Item[5] = "A" And If Val(LigTk.Item[0]) < LigTk.count Then
           mttc = Val(Utils.cpoint(LigTk.Item[11]))
           mht = Val(Utils.cpoint(LigTk.Item[6]))
@@ -5378,7 +5378,7 @@ Public Sub Aff_bastk() As Boolean
                     Try LigTk.Item.Selected = True
                     Try mttc = Val(Utils.cpoint(LigTk.Item[11]))
                   Else
-                    If LigTk.Item[5] = "MT" Then
+                    If LigTk.Item[5] = "MT" Or LigTk.Item[5] = "C" Then
                       Try LigTk.MovePrevious()
                       Try LigTk.Item.Selected = True
                     Endif
