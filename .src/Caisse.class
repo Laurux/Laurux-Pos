@@ -5320,6 +5320,7 @@ Public Sub Aff_bastk() As Boolean
   Dim mttc, mht As Float = 0
   Dim brem, btot As Boolean = False
   Dim $code As String
+  Dim bloc As String
 
   Ligtk.MoveFirst()
   If Ligtk.Count <= 0 Then
@@ -5336,94 +5337,34 @@ Public Sub Aff_bastk() As Boolean
       If LigTk.Item[5] = "MT" Then mtrem = 0
       If LigTk.Item[5] <> "T" And If LigTk.Item[5] <> "MT" And If LigTk.Item[5] <> "C" Then
         If LigTk.Item[5] = "A" And If Val(LigTk.Item[0]) < LigTk.count Then
-          mttc = Val(Utils.cpoint(LigTk.Item[11]))
+          'mttc = Val(Utils.cpoint(LigTk.Item[11]))
           mht = Val(Utils.cpoint(LigTk.Item[6]))
           mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
           $code = LigTk.Item[10]
-          Ligtk.MoveNext()
-          Try LigTk.Item.Selected = True
-          If Not Error Then
-            If LigTk.Item[5] = "O" And If Val(LigTk.Item[0]) = LigTk.count Then
-              'Ligtk.MoveNext()
-              'Try LigTk.Item.Selected = True
-              'If Error Then
-              Ligtk.MovePrevious()
-              LigTk.Item.Selected = True
-            Else
-              If LigTk.Item[5] = "O" And If Val(LigTk.Item[0]) < LigTk.count Then
-                Ligtk.MoveNext()
-                LigTk.Item.Selected = True
-              Endif
+          bloc = LigTk.Item[8]
+          While Not IsNull(LigTk.Item)
+            If LigTk.Item[8] <> bloc Then
+              LigTk.MovePrevious() 'on revient sur la dernière ligne du bloc
+              Break
             Endif
-            If LigTk.Item[5] <> "S" Then
-              If LigTk.Item[5] = "T" Then
-                btot = True
-                mttc = Val(Utils.cpoint(LigTk.Item[11]))
-                LigTk.MovePrevious()
-                LigTk.Item.Selected = True
-                'If LigTk.Item[5] = "O" Then
-                'Ligtk.MovePrevious()
-                'Try LigTk.Item.Selected = True
-                'Endif
-              Else
-                'LigTk.MovePrevious()
-                'Try LigTk.Item.Selected = True
-                'If Not Error Then
-                If LigTk.Item[5] = "O" Then
-                  Ligtk.MovePrevious()
-                  Try LigTk.Item.Selected = True
-                Else
-                  If LigTk.Item[5] = "A" Or LigTk.Item[5] = "BL" Then
-                    LigTk.MovePrevious()
-                    Try LigTk.Item.Selected = True
-                    Try mttc = Val(Utils.cpoint(LigTk.Item[11]))
-                  Else
-                    If LigTk.Item[5] = "MT" Or LigTk.Item[5] = "C" Then
-                      Try LigTk.MovePrevious()
-                      Try LigTk.Item.Selected = True
-                    Endif
-                  Endif
-                Endif
-              Endif
-            Else
+            If LigTk.Item[5] = "S" Then
+              'on applique la remise
               brem = True
-              Ligtk.MoveNext()
-              Try LigTk.Item.Selected = True
-              If Not Error Then
-                If LigTk.Item[5] = "T" Then
-                  btot = True
-                Endif
-                LigTk.MovePrevious()
-                LigTk.Item.Selected = True
-              Else
-                btot = False
-                LigTk.MoveLast()
-                LigTk.Item.Selected = True
-                'mttc = Val(Utils.cpoint(LigTk.Item[11]))
-                'LigTk.MovePrevious()
-                'LigTk.Item.Selected = True
-              '  Endif
-              'Else
-              '  LigTk.MoveLast()
-              '  LigTk.Item.Selected = True
-              Endif
+              mht = Val(Utils.cpoint(LigTk.Item[6]))
+              mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+            Else If LigTk.Item[5] = "T" 'total qte
+              btot = True
+            Else If LigTk.Item[5] = "O" 'eco taxe / copie privé
+              'do nothing
+            Else If LigTk.Item[5] = "A" 'article lui-meme
+              'do nothing
+            Else
+              Message("Unsupported line: " & LigTk.Item[5], "OK")
             Endif
-          Else
-            LigTk.MovePrevious()
-            LigTk.Item.Selected = True
-          Endif
+            Ligtk.MoveNext()
+          Wend
         Endif
         
-        mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
-        $code = LigTk.Item[10]
-        
-        'If Not btot Then
-        '  mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
-        '  $code = LigTk.Item[10]
-        'Else
-        '  mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
-        'Endif
-        mht = Val(Utils.cpoint(LigTk.Item[6]))
         Totalht = totalht + mht
         ttvam = mttc - mht
         rtva = Utils.db.Exec(" select * from " & Tatva & " where code = &1", $code)
@@ -8036,6 +7977,7 @@ Public Sub Recalc_Tottk()
   Dim pu, quantite As String
   Dim tot As String
   Dim Rem, Trem As Boolean = False
+  Dim bloc As String
 
   Blexists = False
   LigTk.MoveFirst
@@ -8047,70 +7989,56 @@ Public Sub Recalc_Tottk()
   For numl = 1 To LigTk.count
     Try LigTk.Item.Selected = True
     If Not Error Then
+
       If LigTk.Item[5] = "BL" Then
         Blexists = True
         TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(LigTk.Current[11])), "0.00")
         Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(LigTk.Current[6]))
       Endif
+      
+      If LigTk.Item[5] = "C" Then
+        'commentaire do nothing
+      Endif
+
       If LigTk.Item[5] = "A" Then
         Tligne = LigTk.Item[5]
-        Pu = LigTk.Current[3]
-        quantite = LigTk.Current[4]
-        Tot = LigTk.Current[6]
+        Pu = LigTk.Item[3]
+        quantite = LigTk.Item[4]
+        Tot = LigTk.Item[6]
         rem = False
-        'LigTk.MoveNext()
-        'Try LigTk.Item.Selected = True
-        'If Error Then
-        'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
-        'Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-        'Totalht = Format$(Totalht, "0.00")
-        'ndif
-      Endif
-      LigTk.MoveNext()
-      Try LigTk.Item.Selected = True
-      If Not Error Then
-        If LigTk.Item[5] = "M" And Not Trem Or If LigTk.Item[5] = "S" And Not Trem Then
-          Pu = LigTk.Current[3]
-          quantite = LigTk.Current[4]
-          Tot = LigTk.Current[6]
-          Rem = True
-          TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
-          Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-          Totalht = Format$(Totalht, "0.00")
-        Else
-          Ligtk.MovePrevious()
-          If LigTk.Item[5] = "A" Or If LigTk.Item[5] = "T" And Not rem Then
-            If LigTk.Item[5] = "A" Then
-              TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
-              Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-              Totalht = Format$(Totalht, "0.00")
-              'Else
-              'Pu = LigTk.Current[3]
-              'TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + Val(Utils.cpoint(pu)), "0.00")
+        bloc = LigTk.Item[8]
+        
+        While Not IsNull(LigTk.Item)
+            If LigTk.Item[8] <> bloc Then
+              LigTk.MovePrevious() 'on revient sur la dernière ligne du bloc
+              Break
             Endif
+            If LigTk.Item[5] = "S" Then
+              'on applique la remise
+              rem = True
+              Pu = LigTk.Item[3]
+              Tot = LigTk.Item[6]
+              'mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
+            Else If LigTk.Item[5] = "T" 'total qte
+              'btot = True
+            Else If LigTk.Item[5] = "O" 'eco taxe / copie privé
+              'do nothing
+            Else If LigTk.Item[5] = "A" 'article lui-meme
+              'do nothing
+            Else
+              Message("Unsupported line: " & LigTk.Item[5], "OK")
+            Endif
+            Ligtk.MoveNext()
+          Wend
 
-          Endif
-        Endif
-        'Tligne = LigTk.Item[5]
-        'Pu = LigTk.Current[3]
-        'quantite = LigTk.Current[4]
-        'Tot = LigTk.Current[6]
-        LigTk.MoveNext()
-        'Try LigTk.Item.Selected = True
-        'If Error And If Tligne = "A" Then
-        ' TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Val(Utils.cpoint(quantite))), "0.00")
-        'Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
-        'Totalht = Format$(Totalht, "0.00")
-        'Endif
-      Else
-        Ligtk.MoveLast()
-        If LigTk.Item[5] = "A" Then
           TotalTk.Text = Format$(Val(Utils.cpoint(TotalTk.Text)) + (Val(Utils.cpoint(pu)) * Abs(Val(Utils.cpoint(quantite)))), "0.00")
           Totalht = Val(Utils.cpoint(Totalht)) + Val(Utils.cpoint(Tot))
           Totalht = Format$(Totalht, "0.00")
-        Endif
-        LigTk.MoveNext()
+
       Endif
+ 
+      LigTk.MoveNext()
+ 
     Endif
   Next
   Mticket.Text = TotalTk.text
