@@ -2514,7 +2514,7 @@ Public Sub Valid_Especes()
       Zone = "Especes"
     Else
       'If Val(Especes.Text) <> 0 And Val(Rticket.Text) > 0 Then
-      If Val(Especes.Text) <> 0 Then
+      If Val(Especes.Text) <> 0 Or Val(Mticket.Text) <> 0 Then
         Especes.Text = Format$(Val(Especes.Text), "0.00")
         Calc_reste(Especes.text)
         Try ColumnView1.Add("N", "N")
@@ -2586,6 +2586,7 @@ Public Sub Valid_Especes()
           Endif
           Especes.Clear
           Especes.Visible = False
+          Delete_Reglements_Tk()
           Aff_bastk()
           Inpm.SetFocus
         Else
@@ -5336,7 +5337,7 @@ Public Sub Aff_bastk() As Boolean
     If Not IsNull(LigTk.Item[10]) Then
       If LigTk.Item[5] = "MT" Then mtrem = 0
       If LigTk.Item[5] <> "T" And If LigTk.Item[5] <> "MT" And If LigTk.Item[5] <> "C" Then
-        If LigTk.Item[5] = "A" And If Val(LigTk.Item[0]) < LigTk.count Then
+        If LigTk.Item[5] = "A" And If Val(LigTk.Item[0]) <= LigTk.count Then
           'mttc = Val(Utils.cpoint(LigTk.Item[11]))
           mht = Val(Utils.cpoint(LigTk.Item[6]))
           mttc = Val(Utils.cpoint(LigTk.Item[11])) * Abs(Val(Utils.cpoint(LigTk.Item[4])))
