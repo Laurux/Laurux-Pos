@@ -52,7 +52,6 @@ Public Sub _new()
   Try Tactile.Value = Start.LocalSettings["/tactile"]
   Try ChoixTouches.Value = Start.LocalSettings["/choixtouches"]
   Try Tfamille.Value = Start.LocalSettings["/Tfamilles"]
-  Try Chmcsv.Text = Start.LocalSettings["/Chmcsv"]
   Try ChmZ.Text = Start.LocalSettings["/ChmZ"]
   If IsNull(Nbf.text) Then Nbf.Text = "1"
   If IsNull(fontes) Then
@@ -60,17 +59,8 @@ Public Sub _new()
   Else
     FontChooser1.SelectedFont = Fontes
   Endif
-  Try Cnomade.Value = Start.LocalSettings["/Cnomade"]
-  If Cnomade.value = True Then
-    Panel1.visible = True
-    Fmenu.Button3.Text = "&Export vers csv"
-    Fmenu.Button4.Visible = True
-    Chmcsv.Text = Start.LocalSettings["/Chmcsv"]
-  Else
-    Panel1.visible = False
-    Fmenu.Button3.Text = "&Préférences"
-    Fmenu.Button4.visible = False
-  Endif
+  Fmenu.Button3.Text = "&Préférences"
+  Fmenu.Button4.visible = False
   Init_Nbase()
   Nbase.text = "Laurux" & Start.LocalSettings["/Soc"]
   Shell "lpc status 2>&1" To $imp
@@ -78,6 +68,10 @@ Public Sub _new()
     If Right($lp) = ":" Then Cimp.add(Left($lp, -1))
   Next
   Try Cimp.Text = Start.LocalSettings["/Cimp"]
+  Try CmdImp.Text = Start.LocalSettings["/CmdImp"]
+  Try CmdVis.Text = Start.LocalSettings["/CmdVis"]
+  Try TKpdf.Value = Start.LocalSettings["/TKpdf"]
+  Try FACpdf.Value = Start.LocalSettings["/FACpdf"]
   Try ServerLogIP.Value = Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogIP"]
   If ServerLogIP.Value = "" Then ServerLogIP.Value = "127.0.0.1"
   Try ServerLogPort.Value = Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogPort"]
@@ -213,14 +207,16 @@ Public Sub Form_Close()
   Start.LocalSettings["/histocli"] = HistoCli.Value
   Start.LocalSettings["/nbf"] = Nbf.Text
   Start.LocalSettings["/tactile"] = Tactile.Value
-  Start.LocalSettings["/Cnomade"] = Cnomade.Value
-  Start.LocalSettings["/Chmcsv"] = Chmcsv.Text
   Start.LocalSettings["/tircarte"] = Tircarte.Value
   Start.LocalSettings["/affusbwn"] = GestAffUSB.Value
   Start.LocalSettings["/choixtouches"] = ChoixTouches.Value
   Start.LocalSettings["/Tfamilles"] = Tfamille.Value
   Start.LocalSettings["/ChmZ"] = ChmZ.Text
   Start.LocalSettings["/Cimp"] = Cimp.Text
+  Start.LocalSettings["/CmdImp"] = CmdImp.Text
+  Start.LocalSettings["/CmdVis"] = CmdVis.Text
+  Start.LocalSettings["/TKpdf"] = TKpdf.Value
+  Start.LocalSettings["/FACpdf"] = FACpdf.Value
   Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogIP"] = ServerLogIP.Value
   Start.LocalSettings["/Soc" & Start.Societe & "/ServerLogPort"] = ServerLogPort.Value
   Start.LocalSettings.Save
@@ -273,18 +269,6 @@ Public Sub Button2_Click()
 
 End
 
-Public Sub chm_Click()
-
-  Dialog.Title = "Choisir un repertoire"
-  Dialog.Path = User.home
-  If Not Dialog.SelectDirectory() Then
-    Chmcsv.Text = Dialog.Path
-  Else
-    Chmcsv.Text = User.Home
-  Endif
-
-End
-
 Public Sub BchmZ_Click()
 
   Dialog.Title = "Choisir un repertoire"
@@ -293,22 +277,6 @@ Public Sub BchmZ_Click()
     ChmZ.Text = Dialog.Path
   Else
     ChmZ.Text = User.Home
-  Endif
-
-End
-
-Public Sub Cnomade_Click()
-
-  If Cnomade.Value = True Then
-    Panel1.visible = True
-    Fmenu.Button3.Text = "&Export vers csv"
-    Fmenu.Button4.visible = True
-    Fmenu.Label2.visible = True
-  Else
-    Panel1.Visible = False
-    Fmenu.Button3.Text = "&Préférences"
-    Fmenu.Button4.visible = False
-    Fmenu.Label2.visible = False
   Endif
 
 End

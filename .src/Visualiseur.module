@@ -1,13 +1,19 @@
 ' Gambas module file
 
-Public Sub Prog_Editeur(Fic As String) As String
+Public Sub Prog(Fic As String) As String
 
   Dim $Exec As String
 
-  $Exec = "kprinter"
-  If Not CheckProg.Chk($Exec) Then $Exec = "evince"
-  If Not CheckProg.Chk($Exec) Then $Exec = "okular"
-  If Not CheckProg.Chk($Exec) Then $Exec = "atril"
-  Shell $Exec & " " & Fic
+  If Start.LocalSettings["/CmdVis"] Then
+    Shell Start.LocalSettings["/CmdVis"] & " " & Fic
+  Else
+    $Exec = "xdg-open"
+    If Not CheckProg.Chk($Exec) Then $Exec = "evince"
+    If Not CheckProg.Chk($Exec) Then $Exec = "okular"
+    If Not CheckProg.Chk($Exec) Then $Exec = "acroread"
+    If Not CheckProg.Chk($Exec) Then $Exec = "kprint"
+    If Not CheckProg.Chk($Exec) Then $Exec = "atril"
+    Shell $Exec & " " & Fic
+  Endif
 
 End

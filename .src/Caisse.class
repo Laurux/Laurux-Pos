@@ -5960,6 +5960,9 @@ Public Sub Button26_Click()
     Cart.SetFocus
     Zone = "Article"
   Else
+    Entetcli = ""
+    $iSpc.clear
+    $iSpc2.Clear
     If LigTk.count > 0 Then
       If Start.son Then
         If Start.son Then
@@ -5990,10 +5993,6 @@ Public Sub Button26_Click()
 End
 
 Public Sub Nticket_KeyPress()
-
-  Entetcli = ""
-  $iSpc.clear
-  $iSpc2.Clear
   ChkNtk()
   If key.code = key.Esc Or If Key.code = key.F12 Then
     Frame6.Visible = False
@@ -7095,10 +7094,9 @@ Public Sub Defaut_Ticketxz(sintitule As String, org As Boolean)
       pdf.Output(Filename, False)
       If Org Then DupliZ(Filename)
       If Org Then
-        'Impression.Ticketxz(Filename, "1")
-        Visualiseur.Prog_Editeur(Filename)
+        Visualiseur.Prog(Filename)
       Else
-        Visualiseur.Prog_Editeur(Filename)
+        Visualiseur.Prog(Filename)
       Endif
       sDon = 1
     Else

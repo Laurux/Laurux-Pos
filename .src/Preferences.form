@@ -3,9 +3,30 @@
 { Form Form
   MoveScaled(0,0,96,93)
   Border = False
+  { Button2 Button
+    MoveScaled(10,87,19,5)
+    ToolTip = ("Lance la mise à jour de Laurux-Pos")
+    Text = Shortcut(("Mise à jour"), "M")
+    Picture = Picture["icon:/22/make"]
+  }
+  { Button1 Button
+    MoveScaled(61,87,19,5)
+    Text = Shortcut(("Quitter"), "Q")
+    Picture = Picture["Icones/exit.png"]
+  }
+  { Button3 Button
+    MoveScaled(35,87,19,5)
+    ToolTip = ("Lance le programme de configuration de la base de données.")
+    Text = Shortcut(("Config Mysql"), "C")
+    Picture = Picture["icon:/22/exec"]
+  }
+  { TextLabel3 TextLabel
+    MoveScaled(5,83,83,3)
+    Alignment = Align.BottomLeft
+  }
   { TabStrip1 TabStrip
     MoveScaled(1,1,94,82)
-    Count = 7
+    Count = 6
     Index = 0
     Text = ("Environnement")
     { Admin CheckBox
@@ -152,36 +173,13 @@
       Text = ("Fenêtre famille par défaut")
     }
     Index = 1
-    Text = ("Synchronisation")
-    { Panel1 Panel
-      MoveScaled(22,13,50,11)
-      Visible = False
-      { Label2 Label
-        MoveScaled(7.375,1,37,3)
-        Text = ("Chemin des générations des csv")
-        Alignment = Align.Center
-      }
-      { chmcsv TextBox
-        MoveScaled(8,5,28,3.375)
-      }
-      { chm Button
-        MoveScaled(36,5,10,3.375)
-        Text = Shortcut(("Choisir"), "C")
-      }
-    }
-    { Cnomade CheckBox
-      MoveScaled(32,6,39,4)
-      ToolTip = ("Cela permet une synchronisation de la base avec les données émises par les caisses nomades.")
-      Text = ("Gestion des caisses nomades")
-    }
-    Index = 2
     Text = ("Caisse tactile")
     { Tactile CheckBox
       MoveScaled(3,3,44,3)
       ToolTip = ("A cocher si vous utilisez un écran tactile.")
       Text = ("Caisse tactile")
     }
-    Index = 3
+    Index = 2
     Text = ("Balance")
     { Balance CheckBox
       MoveScaled(5,2,45,3)
@@ -202,7 +200,7 @@
       Font = Font["Serif,-1"]
       List = [("/dev/ttyS0"), ("/dev/ttyS1"), ("/dev/ttyS2"), ("/dev/ttyS3"), ("/dev/ttyS4"), ("/dev/ttyS5"), ("/dev/ttyS6")]
     }
-    Index = 4
+    Index = 3
     Text = ("Logo et police")
     { Frame12 Frame
       MoveScaled(2,3,42,41)
@@ -243,16 +241,43 @@
         ShowStyle = False
       }
     }
-    Index = 5
-    Text = ("Imprimantes")
+    Index = 4
+    Text = ("Impression et affichage")
     { Cimp ComboBox
-      MoveScaled(41,8,29,3)
+      MoveScaled(41,6,29,3)
     }
     { Label3 Label
-      MoveScaled(4,8,36,3)
+      MoveScaled(4,6,36,3)
       Text = ("Imprimante utilisée par la caisse")
     }
-    Index = 6
+    { Label9 Label
+      MoveScaled(4,11,38,3)
+      Text = ("commande d'impression PDF (vide = auto)")
+    }
+    { Label10 Label
+      MoveScaled(4,31,39,3)
+      Text = ("commande de visualisation PDF (vide = auto)")
+    }
+    { TKpdf CheckBox
+      MoveScaled(4,34,24,4)
+      Text = ("Ticket affiché en PDF")
+    }
+    { FACpdf CheckBox
+      MoveScaled(4,37,27,4)
+      Text = ("Facturette affichée en PDF")
+    }
+    { CmdImp TextBox
+      MoveScaled(44,11,47,3)
+    }
+    { Label2 Label
+      MoveScaled(4,14,85,11)
+      Font = Font["Italic"]
+      Text = ("la commande d'impression utilisateur doit pouvoir interpréter\nles mêmes parametres que la commande lpr soit:\n\nlpr [-P <nom_imprimante>]  -# <nombre_impression> <fichier_pdf>\nl'option -P est optionnelle lorsque l'imprimante par défaut est utilisée ")
+    }
+    { CmdVis TextBox
+      MoveScaled(44,31,47,3)
+    }
+    Index = 5
     Text = ("Réseaux")
     { ServerLogPort ValueBox
       MoveScaled(23,8,7,4)
@@ -267,26 +292,5 @@
       Text = ("Server de log (Addresse IP : port)")
     }
     Index = 0
-  }
-  { Button2 Button
-    MoveScaled(10,87,19,5)
-    ToolTip = ("Lance la mise à jour de Laurux-Pos")
-    Text = Shortcut(("Mise à jour"), "M")
-    Picture = Picture["icon:/22/make"]
-  }
-  { Button1 Button
-    MoveScaled(61,87,19,5)
-    Text = Shortcut(("Quitter"), "Q")
-    Picture = Picture["Icones/exit.png"]
-  }
-  { Button3 Button
-    MoveScaled(35,87,19,5)
-    ToolTip = ("Lance le programme de configuration de la base de données.")
-    Text = Shortcut(("Config Mysql"), "C")
-    Picture = Picture["icon:/22/exec"]
-  }
-  { TextLabel3 TextLabel
-    MoveScaled(5,83,83,3)
-    Alignment = Align.BottomLeft
   }
 }
