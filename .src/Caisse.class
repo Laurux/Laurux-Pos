@@ -6525,7 +6525,7 @@ Public Sub Ticketz()
           'Print rtx!intitule & rtx!montant & rtx!qte & rtx!type & Ncaisse
           If rtx.Available Then
             Repeat
-              Utils.db.Exec("INSERT INTO " & Tabrgz & " (intitule, montant, qte, type, caisse, date) VALUES (&1, &2, &3, &4, &5, &6)", rtx!intitule, rtx!montant, rtx!qte, rtx!type, Ncaisse, rtx!date)
+              Utils.db.Exec("INSERT INTO " & Tabrgz & " (intitule, montant, qte, type, caisse, date) VALUES (&1, &2, &3, &4, &5, &6)", Left(rtx!intitule, 30), rtx!montant, rtx!qte, rtx!type, Ncaisse, rtx!date)
             Until rtx.MoveNext()
           Endif
           ' on efface
@@ -6537,7 +6537,7 @@ Public Sub Ticketz()
           Try Utils.db.EXEC("CREATE TABLE " & Tabtx &
             "(lInd INT NOT NULL AUTO_INCREMENT," &
             "numero Char(7)," &
-            "fam Char(5)," &
+            "fam Char(20)," &
             "montant Char(12)," &
             "qte Char(12)," &
             "caisse Char(2)," &
