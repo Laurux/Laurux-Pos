@@ -1,5 +1,18 @@
 # Change Log
 
+## [v3.25.3](https://github.com/Laurux/Laurux-Pos/tree/v3.25.3) (2018-09-26)
+[Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.2...v3.25.3)
+
+**Implemented enhancements:**
+
+- Clients divers caisse [\#19](https://github.com/Laurux/Laurux-Pos/issues/19)
+
+**Closed issues:**
+
+- Erreur sur ticket Z  [\#20](https://github.com/Laurux/Laurux-Pos/issues/20)
+- Plantage sur remise [\#17](https://github.com/Laurux/Laurux-Pos/issues/17)
+- Erreur TVA sur remise global [\#15](https://github.com/Laurux/Laurux-Pos/issues/15)
+
 ## [v3.25.2](https://github.com/Laurux/Laurux-Pos/tree/v3.25.2) (2018-05-20)
 [Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.1...v3.25.2)
 
