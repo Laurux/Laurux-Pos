@@ -14,5 +14,8 @@ vgcore.*
 .startup
 #----
 
+.connection/*
 branch.txt
 sha1.txt
+Laurux-Pos
+Laurux-Pos.desktop
