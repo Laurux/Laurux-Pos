@@ -573,26 +573,52 @@
       Speed = 9600
     }
     { Button51 Button
-      MoveScaled(-4.25,0.75)
+      MoveScaled(-5.25,0.75)
     }
     { Frame7 Frame
       MoveScaled(42,39,83,24)
       Visible = False
       Background = Color.Background
-      Text = ("Nom du client")
+      Text = ("Nom et coordonnées du client")
+      { TextLabel10 TextLabel
+        MoveScaled(7,3,14,3)
+        Text = ("Nom / Société")
+      }
+      { TextLabel11 TextLabel
+        MoveScaled(7,7,14,3)
+        Text = ("Prénom")
+      }
+      { TextLabel12 TextLabel
+        MoveScaled(7,11,11,3)
+        Text = ("Adresse")
+      }
+      { Nmc4 TextArea
+        MoveScaled(21,3,59,3)
+        ToolTip = ("Saisir le Nom")
+        ScrollBar = Scroll.None
+      }
+      { Nmc5 TextArea
+        MoveScaled(21,7,59,3)
+        ToolTip = ("Saisir le prénom")
+        ScrollBar = Scroll.None
+      }
+      { Nmc6 TextArea
+        MoveScaled(21,11,59,6)
+        ToolTip = ("Saisir les coordonnées")
+        ScrollBar = Scroll.None
+      }
       { Button29 Button
         MoveScaled(65,18,15,5)
         Text = Shortcut(("Imprimer"), "I")
         Picture = Picture["Icones/printer2.png"]
       }
-      { Nmc4 TextArea
-        MoveScaled(2,4,78,12)
-        ToolTip = ("Vous pouvez saisir quatre lignes pour les coordonnées du client")
-        ScrollBar = Scroll.None
-      }
       { Button49 Button
-        MoveScaled(35,18,17,5)
+        MoveScaled(38,18,17,5)
         Text = Shortcut(("Fermer"), "F")
+      }
+      { Button42 Button
+        MoveScaled(9,18,17,5)
+        Text = Shortcut(("Rechercher"), "R")
       }
     }
     { Frame3 Frame

@@ -6145,21 +6145,69 @@ Public Sub Nmc4_KeyPress()
   If key.code = key.Escape Or key.code = key.F12 Then
     Frame7.Visible = False
     Nmc4.Clear
+    Nmc5.Clear
+    Nmc6.Clear
     impressionbon("")
     Cart.SetFocus
     Zone = "Article"
-  Endif
-  If key.code = key.F2 And Start.LocalSettings["/histocli"] Then
+  Else If key.code = key.F2 And Start.LocalSettings["/histocli"] Then
     ClientsDivers()
+  Else If Key.Code = Key.Tab
+    Stop Event
+    Nmc5.SetFocus()
   Endif
 
 End
+
+Public Sub Nmc5_KeyPress()
+
+  If key.code = key.Escape Or key.code = key.F12 Then
+    Frame7.Visible = False
+    Nmc4.Clear
+    Nmc5.Clear
+    Nmc6.Clear
+    impressionbon("")
+    Cart.SetFocus
+    Zone = "Article"
+  Else If key.code = key.F2 And Start.LocalSettings["/histocli"] Then
+    ClientsDivers()
+  Else If Key.Code = Key.Tab
+    Stop Event
+    Nmc6.SetFocus()
+  Endif
+
+End
+
+Public Sub Nmc6_KeyPress()
+
+  If key.code = key.Escape Or key.code = key.F12 Then
+    Frame7.Visible = False
+    Nmc4.Clear
+    Nmc5.Clear
+    Nmc6.Clear
+    impressionbon("")
+    Cart.SetFocus
+    Zone = "Article"
+  Else If key.code = key.F2 And Start.LocalSettings["/histocli"] Then
+    ClientsDivers()
+  Else If Key.Code = Key.Tab
+    Stop Event
+    Nmc4.SetFocus()
+  Endif
+
+End
+
+
+Public Sub button42_Click()
+    ClientsDivers()
+End
+
 
 Public Sub button29_Click()
   ' on imprime
 
   If Not IsNull(Nmc4.Text) Then
-    If Start.LocalSettings["/histocli"] Then Enrg_Clientd()
+    If Start.LocalSettings["/histocli"] Then Enrg_Clientd(Caisse.Codearticle)
     Ent_tk2()
     If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Or If Start.LocalSettings["/choiximp2"] Then
       Defaut_Facture()
@@ -6257,6 +6305,8 @@ Public Sub Serial_Facture()
       Until rntck.MoveNext()
     Endif
     Nmc4.clear
+    Nmc5.clear
+    Nmc6.clear
     Frame7.visible = False
     Cart.SetFocus
     Zone = "Article"
@@ -6311,7 +6361,9 @@ Public Sub Defaut_Facture()
   i = 0
   Posy = 4
   If clicompte <> 1 Then
-    For Each sline In Split(Nmc4.Text, "\n")
+    $iSpc2.Add(Nmc4.Text)
+    $iSpc2.Add(Nmc5.Text)
+    For Each sline In Split(Nmc6.Text, "\n")
       'Inc i
       $iSpc2.Add(sline)
     Next
@@ -6388,6 +6440,8 @@ Public Sub Defaut_Facture()
     Impression.Facture(Filename, 1)
   Endif
   Nmc4.clear
+  Nmc5.clear
+  Nmc6.clear
   Frame7.visible = False
   Try Kill Filename
   Cart.SetFocus
@@ -7638,7 +7692,7 @@ Public Sub ClientsDivers()
     MyForm = New Tricartes(-1)
     MyForm.Showmodal()
     If Bsel = True Then
-      RecupClientd()
+      RecupClientd(Codearticle)
     Endif
   Else
     If Start.son Then
@@ -7655,39 +7709,47 @@ End
 '******************************************
 '*           Selection du  code client  divers           *
 '******************************************
-Public Sub RecupClientd()
+Public Sub RecupClientd(codeclid As String, Optional Update_Field As Boolean = True) As Boolean
 
   Dim Rcarte As Result
-  Dim scartef As Variant
-
+  
   $Cli = ""
-  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", Codearticle)
+  Rcarte = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabCarte") & " where code = &1", codeclid)
   If Rcarte.Available Then
-    scartef = Rcarte!code
-    $Cli = scartef
+    'scartef = Rcarte!code
+    $Cli = Rcarte!code
     $Nomd = Rcarte!nom
+    If Update_Field Then
+      Nmc4.Text = Rcarte!nom
+      Nmc5.Text = Rcarte!pnm
+      Nmc6.Text = Rcarte!adr1
+    Endif
+    Return True
+  Else
+    Return False
   Endif
 
 End
 
-Public Sub Enrg_Clientd()
+Public Sub Enrg_Clientd(codeclid As String)
 
-  Dim Clitab As Result
-  Dim nom As String[]
-
-  nom = Split(Nmc4.Text, "\n")
-  Try Clitab = Utils.db.Exec("SELECT * FROM  " & Cbase.Table("TabClid") & " where locate(&1, adr)", nom[0])
-  If Clitab.Available Then
-    slind = Clitab!lind
+  Dim CResult As Result
+  Dim Cd, der As String
+  
+  If RecupClientd(codeclid, False) Then
+    Utils.db.Exec("UPdate  " & Cbase.Table("TabCarte") & "  SET  nom = &1, pnm = &2, adr1 = &3, datec = &4, datef = &5 WHERE code = &6", Nmc4.Text, Nmc5.Text, Nmc6.Text, Now, Now, codeclid) ' TODO A remplacer par LDate
   Else
-    slind = ""
+    Try CResult = Utils.db.Exec("SELECT code FROM " & Cbase.Table("TabCarte") & " order by code")
+    If CResult.Available Then
+      CResult.MoveLast
+      der = CResult!code
+      Cd = Val(der) + 1
+      Cd = Format$(Cd, "000000")
+    Else
+      Cd = "000001"
+    Endif
+    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabCarte") & " (code,nom,pnm,adr1,datec,datef,rem,promo,tp1,tp2,tg1,tg2,divers) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", Cd, Nmc4.Text, Nmc5.Text, Nmc6.Text, Now, Now, 0, 0, 0, 0, 0, 0, -1) ' TODO A remplacer par LDate
   Endif
-  If IsNull(slind) Then
-    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabClid") & " (adr, ddate) VALUES (&1, &2)", Nmc4.Text, Format$(Now, "yyyymmdd"))
-  Else
-    Utils.db.Exec("UPdate  " & Cbase.Table("TabClid") & "  SET  adr = &1, ddate = &2  WHERE lind = &3", Nmc4.Text, Format$(Now, "yyyymmdd"), slind)
-  Endif
-  slind = ""
 
 End
 
@@ -8629,6 +8691,8 @@ End
 Public Sub Button49_Click()
 
   Nmc4.Clear
+  Nmc5.Clear
+  Nmc6.Clear
   Frame7.Visible = False
 
 End
