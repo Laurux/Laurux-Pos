@@ -59,8 +59,6 @@ Public Sub _new()
   Else
     FontChooser1.SelectedFont = Fontes
   Endif
-  Fmenu.Button3.Text = "&Préférences"
-  Fmenu.Button4.visible = False
   Init_Nbase()
   Nbase.text = "Laurux" & Start.LocalSettings["/Soc"]
   Shell "lpc status 2>&1" To $imp

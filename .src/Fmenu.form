@@ -71,16 +71,8 @@
           MoveScaled(1,29,24,6)
           #Public = True
           ToolTip = ("Exporte les données de la caisse nomade dans un format texte")
-          Text = Shortcut(("Export vers csv"), "E")
+          Text = Shortcut(("Préférences"), "P")
           Picture = Picture["Icones/open.png"]
-        }
-        { !Button4 Button
-          MoveScaled(1,36,24,6)
-          #Public = True
-          Visible = False
-          ToolTip = ("Restauration la base de données sur la caisse nomade.")
-          Text = Shortcut(("Restauration"), "R")
-          Picture = Picture["Icones/Sauve.png"]
         }
       }
       { Label1 Label

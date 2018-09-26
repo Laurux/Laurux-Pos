@@ -29,14 +29,8 @@ Public Sub _new()
   titre = fmenu.text
   Try intitule = Start.LocalSettings["/intitule"]
   Try Version = Start.LocalSettings["/dbase/Version"]
-  If Start.LocalSettings["/Cnomade"] Then
-    Button3.Text = "&Export vers csv"
-    Button4.Visible = True
-  Else
-    Button3.Text = "&Préférences"
-    Button3.Tooltip = ""
-    Button4.Visible = False
-  Endif
+  Button3.Text = "&Préférences"
+  Button3.Tooltip = "Préférences locale de la Caisse"
   SetObservers(Me, Me)
   Try Soc = Start.LocalSettings["/Soc"]
   If Error Then Soc = "01"
@@ -443,32 +437,6 @@ End
 
 Public Sub Button3_Click()
 
-  If Start.LocalSettings["/Cnomade"] Then
-    Export.ShowModal()
-  Else
-    mdp_admin2()
-  Endif
-
-End
-
-Public Sub Button3_KeyPress()
-
-  If Key.code = Key.F1 Then Doc.Open("Laurux.PosIndexParCategories")
-  If Key.code = Key.F12 Then ControleCai()
-  If key.code = key.Enter Or key.code = key.Return Then Button3_Click()
-
-End
-
-Public Sub Button4_Click()
-
-  Frestore.ShowModal()
-
-End
-
-Public Sub Button4_KeyPress()
-
-  If Key.code = Key.F1 Then Doc.Open("Laurux.PosIndexParCategories")
-  If Key.code = Key.F12 Then ControleCai()
-  If key.code = key.Enter Or key.code = key.Return Then Button4_Click()
+  mdp_admin2()
 
 End
