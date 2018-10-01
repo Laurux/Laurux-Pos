@@ -1196,8 +1196,14 @@ Public Sub Valid_Qte()
   Else
     If Val(utils.cpoint(qte.text)) <> 0 Then
       If iRem = 0 Then
-        Init_Art()
-        If bt <> 1 Then calc_total()
+        If Init_Art() <> True Then
+          Message.Warning("La quantité saisie n'est pas autorisée pour cet article!")
+          qte.SetFocus
+          Qte.Select
+          Zone = "Qte"
+        Else
+          If bt <> 1 Then calc_total()
+        Endif
       Else
         Remise.SetFocus
         Zone = "Remise"
@@ -1341,8 +1347,14 @@ Public Sub Valid_Cart() As Boolean
             Remise.SetFocus
             Zone = "Remise"
           Else
-            Init_Art()
-            calc_total()
+            If Init_Art() = False Then
+              Message.Warning("La quantité saisie n'est pas autorisée pour cet article!")
+              qte.SetFocus
+              Qte.Select
+              Zone = "Qte"
+            Else
+              calc_total()
+            Endif
           Endif
         Else
           Qte.SetFocus
@@ -1489,10 +1501,10 @@ Public Sub RemqShow()
 
 End
 
-Public Sub Init_Art()
+Public Sub Init_Art() As Boolean
 
   If Not IsNull(RemTot.Text) Then
-    If Message.Warning("Il est impossible de rajouter un article une fois une remise totale saisie!\nVoulez-vous la supprimer?", "Oui", "Non") = 2 Then Return
+    If Message.Warning("Il est impossible de rajouter un article une fois une remise totale saisie!\nVoulez-vous la supprimer?", "Oui", "Non") = 2 Then Return True
     iremT = 0
     RemTot.Clear
     Valid_Remtot("0")
@@ -1500,12 +1512,17 @@ Public Sub Init_Art()
   
   Recup_dec()
   Decimal()
+  
+  If Val(Utils.cpoint(Qte.Text)) = 0 Then Return False
+  
   If Left$(Cart.Text) = "*" Then
     Cart.Text = Mid$(Cart.Text, 2, Len(Cart.Text))
     Cart.Text = Utils.Find_cbarre(Cart.Text)
   Endif
   If Abs(Val(Utils.cpoint(Qte.Text))) <> 1 Then iQte = 1
   Art_man()
+  
+  Return True
 
 End
 
