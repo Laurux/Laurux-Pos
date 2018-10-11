@@ -1245,8 +1245,18 @@ Public Sub Valid_Cart() As Boolean
   Dim Rarts As Result
   Dim cbarr As String
   Dim ret As Boolean
+  Dim i As Integer
 
   If Left$(Cart.Text, 1) = "*" Then
+    'on verifie que le code barre saisie est correct on autorise que les caractères de 0 à 9
+    i = 2
+    While i <= Len(Cart.Text)
+      If (String.Code(Cart.Text, i) < String.Code("0")) Or (String.Code(Cart.Text, i) > String.Code("9")) Then
+        Message.Error("Erreur sur la saisie du code bare " & Cart.Text & " à la position " & i)
+        Return False
+      Endif
+      Inc i
+    Wend
     If Len(Cart.Text) = 14 And Mid$(Cart.Text, 2, 6) = "299999" Then
       Cart.Text = Mid$(Cart.Text, 8, 6)
       Crt = True
