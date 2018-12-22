@@ -75,7 +75,6 @@ Coulfc As Integer
 Datetk As String
 Datetk2 As String
 Client As String
-Client2 As String
 Caissiere As String
 $Caissiere As String
 Pointille As String
@@ -2243,10 +2242,10 @@ Public Sub ColTka_Click()
   ColTka.visible = False
   ColTka.clear
   RTck = Utils.db.Exec("SELECT * FROM " & Tab & " where caisse = &1 and numero = &2", Caisse, Numtk)
-  Client2 = Rtck!client
-  $Cli = Rtck!nom
-
   Ent_tk(numtk)
+  
+  Client = Rtck!client
+  $Cli = Rtck!nom
 
   TotalTk.Text = RTck!mttc
   If (RTck!type = 1) Then
@@ -5697,6 +5696,11 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       smttc = TotalTk.text
     Endif
 
+    If clicompte = 0 Then
+      'Si le règlement n'est pas un client compte on s'assure d'enregistrer le code du client caisse par defaut dans le ticket
+      clicode = CodeclientDefault
+    Endif
+    
     If IsNull(scartef) Then scartef = $Cli
     If Not IsNull($Nomd) Then $Cli = $Nomd
 
