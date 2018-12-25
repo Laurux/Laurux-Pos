@@ -1,5 +1,12 @@
 # Change Log
 
+## [v3.25.4](https://github.com/Laurux/Laurux-Pos/tree/v3.25.4) (2018-12-25)
+[Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.3...v3.25.4)
+
+**Implemented enhancements:**
+
+- Amélioration pour l'impression dans Laurux-Pos avec l'utilisation d'une commande définie par l'utilisateur [\#18](https://github.com/Laurux/Laurux-Pos/issues/18)
+
 ## [v3.25.3](https://github.com/Laurux/Laurux-Pos/tree/v3.25.3) (2018-09-26)
 [Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.2...v3.25.3)
 
