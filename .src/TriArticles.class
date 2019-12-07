@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Arttable[7] As String
+Arttable As New String[7]
 Dbl As Boolean = False
 sel As String
 Tri2Art As String
