@@ -2574,34 +2574,7 @@ Public Sub Valid_Especes()
             Endif
           Until ColumnView1.MoveNext()
         Endif
-        If Val(Utils.cpoint(Rticket.Text)) < 0 And bmodifregl = False Then
-          Try ColumnView1.Add("Q", "Q")
-          If Not Error Then
-            ColumnView1.Item[0] = "Q"
-            ColumnView1.Item[1] = "Montant rendu : "
-            ColumnView1.Item[2] = Format$(Abs(Val(Utils.cpoint(Rticket.Text))), "0.00")
-          Else
-            ColumnView1.MoveFirst()
-            Repeat
-              If ColumnView1.Item[0] = "Q" Then
-                If Val(Utils.cpoint(Especes.Text)) < 0 Then
-                  Especes.Text = Abs(Val(Utils.cpoint(Especes.Text)))
-                  ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) - Val(Utils.cpoint(Especes.Text)), "0.00")
-                Else
-                  ColumnView1.Item[2] = Format$(Val(Utils.cpoint(ColumnView1.Item[2])) + Val(Utils.cpoint(Especes.Text)), "0.00")
-                Endif
-              Endif
-            Until ColumnView1.MoveNext()
-          Endif
-        Else
-          ColumnView1.MoveFirst()
-          Repeat
-            If ColumnView1.Item[0] = "Q" Then
-              ColumnView1.Item.Delete()
-              ColumnView1.MoveFirst()
-            Endif
-          Until ColumnView1.MoveNext()
-        Endif
+        Valid_Reste()
         Especes.Clear
         Especes.Visible = False
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
@@ -2633,6 +2606,26 @@ Public Sub Valid_Especes()
         Endif
       Endif
     Endif
+  Endif
+
+End
+
+Public Sub Valid_Reste()
+
+  ColumnView1.MoveFirst()
+  Repeat
+    If ColumnView1.Item[0] = "Q" Then
+      ColumnView1.Item.Delete()
+      ColumnView1.MoveFirst()
+    Endif
+  Until ColumnView1.MoveNext()
+
+  If Val(Utils.cpoint(Rticket.Text)) < 0 And bmodifregl = False Then
+  'If Val(Utils.cpoint(Especes.Text)) > 0 And Val(Utils.cpoint(Especes.Text)) > Val(Mticket.Text) And bmodifregl = False Then
+    ColumnView1.Add("Q", "Q")
+    ColumnView1.Item[0] = "Q"
+    ColumnView1.Item[1] = "Montant rendu : "
+    ColumnView1.Item[2] = Format$(Val(Utils.cpoint(Rticket.Text)), "0.00")
   Endif
 
 End
@@ -2827,6 +2820,7 @@ Public Sub Valid_Carte()
         'Endif
         carte.Clear
         Carte.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
           Ouv_Tiroir()
           pointsF()
@@ -2953,6 +2947,7 @@ Public Sub Valid_Cheque()
         'Endif
         Cheque.Clear
         Cheque.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
           Ouv_Tiroir()
           pointsF()
@@ -3055,10 +3050,21 @@ Public Sub Valid_Credit()
         Endif
         credit.Clear
         Credit.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -3157,10 +3163,21 @@ Public Sub Valid_Bachat()
         Endif
         Bachat.Clear
         Bachat.Visible = False
-        If Val(Utils.cpoint(Rticket.Text)) = 0 Then
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+        Valid_Reste()
+        If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -3307,20 +3324,16 @@ Public Sub Valid_Bavoir()
           'Endif
           'Until ColumnView1.MoveNext()
         Endif
-        If Bavoir.Text < mavoir Then
-          Try ColumnView1.Add("Q", "Q")
-          ColumnView1.Item[0] = "Q"
-          ColumnView1.Item[1] = "Montant rendu : "
-          ColumnView1.Item[2] = Format$(Abs(Val(Utils.cpoint(Rticket.Text))), "0.00")
-          Aff_bastk()
-        Endif
+        Valid_Reste()
         Bavoir.Clear
         mavoir = False
-        If Val(Rticket.Text) = 0 Then
-          Bavoir.Visible = False
+        Bavoir.Visible = False
+        If Val(Rticket.Text) <= 0 Then
           Ouv_Tiroir()
           pointsF()
           Button15.SetFocus
+        Else
+          Inpm.SetFocus
         Endif
       Endif
     Endif
@@ -3433,10 +3446,21 @@ Public Sub Valid_Chequecad()
         Endif
         Chequecad.Clear
         Chequecad.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -3528,10 +3552,21 @@ Public Sub Valid_Breduc()
         Endif
         Breduc.Clear
         Breduc.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -3625,10 +3660,21 @@ Public Sub Valid_Tresto()
         Endif
         Tresto.Clear
         Tresto.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -3731,10 +3777,21 @@ Public Sub Valid_Bonus()
         Boni = Val(Utils.cpoint(ColumnView1.Item[2]))
         Bonus.Clear
         Bonus.Visible = False
+        Valid_Reste()
         If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -3995,12 +4052,21 @@ Public Sub Valid_Bacompte()
         Endif
         Bacompte.Clear
         Bacompte.Visible = False
-        If Val(Rticket.Text) = 0 Then
-          Aff_bastk()
-          Bacompte.Visible = False
-          Ouv_Tiroir()
-          pointsF()
-          Button15.SetFocus
+        Valid_Reste()
+        If Val(Utils.cpoint(Rticket.Text)) <= 0 Then
+          If Val(Utils.cpoint(Rticket.Text)) < 0 Then
+            If Message.Warning("Attention, Voulez-vous vraiment rendre la monnaie sur ce mode de règlement?\n\nSi non, vous devez modifier le montant de ce mode règlements pour solder uniquement le montant du ticket", "Non", "Oui") = 2 Then
+              Ouv_Tiroir()
+              pointsF()
+              Button15.SetFocus
+            Else
+              ColumnView1_Delete(False)
+            Endif
+          Else
+            Ouv_Tiroir()
+            pointsF()
+            Button15.SetFocus
+          Endif
         Else
           Inpm.SetFocus
         Endif
@@ -8039,16 +8105,31 @@ Public Sub ColumnView1_Activate()
 
 End
 
-Public Sub ColumnView1_Delete()
+Public Sub ColumnView1_Delete(Optional Confirm As Boolean = True)
+
+  Dim numl As Integer
 
   If ColumnView1.count > 0 Then
-    If message.Question("Voulez-vous supprimer les lignes de règlements ?", "Oui", "Non") = 1 Then
-      Delete_Reglements_Tk()
-      ColumnView1.Clear
-      Rticket.text = Mticket.Text
-      TextLabel5.Text = "Reste à payer :"
-      inpm.SetFocus()
+    
+    If Confirm = True Then
+      If message.Question("Voulez-vous supprimer les lignes de règlements ?", "Oui", "Non") = 2 Then
+        Return
+      Endif
     Endif
+    
+    Delete_Reglements_Tk()
+    ColumnView1.MoveFirst()
+    For numl = 0 To ColumnView1.count - 1
+      Try ColumnView1.item.Selected = True
+      Try ColumnView1.MoveNext()
+      If Not Error Then
+        ColumnView1.Current.Delete
+      Endif
+    Next
+    ColumnView1.Clear
+    Rticket.text = Mticket.Text
+    TextLabel5.Text = "Reste à payer :"
+    inpm.SetFocus()
   Endif
 
 End
