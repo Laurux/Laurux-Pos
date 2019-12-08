@@ -2213,7 +2213,7 @@ End
 Public Sub ColTka_Click()
 
   Dim Mtk As String
-  Dim RTck As Result
+  Dim RTck, Rarts As Result
   Dim Tab As String
   Dim heuretk As String
   Dim Clitab As Result
@@ -2286,6 +2286,10 @@ Public Sub ColTka_Click()
       If rResult!type = "A" Then
         Totalht = Val(Utils.cpoint(Totalht)) + (Val(utils.cpoint(rResult!mht)))
         Totalht = Format$(Totalht, "0.00")
+        Rarts = Utils.db.Exec("SELECT art_tva FROM " & Cbase.Table("TabArt") & " where art_code = &1", rResult!code)
+        If Rarts.Available Then
+          LigTk.Item[12] = Rarts!art_tva
+        Endif
       Endif
       'verifie si BLs règlé dans ce ticket
       If rResult!type = "BL" Then
@@ -5527,7 +5531,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
   Dim smontantht As String 'montant de la ligne ht
   Dim sqte As String ' quantité
   Dim stype As String ' type de ligne
-  Dim sstatut As Integer = 0 ' si ticket mis en attente
+  Dim sstatut As String = "0" ' si ticket mis en attente
   Dim ssuppr As Integer = 0 ' si ticket est supprime
   Dim sespeces As String
   Dim smespeces As String
@@ -5688,7 +5692,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       Until LigTk.MoveNext()
     Else
       'Ticket en Attente
-      If iAttente Then sstatut = 1
+      If iAttente Then sstatut = "1"
       'Ticket a supprimer
       If Supprime Then ssuppr = 1
       smht = Totalht
@@ -6507,8 +6511,7 @@ Public Sub Button20_Click()
   If Imprimante = "DéfautA4" Or If Imprimante = "Défaut80" Then
     Defaut_Ticketxz(sIntitule, False)
   Else
-    sIntitule = Utils.Replace(sIntitule)
-    Serial_Ticketxz(sIntitule, "x")
+    Message.Warning("Support d'impression serie non disponible")
     Defaut_Ticketxz(sIntitule, False)
   Endif
 
@@ -6584,7 +6587,7 @@ Public Sub Ticketz()
           Defaut_Ticketxz(sIntitule, True)
           Dupli()
         Else
-          Serial_Ticketxz(sIntitule, "z")
+          Message.Warning("Support d'impression serie non disponible")
           Defaut_Ticketxz(sIntitule, False)
           Dupli()
         Endif
@@ -8187,7 +8190,7 @@ Public Sub Ligtk_Delete()
       Valid_Remtot("0")
 
       'On recalcule le total du ticket
-      Recalc_Tottk()
+      'Recalc_Tottk()
       
       Cart.Text = ""
       Qte.Text = "1"
