@@ -5679,7 +5679,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
           sstatut = 0
         Endif
         If Right$(LigTk.Item[5], 1) = "Q" Then
-          Esp -= Val(utils.cpoint(LigTk.Item[3]))
+          Esp += Val(utils.cpoint(LigTk.Item[3]))
           smespeces = Esp
           Maj_Paiements("Q", LigTk.Item[3], "1")
           sstatut = 0
@@ -5990,7 +5990,7 @@ Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
     rReglt = Utils.db.Exec(" select * from " & TabReglt & " where type = &1 and date = &2", reg, Format$(Now, "dd-mm-yyyy"))
     If rReglt.Available Then
       MntReglt = rReglt!montant
-      MntReglt = Format$(Val(Utils.cpoint(MntReglt)) - Val(Utils.cpoint(smnt)), "0.00")
+      MntReglt = Format$(Val(Utils.cpoint(MntReglt)) + Val(Utils.cpoint(smnt)), "0.00")
       Utils.db.Exec("UPdate  " & TabReglt & "  SET montant = &1 WHERE type = &2 and date = &3", MntReglt, Reg, Format$(Now, "dd-mm-yyyy"))
     Endif
   Else
