@@ -55,9 +55,7 @@ Public Sub _new()
     If rResult.Available Then Soc = Soc & " " & rResult!type_sc & " - " & rResult!int_sc
     Fmenu.text = titre & " ( Société en cours : " & Soc & ")"
     TextLabel1.text &= "<BR> Vous êtes connecté sur la société :<BR>" & Soc
-    If Application.Path <> "/usr/bin/" & Application.Name Then
-      Majversion.RecupVersion()
-    Endif
+    Majversion.RecupVersion()
     LauruxMaj.Verif_Version()
   Else
     Message.Warning("Le tunnel SSH n'a pu être établi, la connexion SQL est impossible")
