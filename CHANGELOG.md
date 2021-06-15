@@ -1,5 +1,13 @@
 # Changelog
 
+## [v3.25.7](https://github.com/Laurux/Laurux-Pos/tree/v3.25.7) (2021-06-15)
+
+[Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.6...v3.25.7)
+
+**Closed issues:**
+
+- Erreur dans le calcul sur le total rendu en caisse [\#22](https://github.com/Laurux/Laurux-Pos/issues/22)
+
 ## [v3.25.6](https://github.com/Laurux/Laurux-Pos/tree/v3.25.6) (2021-01-31)
 
 [Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.5...v3.25.6)
