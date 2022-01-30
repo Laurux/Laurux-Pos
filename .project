@@ -2,7 +2,7 @@
 Title=Laurux-Pos
 Startup=Start
 Icon=Icones/Laurux-Pos.png
-Version=3.25.7
+Version=3.25.8
 Component=gb.args
 Component=gb.image
 Component=gb.gui.qt
