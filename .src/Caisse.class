@@ -5911,7 +5911,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
               Endif
             Else
               If stype <> "T" Then
-                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Val(utils.cpoint(smontantFam)) * Val(sqte), sqte, Fam)
+                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Abs(Val(utils.cpoint(smontantFam))) * Val(sqte), sqte, Fam)
               Else
                 Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Val(utils.cpoint(smontantFam)), sqte, Fam)
               Endif
