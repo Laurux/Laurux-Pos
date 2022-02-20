@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.25.8](https://github.com/Laurux/Laurux-Pos/tree/v3.25.8) (2022-02-20)
+
+[Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.7...v3.25.8)
+
 ## [v3.25.7](https://github.com/Laurux/Laurux-Pos/tree/v3.25.7) (2021-06-15)
 
 [Full Changelog](https://github.com/Laurux/Laurux-Pos/compare/v3.25.6...v3.25.7)
