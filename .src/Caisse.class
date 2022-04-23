@@ -672,7 +672,7 @@ Public Sub Art_man()
         LigTk.Item[11] = Artpu
         If Val(.CPoint(Remise.text)) <> 0 Then
           pvht = Format$(Val(.CPoint(pvht)) - (Val(.CPoint(pvht)) * Val(.CPoint(Remise.text)) / 100), "0.00")
-          Artrm = Val(.CPoint(LigTk.Item[6])) - Val(.CPoint(pvht))
+          Artrm = Format$(Val(.CPoint(LigTk.Item[6])) - Val(.CPoint(pvht)), "0.00")
         Endif
         If Ecotaxe <> 0 And Not IsNull(Ecotaxe) Then
           Inc iligne
