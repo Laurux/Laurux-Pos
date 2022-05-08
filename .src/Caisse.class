@@ -5674,13 +5674,13 @@ Public Sub Enrg_Tk(Supprime As Boolean)
           'Esp += Val(utils.cpoint(LigTk.Item[3]))
           'If Val(utils.cpoint(smespeces)) > Val(utils.cpoint(TotalTk.text)) Then smespeces = TotalTk.Text
           Esp += Val(utils.cpoint(LigTk.Item[3]))
-          smespeces = Esp
+          smespeces = Format$(Esp, "0.00")
           Maj_Paiements(sespeces, LigTk.Item[3], "1")
           sstatut = 0
         Endif
         If Right$(LigTk.Item[5], 1) = "Q" Then
           Esp += Val(utils.cpoint(LigTk.Item[3]))
-          smespeces = Esp
+          smespeces = Format$(Esp, "0.00")
           Maj_Paiements("Q", LigTk.Item[3], "1")
           sstatut = 0
         Endif
