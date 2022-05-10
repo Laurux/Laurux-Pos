@@ -247,7 +247,10 @@ End
 '###################################### FIN DES AJOUTS TUNNEL SSH / MG - 07 janvier 2010
 
 Public Function cpoint(mtt As String) As String
-
+  
+  If IsNull(mtt) Then
+    Return "0,00"
+  Endif
   Return (Replace$(LTrim$(mtt), ".", ","))
 
 End

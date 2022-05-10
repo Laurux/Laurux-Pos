@@ -4406,7 +4406,7 @@ Public Sub Maj_Mespeces(intitule As String, Reg As String, smnt As String, sqte 
   Dim TabReglt As String
 
   TabReglt = "Fiches_Reglts" & Ncaisse
-  Utils.db.Exec("INSERT INTO " & TabReglt & " (intitule, type, montant, qte, date) VALUES (&1, &2, &3, &4, &5)", Intitule, Reg, smnt, sqte, Format$(Now, "dd-mm-yyyy"))
+  Utils.db.Exec("INSERT INTO " & TabReglt & " (intitule, type, montant, qte, date) VALUES (&1, &2, &3, &4, &5)", Intitule, Reg, Format$(Val(Utils.cpoint(smnt)), "0.00"), sqte, Format$(Now, "dd-mm-yyyy"))
 
 End
 
@@ -4433,16 +4433,16 @@ Public Sub Maj_Acomptes(intitule As String, Reg As String, smnt As String, libel
     numr2 = Ecritures(numecr)
     numr2 = numr2 + 1
     ' on met à jour la table des acomptes
-    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabAcomptes") & " (intitule, type, montant, date) VALUES (&1, &2, &3, &4)", Intitule, Reg, Val(.cpoint(smnt)), Format$(Now, "yyyy-mm-dd"))
+    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabAcomptes") & " (intitule, type, montant, date) VALUES (&1, &2, &3, &4)", Intitule, Reg, Format$(Val(.cpoint(smnt)), "0.00"), Format$(Now, "yyyy-mm-dd"))
     ' On met à jour la trésorerie
     rResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabJour") & " where code_jo = &1", jour)
     CptCaisse = rResult!cde_banque
     If reg = "P" Then typeP = Vic
     If reg = "H" Then typeP = Vichq
     If reg = "G" Then typeP = CptCaisse
-    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, intitule, dte, numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, clicode, Clicaisse, Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, 0, Val(.cpoint(smnt)), 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
+    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, intitule, dte, numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, clicode, Clicaisse, Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, 0, Format$(Val(.cpoint(smnt)), "0.00"), 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
     maj_solde(clicode, sMnt)
-    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour,numero,compte,intitule,dte,numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, typeP, "Espèces", Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, Val(.cpoint(smnt)), 0, 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
+    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour,numero,compte,intitule,dte,numdoc, numlot, libelle, montantd, montantc,validee, provisoire,tresorerie,lettree,Cloturee, datee, numerodef) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17})", Jour, numr, typeP, "Espèces", Format$(Now, "yyyy-mm-dd"), Ntk, Ntk, libelac, Format$(Val(.cpoint(smnt)), "0.00"), 0, 1, 0, 1, 0, 1, Format$(Now, "yyyy-mm-dd"), numr2)
     maj_solde(typeP, sMnt)
     Maj_Collectif(clicode, Clicaisse, libelac, smnt)
     ' On met à jour le numéro d'écriture
@@ -4460,7 +4460,7 @@ Public Sub Maj_Collectif(Cpt As String, intit As String, libelac As String, Mnt 
   With Utils
     cResult = Utils.db.Exec("SELECT * FROM " & Cbase.Table("TabComptes") & " Where compte_cc = &1", Cpt)
     coll = cResult!coll_cc
-    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, collectif, intitule, dte, libelle, montantd, montantc, validee, provisoire, tresorerie, pointee, lettree, cloturee, relance, numerodef, numdoc, numlot) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19})", Jour, numr, coll, 1, Intit, Format$(Now, "yyyy-mm-dd"), Libelac, 0, Val(.cpoint(mnt)), 1, 0, 1, 0, 0, 1, 0, numr2, Ntk, Ntk)
+    Utils.db.Exec("INSERT INTO " & Cbase.Table("TabMvt") & "(jour, numero, compte, collectif, intitule, dte, libelle, montantd, montantc, validee, provisoire, tresorerie, pointee, lettree, cloturee, relance, numerodef, numdoc, numlot) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13}, &{14}, &{15}, &{16}, &{17}, &{18}, &{19})", Jour, numr, coll, 1, Intit, Format$(Now, "yyyy-mm-dd"), Libelac, 0, Format$(Val(.cpoint(mnt)), "0.00"), 1, 0, 1, 0, 0, 1, 0, numr2, Ntk, Ntk)
     maj_solde(coll, Mnt)
   End With
 
@@ -5795,7 +5795,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       Endif
     Endif
     If iavoir = 1 Then
-      Utils.db.Exec("INSERT INTO " & Cbase.Table("TabAvoirs") & " (intitule, dte, montant, montantdu, ntk) VALUES (&1, &2, &3, &4, &5)", snavoir, datetk, Val(utils.cpoint(TotalTk.Text)), 0, numero_tk)
+      Utils.db.Exec("INSERT INTO " & Cbase.Table("TabAvoirs") & " (intitule, dte, montant, montantdu, ntk) VALUES (&1, &2, &3, &4, &5)", snavoir, datetk, Format$(Val(utils.cpoint(TotalTk.Text)), "0.00"), 0, numero_tk)
     Endif
 
     Tab = "Fiches_LigTickets" & Ncaisse
@@ -5830,7 +5830,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       If Error Then smtva = ""
 
       'On enregistre chaques lignes du ticket
-      Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", numero_tk, snumlig, Left$(scode, 15), sdesign, smontant, sqte, stype, fam, smontantht, smrem, smtva, LigTk.Item[8], LigTk.Item[10])
+      Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", numero_tk, snumlig, Left$(scode, 15), sdesign, Format$(Val(utils.CPoint(smontant)), "0.00"), sqte, stype, fam, smontantht, smrem, smtva, LigTk.Item[8], LigTk.Item[10])
 
     Until LigTk.MoveNext()
 
@@ -5891,7 +5891,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
                 mntFam = Val(Utils.cpoint(MntFam)) - Val(utils.cpoint(smontantFam))
                 QteFam = rFam!qte
                 QteFam = Val(utils.cpoint(QteFam)) - Val(Utils.cpoint(sqte))
-                Utils.db.Exec("UPdate  " & Tiketx & "  SET montant = &1, qte = &2 WHERE Fam = &3", MntFam, QteFam, Fam)
+                Utils.db.Exec("UPdate  " & Tiketx & "  SET montant = &1, qte = &2 WHERE Fam = &3", Format$(Val(utils.CPoint(MntFam)), "0.00"), Format$(Val(utils.CPoint(QteFam)), "0.000"), Fam)
               Endif
             Else
               If Val(Utils.cpoint(sqte)) <> 0 And Not IsNull(sqte) Then
@@ -5899,21 +5899,21 @@ Public Sub Enrg_Tk(Supprime As Boolean)
                 mntFam = Val(Utils.cpoint(MntFam)) + Val(utils.cpoint(smontantFam))
                 QteFam = rFam!qte
                 QteFam = Val(utils.cpoint(QteFam)) + Val(Utils.cpoint(sqte))
-                Utils.db.Exec("UPdate  " & Tiketx & "  SET montant = &1, qte = &2 WHERE Fam = &3", MntFam, QteFam, Fam)
+                Utils.db.Exec("UPdate  " & Tiketx & "  SET montant = &1, qte = &2 WHERE Fam = &3", Format$(Val(utils.CPoint(MntFam)), "0.00"), Format$(Val(utils.CPoint(QteFam)), "0.000"), Fam)
               Endif
             Endif
           Else
             If iavoir = 1 Then
               If stype <> "T" Then
-                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", "-" & Val(utils.cpoint(smontantFam)), "-" & sqte, Fam)
+                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", "-" & Format$(Val(utils.cpoint(smontantFam)), "0.00"), "-" & sqte, Fam)
               Else
-                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", "-" & Val(utils.cpoint(smontantFam)), "-" & sqte, Fam)
+                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", "-" & Format$(Val(utils.cpoint(smontantFam)), "0.00"), "-" & sqte, Fam)
               Endif
             Else
               If stype <> "T" Then
-                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Abs(Val(utils.cpoint(smontantFam))) * Val(sqte), sqte, Fam)
+                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Format$(Abs(Val(utils.cpoint(smontantFam))) * Val(sqte), "0.00"), sqte, Fam)
               Else
-                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Val(utils.cpoint(smontantFam)), sqte, Fam)
+                Utils.db.Exec("INSERT INTO " & Tiketx & " (montant, qte, fam) VALUES (&1, &2, &3)", Format$(Val(utils.cpoint(smontantFam)), "0.00"), sqte, Fam)
               Endif
             Endif
           Endif
@@ -5997,12 +5997,12 @@ Public Sub Maj_Paiements(Reg As String, smnt As String, sqte As String)
     rReglt = Utils.db.Exec(" select * from " & TabReglt & " where type = &1 and date = &2", reg, Format$(Now, "dd-mm-yyyy"))
     If rReglt.Available Then
       MntReglt = rReglt!montant
-      MntReglt = Val(Utils.cpoint(MntReglt)) + Val(Utils.cpoint(smnt))
+      MntReglt = Format$(Val(Utils.cpoint(MntReglt)) + Val(Utils.cpoint(smnt)), "0.00")
       QteReglt = rReglt!qte
-      QteReglt = Val(utils.cpoint(QteReglt)) + Val(Utils.cpoint(sqte))
+      QteReglt = Format$(Val(utils.cpoint(QteReglt)) + Val(Utils.cpoint(sqte)), "0.000")
       Utils.db.Exec("UPdate  " & TabReglt & "  SET montant = &1, qte = &2 WHERE type = &3 and date = &4", MntReglt, QteReglt, Reg, Format$(Now, "dd-mm-yyyy"))
     Else
-      Utils.db.Exec("INSERT INTO " & TabReglt & " (type, montant, qte, date) VALUES (&1, &2, &3, &4)", Reg, smnt, sqte, Format$(Now, "dd-mm-yyyy"))
+      Utils.db.Exec("INSERT INTO " & TabReglt & " (type, montant, qte, date) VALUES (&1, &2, &3, &4)", Reg, Format$(Val(Utils.cpoint(smnt)), "0.00"), Format$(Val(Utils.cpoint(sqte)), "0.000"), Format$(Now, "dd-mm-yyyy"))
     Endif
   Endif
 
@@ -6688,7 +6688,7 @@ Public Sub Ticketz()
           'Print rtx!intitule & rtx!montant & rtx!qte & rtx!type & Ncaisse
           If rtx.Available Then
             Repeat
-              Utils.db.Exec("INSERT INTO " & Tabrgz & " (intitule, montant, qte, type, caisse, date) VALUES (&1, &2, &3, &4, &5, &6)", Left(rtx!intitule, 30), rtx!montant, rtx!qte, rtx!type, Ncaisse, rtx!date)
+              Utils.db.Exec("INSERT INTO " & Tabrgz & " (intitule, montant, qte, type, caisse, date) VALUES (&1, &2, &3, &4, &5, &6)", Left(rtx!intitule, 30), Format$(Val(Utils.cpoint(rtx!montant)), "0.00"), rtx!qte, rtx!type, Ncaisse, rtx!date)
             Until rtx.MoveNext()
           Endif
           ' on efface
