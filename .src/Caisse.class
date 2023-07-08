@@ -5830,7 +5830,7 @@ Public Sub Enrg_Tk(Supprime As Boolean)
       If Error Then smtva = ""
 
       'On enregistre chaques lignes du ticket
-      Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", numero_tk, snumlig, Left$(scode, 15), sdesign, Format$(Val(utils.CPoint(smontant)), "0.00"), sqte, stype, fam, smontantht, smrem, smtva, LigTk.Item[8], LigTk.Item[10])
+      Utils.db.Exec("INSERT INTO " & Tab & " (numero, numlig, code, intitule, montant, qte, type, fam, mht, mrem, mtva, block, tva) VALUES (&1, &2, &3, &4, &5, &6, &7, &8, &9, &{10}, &{11}, &{12}, &{13})", numero_tk, snumlig, Left$(scode, 15), sdesign, Format$(Val(utils.CPoint(smontant)), "0.00"), sqte, stype, fam, Format$(Val(utils.CPoint(smontantht)), "0.00"), smrem, Format$(Val(utils.CPoint(smtva)), "0.00"), LigTk.Item[8], LigTk.Item[10])
 
     Until LigTk.MoveNext()
 
